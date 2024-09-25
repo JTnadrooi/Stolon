@@ -1,0 +1,1 @@
+The board class server a single purpose; casting the underlying BOARDSTATE to the STOLON enviroment. BOARDSATE is a STRUCT to refrencing it multiple times in the same frame can be quite costly.

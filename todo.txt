@@ -1,0 +1,3 @@
+﻿-Implement different tile-kinds.
+-Write tutorial. (PDF most likely)
+-Implement screen tips. 

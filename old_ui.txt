@@ -1,0 +1,913 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using AsitLib.XNA;
+using System.Drawing;
+using System.Linq;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
+using System;
+using System.Runtime.Versioning;
+using System.Reflection.Metadata;
+using AsitLib;
+using System.Windows;
+using System.Xml.Linq;
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
+
+using Color = Microsoft.Xna.Framework.Color;
+using Point = Microsoft.Xna.Framework.Point;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using Math = System.Math;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+using System.Diagnostics;
+using System.Collections;
+using MonoGame.Extended;
+using AsitLib.Collections;
+using MonoGame.Extended.Content;
+
+using static Stolon.StolonGame;
+using RectangleF = MonoGame.Extended.RectangleF;
+using static Stolon.UIElement;
+using MonoGame.Extended.BitmapFonts;
+using Betwixt;
+using System.Text;
+
+#nullable enable
+
+namespace Stolon
+{
+    public class DLUserInterface : AxComponent
+    {
+        private Board board;
+        private DLEnvironment environment;
+
+        private int lineHeight;
+
+        private List<UIElementDrawData> drawData;
+
+        #region menuVariables
+
+        private Texture2D menuLogoLines;
+        private Texture2D menuLogoDummyTiles;
+        private Texture2D menuLogoFilledTiles;
+        private Texture2D menuLogoLowResFonted;
+        private Texture2D dither8x8;
+
+        private Rectangle menuLogoTileHider;
+
+        private bool drawMenuLogoLines;
+        private bool drawMenuLogoDummyTiles;
+        private bool drawMenuLogoFilledTiles;
+        private bool drawMenuLogoLowResFonted;
+        private int menuLogoRowsHidden;
+        private Rectangle menuLogoBoundingBox;
+
+        private Vector2 menuLogoDrawPos;
+        private int milisecondsSinceStartup;
+
+        private int menuLogoFlashTime;
+        private int? menuFlashStart; 
+        private int? menuFlashEnd;
+        private int menuLogoMilisecondsFlashing;
+        private bool selectEntities;
+
+        private int menuLine1X;
+        private int menuLine2X;
+        private int menuLineLenght;
+        private int menuLineWidth;
+
+        private List<UIElement> depthPath;
+        private List<UIElement>? uiElementOverride;
+
+        private Point[] menuDitherTexturePositions;
+
+        private Tweener<float> menuLogoEaseTweener;
+        private Tweener<float> menuRemoveTweener;
+
+        private const int menuLogoRowCount = 5;
+
+        #endregion
+
+        #region selectEntityVariables
+
+        private int selectEntityLineX;
+        private float selectEntityLineOffsetCoefficient;
+        private Vector2 selectEntityOrigin;
+
+        private List<UIElement> selectEntityUIElements;
+        private Dictionary<string, DLEntity> dLEntities;
+        private Rectangle selectEntityBorderTop;
+        private Rectangle selectEntityBorderBottom;
+        private DLEntity? persistentCurrentSelected;
+        private DLEntity? currentSelected;
+        private DLEntity? definitiveSelected;
+
+        private bool drawSelectedEntityDesc;
+
+        private Rectangle selectedEntityDescriptionOutline;
+        private Vector2 selectedEntityDescriptionPos;
+        private string? wrappedSelectedEntityDescription;
+
+        private Dictionary<string, int> selectedEntityStichedPositions;
+        private int desiredStichedEntitiesDrawOffset;
+        private float stichedEntitiesDrawOffset;
+
+        private Tweener<float> stichedEntitiesScrollTweener;
+        private int milisecondsOnCurrentSelectedEntity;
+
+        private Stack<(string id, int miliseconds)> entitySelectHistory;
+
+        private const int selectedEntityDesiredSize = 256;
+
+        #endregion
+
+        #region boardUIvariables
+
+        private int lineX1;
+        private int lineX2;
+        private float lineOffset;
+        private float lineWidth;
+        private float uiLeftOffset;
+        private float uiRightOffset;
+
+
+        private Dictionary<string, UIElement> uiElements;
+
+        private SpriteFont uifont;
+        private SpriteFont largeUiFont;
+        private float outlineSpacing;
+
+        private Dictionary<string, UIElementUpdateData> updateData;
+
+        private Texture2D mouseClickFillElementTexture;
+        private Rectangle mouseClickFillElementBounds;
+        private float mouseClickElementBoundsCoefficient;
+        private string? pressedElementId;
+
+        private float mouseHoverCoefficient;
+        private string? hoveredElementId;
+        private float lineClearance;
+
+        #endregion
+        #region dialogue variables
+
+        private Queue<DialogueInfo> dialogueQueue;
+        private Rectangle dialoguebounds;
+        private DialogueInfo? currentDialogue;
+        private Point dialogueTextPos;
+        private int initialDialogueMiliseconds;
+        private int dialogueMilisecondsRemaining;
+        private string toDrawDialogueText;
+
+        private Point providerTextPos;
+        private float providerTextScaleCoefficient;
+        private Tweener<float>? providerTextSizeTweener;
+
+        private float dialogueShowCoefficient;
+        private int dialogueBoxY;
+        private bool awaitingMouseDialogueHover;
+        private bool dialogueIsHidden;
+        public bool DialogueIsHidden
+        {
+            get => dialogueIsHidden;
+            set => dialogueIsHidden = value;
+        }
+
+        private const int charReadMiliseconds = 75; // per char
+
+        private const bool lockFirstDialogue = true; // debug stuff.
+
+        #endregion
+        #region public properties
+
+        /// <summary>
+        /// The virtual X coordiantes of the first line (from left to right).
+        /// </summary>
+        public float Line1X => lineX1;
+        /// <summary>
+        /// The virtual X coordiantes of the second line (from left to right).
+        /// </summary>
+        public float Line2X => lineX2;
+
+        /// <summary>
+        /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> containing all the <see cref="UIElementDrawData"/> objects from all the <see cref="UIElement"/> objects refreched AFTER the UI update.
+        /// </summary>
+        public ReadOnlyDictionary<string, UIElementUpdateData> UIElementUpdateData => new ReadOnlyDictionary<string, UIElementUpdateData>(updateData);
+        public ReadOnlyDictionary<string, UIElement> UIElements => new ReadOnlyDictionary<string, UIElement>(uiElements);
+        public Rectangle DialogueBounds => dialoguebounds;
+
+        #endregion
+
+        internal DLUserInterface(DLScene scene, Dictionary<string, DLEntity> dLEntities) : base(Instance.Environment)
+        {
+            environment = Instance.Environment;
+            board = scene.Board;
+            this.dLEntities = dLEntities;
+
+            lineOffset = 96f;
+            lineWidth = 2f;
+            lineClearance = 8f;
+
+            uifont = Instance.Fonts["mini3x5"];
+
+            lineHeight = (int)(uifont.MeasureString("A").Y * DLEnvironment.FontScale + lineClearance);
+
+            menuLogoLines = Instance.Textures.GetReference("textures\\menuLogo\\lines");
+            menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogo\\dummyTiles");
+            menuLogoFilledTiles = Instance.Textures.GetReference("textures\\menuLogo\\filledTiles");
+            menuLogoLowResFonted = Instance.Textures.GetReference("textures\\menuLogo\\lowResFonted");
+            dither8x8 = Instance.Textures.GetReference("textures\\dither8x8");
+
+            //startMainButton = Instance.Textures.GetReference("textures\\start");
+            //backMainButton = Instance.Textures.GetReference("textures\\back");
+            //uifont = Instance.Fonts["m6x11"];
+
+            uiElements = new Dictionary<string, UIElement>();
+
+            drawData = new List<UIElementDrawData>();
+
+            updateData = new Dictionary<string, UIElementUpdateData>();
+            mouseClickFillElementBounds = new Rectangle();
+
+            outlineSpacing = 2f;
+            mouseClickFillElementTexture = new AxTexture(AxPalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
+            ((Texture2D)mouseClickFillElementTexture).SetData(new Color[] { Color.White });
+
+            dialogueQueue = new Queue<DialogueInfo>();
+            dialogueTextPos = Point.Zero;
+            dialogueMilisecondsRemaining = 0;
+            currentDialogue = null;
+            dialogueShowCoefficient = 0f;
+            toDrawDialogueText = string.Empty;
+
+            drawMenuLogoLines = true;
+            drawMenuLogoDummyTiles = true;
+            drawMenuLogoFilledTiles = false;
+
+            menuLogoFlashTime = 0;
+            menuFlashStart = null;
+            menuLogoRowsHidden = 5;
+            menuDitherTexturePositions = Array.Empty<Point>();
+
+            depthPath = new List<UIElement>();
+
+            menuLogoEaseTweener = new Tweener<float>(0f, 1f, 2f, Ease.Quad.InOut);
+            menuRemoveTweener = new Tweener<float>(0f, 1f, 2f, Ease.Quad.In);
+            selectedEntityStichedPositions = new Dictionary<string, int>();
+            entitySelectHistory = new Stack<(string id, int miliseconds)>();
+
+            selectEntityUIElements = new List<UIElement>();
+            //milisecondsSinceStartup = 2000; // debug and below
+        }
+        private void ResetElementData()
+        {
+            updateData.Clear();
+            foreach (UIElement uiElement in uiElements.Values)
+                updateData.Add(uiElement.Id, new Stolon.UIElementUpdateData(false, uiElement.Id));
+            drawData.Clear();
+        }
+        public override void Update(int elapsedMiliseconds)
+        {
+            ResetElementData();
+
+            UpdateDialogueUI(elapsedMiliseconds);
+            switch (Instance.Environment.GameState)
+            {
+                case DLEnvironment.DeadLineGameState.OpenBoard:
+                    UpdateBoardUI(elapsedMiliseconds);
+                    break;
+                case DLEnvironment.DeadLineGameState.InMenu:
+                    UpdateMenu(elapsedMiliseconds);
+                    break;
+                case DLEnvironment.DeadLineGameState.Loading:
+                    break;
+            }
+            base.Update(elapsedMiliseconds);
+        }
+        public void UpdateDialogueUI(int elapsedMiliseconds)
+        {
+            Point dialogueBoxDimensions = new Point(256, 64);
+            int dialogueYoffset = (int)(-10f * (dialogueIsHidden ? dialogueShowCoefficient : 1f));
+            dialoguebounds = new Rectangle(
+                (int)(Instance.VirtualBounds.Width * 0.5f - dialogueBoxDimensions.X * 0.5f),
+                (int)(Instance.VirtualBounds.Height - (dialogueBoxDimensions.Y * dialogueShowCoefficient) + dialogueYoffset),
+                dialogueBoxDimensions.X,
+                dialogueBoxDimensions.Y);
+
+            dialogueMilisecondsRemaining -= elapsedMiliseconds;
+
+            if (dialogueQueue.Count == 1 || dialogueMilisecondsRemaining < -(charReadMiliseconds * 10)) // new dialogue or no dialogue
+                if (dialogueQueue.Count > 0)
+                {
+                    bool providerDiffers = currentDialogue.HasValue && currentDialogue.Value.Provider.Name != dialogueQueue.Peek().Provider.Name;
+
+                    currentDialogue = dialogueQueue.Dequeue();
+                    Instance.DebugStream.WriteLine("Dequeued dialogue with text: " + currentDialogue.Value.Text);
+                    initialDialogueMiliseconds = GetMilisecondsFromText(currentDialogue.Value.Text);
+                    dialogueMilisecondsRemaining = initialDialogueMiliseconds;
+
+                    if (providerDiffers || providerTextSizeTweener == null)
+                    {
+                        providerTextSizeTweener = new Tweener<float>(0.0001f, 1f, 1, Ease.Sine.Out);
+                        providerTextSizeTweener.Start();
+                    }
+
+                    awaitingMouseDialogueHover = true;
+                }
+                else
+                {
+                    if (!lockFirstDialogue)
+                    {
+                        currentDialogue = null; // debug stuff.
+                        providerTextSizeTweener = null;
+                    }
+                    dialogueMilisecondsRemaining = 0;
+                }
+
+            
+
+            if (currentDialogue.HasValue) // dialogue yay
+            {
+                if (currentDialogue.Value.Text.Length == 0) throw new Exception("Text size zero.");
+
+                providerTextSizeTweener!.Update(elapsedMiliseconds / 1000f);
+                providerTextScaleCoefficient = MathF.Min(providerTextSizeTweener.Value, dialogueShowCoefficient > 0.9f ? 1f : dialogueShowCoefficient);
+                //providerTextScaleCoefficient = dialogueShowCoefficient;
+
+                toDrawDialogueText = dialogueMilisecondsRemaining < 0 ? currentDialogue.Value.Text : currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
+                dialogueTextPos = dialoguebounds.Location + new Point((int)(dialoguebounds.Width / 2f - uifont.MeasureString(toDrawDialogueText).X * DLEnvironment.FontScale / 2f),
+                    (int)(dialoguebounds.Height / 2f - Instance.Environment.FontDimensions.Y / 2f));
+
+                providerTextPos = dialoguebounds.Location + new Point((int)(dialoguebounds.Width / 2f - uifont.MeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient * DLEnvironment.FontScale / 2f),
+                    2);
+            }
+            if (awaitingMouseDialogueHover)
+            {
+                dialogueShowCoefficient += MathF.Pow(1 - dialogueShowCoefficient, 2) * 0.1f;
+            }
+
+            if (DLMouse.Domain == DLMouse.MouseDomain.Dialogue)
+            {
+                awaitingMouseDialogueHover = false;
+                dialogueShowCoefficient += MathF.Pow(1 - dialogueShowCoefficient, 2) * 0.1f;
+            }
+            else
+            {
+                if ((!awaitingMouseDialogueHover))
+                {
+                    dialogueShowCoefficient -= MathF.Pow(dialogueShowCoefficient, 2) * 0.1f;
+                }
+            }
+            dialogueShowCoefficient = Math.Clamp(dialogueShowCoefficient, 0f, 1f);
+
+
+        }
+        public void UpdateBoardUI(int elapsedMiliseconds)
+        {
+            float zoomIntensity = board.ZoomIntensity;
+            float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
+
+            bool mouseIsOnUI = DLMouse.Domain == DLMouse.MouseDomain.UserInterfaceLow;
+
+            uiLeftOffset = -lineZoomOffset;
+            uiRightOffset = lineZoomOffset;
+
+            lineX1 = (int)(lineOffset + uiLeftOffset);
+            lineX2 = (int)(Instance.VirtualDimensions.X - lineOffset + uiRightOffset);
+
+            Ordering.Order(uiElements.Values.ToArray(), drawData, updateData, UIDock.Left, new Vector2(uiLeftOffset, 0) + new Vector2(5));
+            Ordering.Order(uiElements.Values.ToArray(), drawData, updateData, UIDock.Right, new Vector2(lineX2, 0) + new Vector2(5));
+
+            // end ui element section.
+            // its dialogue time.
+
+
+
+        }
+        public void UpdateMenu(int elapsedMiliseconds)
+        {
+            int rowHeight = (int)(menuLogoLines.Height / (float)menuLogoRowCount);
+            float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
+            int lineFromMid = (int)(110f + menuRemoveTweenerOffset);
+            bool menuFlashEnded = milisecondsSinceStartup > menuFlashEnd;
+            int menuLogoBoundingBoxClearing = 8;
+            int uiElementOffsetY = (int)(130f + menuRemoveTweenerOffset);
+            bool startFrame = false;
+            int selectEntityBorderHeight = (int)((Instance.VirtualDimensions.Y - selectedEntityDesiredSize) / 2f);
+
+            if (milisecondsSinceStartup < 10000)
+            {
+                milisecondsSinceStartup = 10001;
+                selectEntities = true;
+                menuRemoveTweener.Update(10);
+                startFrame = true;
+            }
+
+            #region inFlash
+            menuLogoTileHider = new Rectangle(menuLogoDrawPos.ToPoint(), new Point(menuLogoLines.Width, (int)(rowHeight * menuLogoRowsHidden)));
+            milisecondsSinceStartup += elapsedMiliseconds;
+            menuLogoDrawPos = Vector2.Round(Centering.MiddleX(menuLogoLines, 30, Instance.VirtualDimensions.X, Vector2.One) + new Vector2(0, 8f * menuLogoEaseTweener.Value))
+                + new Vector2(0, -menuRemoveTweenerOffset);
+            menuDitherTexturePositions = new Point[(int)Math.Ceiling(Instance.VirtualDimensions.Y / (float)dither8x8.Height) * 2];
+
+            menuFlashStart = 1200;
+            menuFlashEnd = menuFlashStart + 400;
+
+            menuLine1X = (int)(Instance.VirtualDimensions.X / 2f) - lineFromMid;
+            menuLine2X = (int)(Instance.VirtualDimensions.X / 2f) + lineFromMid;
+
+            //menuLineLenght = (int)((5f - menuLogoRowsHidden) / ((float)menuLogoRowCount) * Instance.VirtualDimensions.Y);
+            menuLineLenght = drawMenuLogoFilledTiles ? 400 : 0;
+            menuLineWidth = 1 + (menuFlashEnded ? 1 : 0);
+
+            if (milisecondsSinceStartup > 300) menuLogoRowsHidden = 4;
+            if (milisecondsSinceStartup > 600) menuLogoRowsHidden = 3;
+            if (milisecondsSinceStartup > 800) menuLogoRowsHidden = 2;
+            if (milisecondsSinceStartup > 1000) menuLogoRowsHidden = 1;
+            if (milisecondsSinceStartup > menuFlashStart) menuLogoRowsHidden = 0;
+
+            if (menuLogoFlashTime > 0)
+            {
+                menuLogoMilisecondsFlashing += elapsedMiliseconds;
+                if (menuLogoMilisecondsFlashing > menuLogoFlashTime)
+                {
+                    drawMenuLogoFilledTiles = !drawMenuLogoFilledTiles;
+                    menuLogoMilisecondsFlashing = 0;
+                }
+            }
+
+            if (!menuFlashStart.HasValue) return; // code below only relevant when the dummy board show animation ended.
+
+            if (milisecondsSinceStartup > menuFlashStart.Value) menuLogoFlashTime = 120;
+            if (milisecondsSinceStartup > menuFlashStart.Value + 200) menuLogoFlashTime = 100;
+            if (milisecondsSinceStartup > menuFlashStart.Value + 300) menuLogoFlashTime = 75;
+            if (milisecondsSinceStartup > menuFlashStart.Value + 350) menuLogoFlashTime = 60;
+            if (milisecondsSinceStartup < menuFlashEnd) return; // code below only relevant when the full animation ended.
+
+            #endregion
+            #region inMenu
+            drawMenuLogoLowResFonted = true;
+            drawMenuLogoDummyTiles = true;
+            drawMenuLogoFilledTiles = true;
+            drawMenuLogoLines = true;
+
+            menuLogoFlashTime = 0; // ensures disabled flashing.
+            menuLogoEaseTweener.Update(elapsedMiliseconds / 1000f); // update the tweener.
+            if (selectEntities) menuRemoveTweener.Update(elapsedMiliseconds / 1000f); // update a tweener.
+            if (menuLogoEaseTweener.Value == 1 || menuLogoEaseTweener.Value == 0) // reverse and restart if finished.
+            {
+                menuLogoEaseTweener.Reverse();
+                menuLogoEaseTweener.Start();
+                Instance.DebugStream.WriteLine("\treversing icon tweener.");
+            }
+            menuLogoBoundingBox = // well.
+                new Rectangle(menuLogoDrawPos.ToPoint() + new Point(-menuLogoBoundingBoxClearing), menuLogoLines.Bounds.Size + new Point(menuLogoBoundingBoxClearing * 2));
+
+            for (int i = 0; i < menuDitherTexturePositions.Length; i++) // dithering positions.
+                menuDitherTexturePositions[i] = new Point(
+                        (i >= menuDitherTexturePositions.Length / 2f) ? menuLine2X : menuLine1X - dither8x8.Width,
+                        (i % (int)(menuDitherTexturePositions.Length / 2f)) * dither8x8.Height);
+
+            Ordering.Order(uiElements.Values.ToArray(), 
+                drawData, updateData,
+                UIDock.MainMenu, new Vector2(0, uiElementOffsetY), 4, true);
+
+
+            if (updateData["start"].IsClicked)
+            {
+                startFrame = !selectEntities;
+                selectEntities = true;
+            }
+            if (updateData["options"].IsClicked)
+            {
+                Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+            }
+            if (updateData["quit"].IsClicked)
+            {
+                Instance.Exit();
+            }
+
+            if (!selectEntities) return;
+            #endregion
+
+            Dictionary<string, UIElementUpdateData> entitySelectUpdateDataDump = new Dictionary<string, UIElementUpdateData>();
+            const int selectEntityLineMaxOffset = selectedEntityDesiredSize / 2;
+            const int clearance = 2;
+
+            int selectEntityDescriptionHeight = 80; // 5 * 16
+
+            selectEntityLineX = Instance.VirtualDimensions.X - selectedEntityDesiredSize;
+
+            if (startFrame)
+            {
+                DialogueIsHidden = true;
+                int index = 0;
+                foreach (DLEntity entity in dLEntities.Values)
+                {
+                    selectEntityUIElements.Add(new UIElement(entity.Id + "Button", UIDock.Left, entity.Name + " [" + entity.SymbolNotation + "]", UIElementType.Clickable));
+                    selectedEntityStichedPositions.Add(entity.Id, index * selectedEntityDesiredSize);
+                    index++;
+                }
+            }
+            DynamicTweening.PushSubunitary(ref selectEntityLineOffsetCoefficient, currentSelected != null, elapsedMiliseconds);
+            selectEntityLineX += (int)(selectEntityLineOffsetCoefficient * selectEntityLineMaxOffset);
+
+            selectEntityOrigin = new Vector2(selectEntityLineX - (selectEntityLineMaxOffset * selectEntityLineOffsetCoefficient * 0.5f), selectEntityBorderHeight);
+
+            currentSelected = null;
+            Ordering.Order(selectEntityUIElements.ToArray(), drawData, entitySelectUpdateDataDump, UIDock.Left, new Vector2(5, 5 + selectEntityBorderHeight), rectangleProvider: 
+                (element, elementPos) =>
+                {
+                    Rectangle toret = element.GetBounds(elementPos, Instance.Environment.FontDimensions, clearance);
+                    toret.Width = (int)selectEntityLineX - toret.Location.X - clearance - 1; // #1 linewidth / float rounding compensation (idk what one)
+                    return toret;
+                }, textProvider: (element, updateData) =>
+                {
+                    return updateData.SourcID.Replace("Button", string.Empty) == definitiveSelected?.Id ? (element.Text + " <<", Point.Zero) : Ordering.DefaultTextProvider(element, updateData);
+                });
+            foreach (DLEntity entity in dLEntities.Values)
+            {
+                UIElementUpdateData entityButton = entitySelectUpdateDataDump[entity.Id + "Button"];
+                if (entityButton.IsHovered)
+                {
+                    if (!(entity.Splash.Width == 256)) throw new Exception();
+                    desiredStichedEntitiesDrawOffset = -selectedEntityStichedPositions[(definitiveSelected ?? entity).Id] + selectEntityBorderHeight - selectedEntityDesiredSize * 0; // inversed because inversed y axis
+                    if (persistentCurrentSelected != entity)
+                    {
+                        if (persistentCurrentSelected == null) stichedEntitiesDrawOffset = desiredStichedEntitiesDrawOffset;
+                        
+                        milisecondsOnCurrentSelectedEntity = 0;
+                        stichedEntitiesScrollTweener = new Tweener<float>(stichedEntitiesDrawOffset, desiredStichedEntitiesDrawOffset, 2, Ease.Expo.In);
+                        Instance.DebugStream.WriteLine("\tcurrent selected entity: " + entity.Id);
+                    }
+                    persistentCurrentSelected = entity;
+
+                    currentSelected = entity;
+
+                    if (entityButton.IsClicked)
+                    {
+                        definitiveSelected = entity;
+                        Console.WriteLine(definitiveSelected.Name);
+                    }
+                }
+            }
+            milisecondsOnCurrentSelectedEntity += elapsedMiliseconds;
+
+            if (stichedEntitiesScrollTweener != null)
+            {
+                stichedEntitiesScrollTweener.Update(elapsedMiliseconds / 1000f);
+                stichedEntitiesDrawOffset = stichedEntitiesScrollTweener.Value;
+            }
+
+            selectEntityBorderTop = new Rectangle(Point.Zero, new Point(500, selectEntityBorderHeight));
+            selectEntityBorderBottom = new Rectangle(new Point(0, Instance.VirtualDimensions.Y - selectEntityBorderHeight), new Point(500, selectEntityBorderHeight));
+
+            UIElementDrawData drawDataExampleReference = drawData.Where(d => d.Id == "stolonButton").First();
+            selectedEntityDescriptionOutline = new Rectangle(new Point((int)drawDataExampleReference.Rectangle.Position.X, Instance.VirtualDimensions.Y - selectEntityBorderHeight - clearance - selectEntityDescriptionHeight), new Point((int)drawDataExampleReference.Rectangle.Size.Width, selectEntityDescriptionHeight));
+            selectedEntityDescriptionPos = selectedEntityDescriptionOutline.Location.ToVector2() + new Vector2(clearance);
+            if ((currentSelected != null && currentSelected.Description != null))
+            {
+                drawSelectedEntityDesc = true;
+                wrappedSelectedEntityDescription = WrapText(ShowPercentage(currentSelected.Description, Math.Clamp(milisecondsOnCurrentSelectedEntity / (float)(GetMilisecondsFromText(currentSelected.Description) * 0.2f), 0f, 1f)), selectedEntityDescriptionOutline.Width);
+            }
+            else drawSelectedEntityDesc = false;
+            if (definitiveSelected != null && wrappedSelectedEntityDescription != null)
+            {
+                drawSelectedEntityDesc = true;
+            }
+
+            if (DLMouse.IsClicked(DLMouse.MouseButton.Left) && selectedEntityDescriptionOutline.Contains(DLMouse.VirualPosition))
+            {
+                DLEnvironment.Instance.ForceGameState(DLEnvironment.DeadLineGameState.OpenBoard);
+            }
+        }
+        public string ShowPercentage(string text, float percentage)
+        {
+            int lengthToShow = (int)(text.Length * (percentage));
+            return text.Substring(0, lengthToShow);
+        }
+        public string WrapText(string text, float maxLineWidth)
+        {
+            string[] words = text.Split(' ');
+            StringBuilder sb = new StringBuilder();
+            float lineWidth = 0f;
+            float spaceWidth = uifont.MeasureString(" ").X * DLEnvironment.FontScale;
+
+            foreach (string word in words)
+            {
+                Vector2 size = uifont.MeasureString(word) * DLEnvironment.FontScale;
+
+                if (lineWidth + size.X < maxLineWidth)
+                {
+                    sb.Append(word + " ");
+                    lineWidth += size.X + spaceWidth;
+                }
+                else
+                {
+                    sb.Append("\n" + word + " ");
+                    lineWidth = size.X + spaceWidth;
+                }
+            }
+
+            return sb.ToString();
+        }
+        public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
+        {
+            switch (DLEnvironment.Instance.GameState)
+            {
+                case DLEnvironment.DeadLineGameState.OpenBoard:
+                    spriteBatch.Draw(Instance.Pixel, new Rectangle(Point.Zero, new Point((int)lineX1, 500)), Color.Black);
+                    spriteBatch.DrawLine(lineX1, -10f, lineX1, 500f, Color.White, lineWidth);
+                    spriteBatch.Draw(Instance.Pixel, new Rectangle((int)lineX2, 0, Instance.VirtualDimensions.X - (int)lineX2, 500), Color.Black);
+                    spriteBatch.DrawLine(lineX2, -10f, lineX2, 500f, Color.White, lineWidth);
+
+                    if (mouseClickElementBoundsCoefficient > 0.015f) spriteBatch.Draw(mouseClickFillElementTexture, mouseClickFillElementBounds, Color.White);
+                    else mouseClickElementBoundsCoefficient = 0f; // I really shouldent be altering this in the Draw() method..
+
+                    break;
+                case DLEnvironment.DeadLineGameState.InMenu:
+                    spriteBatch.DrawLine(menuLine1X, -10f, menuLine1X, menuLineLenght, Color.White, menuLineWidth);
+                    spriteBatch.DrawLine(menuLine2X, -10f, menuLine2X, menuLineLenght, Color.White, menuLineWidth);
+                    if (drawMenuLogoLowResFonted)
+                    {
+                        for (int i = 0; i < menuDitherTexturePositions.Length; i++)
+                            spriteBatch.Draw(dither8x8, menuDitherTexturePositions[i].ToVector2(), null, Color.White, 0f, Vector2.Zero, 1f,
+                                (i >= menuDitherTexturePositions.Length / 2f) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+                        spriteBatch.Draw(Instance.Pixel, menuLogoBoundingBox, Color.Black);
+                        spriteBatch.DrawRectangle(menuLogoBoundingBox, Color.White, 1);
+                    }
+                    if (drawMenuLogoDummyTiles) spriteBatch.Draw(menuLogoDummyTiles, menuLogoDrawPos, Color.White);
+                    if (drawMenuLogoFilledTiles) spriteBatch.Draw(menuLogoFilledTiles, menuLogoDrawPos, Color.White);
+                    if (drawMenuLogoLowResFonted) spriteBatch.Draw(menuLogoLowResFonted, menuLogoDrawPos, Color.White);
+                    spriteBatch.Draw(Instance.Pixel, menuLogoTileHider, Color.Black);
+                    if (drawMenuLogoLines) spriteBatch.Draw(menuLogoLines, menuLogoDrawPos, Color.White);
+
+                    if (selectEntities)
+                    {
+                        if (persistentCurrentSelected != null)
+                        {
+                            foreach (KeyValuePair<string, int> kvp in selectedEntityStichedPositions)
+                            {
+                                Vector2 pos = new Vector2(selectEntityOrigin.X, kvp.Value + (int)stichedEntitiesDrawOffset);
+
+                                spriteBatch.Draw(dLEntities[kvp.Key].Splash, pos, Color.White);
+                                spriteBatch.DrawLine(pos, pos + new Vector2(500, 0), Color.White, 2);
+                            }
+                        }
+                            
+                        spriteBatch.Draw(Instance.Pixel, new Rectangle(Point.Zero, new Point(selectEntityLineX, 500)), Color.Black);
+
+                        if (drawSelectedEntityDesc)
+                        {
+                            spriteBatch.DrawString(uifont, wrappedSelectedEntityDescription!, selectedEntityDescriptionPos, Color.White, 0f, Vector2.Zero, DLEnvironment.FontScale, SpriteEffects.None, 1f);
+                        }
+                        else
+                        {
+                            //if (selectedEntityDescriptionOutline.Contains(DLMouse.VirualPosition))
+                            //{
+                            //    spriteBatch.DrawRectangle(selectedEntityDescriptionOutline, Color.White, 3f);
+                            //}
+                        }
+                        spriteBatch.DrawRectangle(selectedEntityDescriptionOutline, Color.White, 1f);
+
+                        spriteBatch.Draw(Instance.Pixel, selectEntityBorderTop, Color.White);
+                        spriteBatch.Draw(Instance.Pixel, selectEntityBorderBottom, Color.White);
+                        spriteBatch.DrawLine(new Vector2(selectEntityLineX, -10), new Vector2(selectEntityLineX, -10) + new Vector2(0, 500), Color.White, 2);
+
+                        //spriteBatch.Draw(Instance.Pixel, selectedEntityDescriptionOutline, Color.Black);
+                        //spriteBatch.DrawRectangle(selectedEntityDescriptionOutline, Color.White, 1f);
+                        //spriteBatch.DrawString(uifont, currentSelected?.Description ?? "", selectedEntityDescriptionPos, Color.White, 0f, Vector2.Zero, DLEnvironment.FontScale, SpriteEffects.None, 1f);
+                    }
+
+                    break;
+                case DLEnvironment.DeadLineGameState.Loading:
+                    break;
+            }
+            foreach (UIElementDrawData elementDrawData in drawData)
+            {
+                spriteBatch.DrawString(uifont, elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, DLEnvironment.FontScale, SpriteEffects.None, 1f);
+                if (elementDrawData.DrawRectangle)
+                {
+                    spriteBatch.DrawRectangle(elementDrawData.Rectangle, Color.White, 1f);
+                }
+            }
+            spriteBatch.Draw(Instance.Pixel, dialoguebounds, Color.Black);
+            if (currentDialogue.HasValue)
+            {
+                spriteBatch.DrawString(uifont, toDrawDialogueText, dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, DLEnvironment.FontScale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(uifont, currentDialogue.Value.Provider.Name.ToUpper(), providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, providerTextScaleCoefficient * DLEnvironment.FontScale, SpriteEffects.None, 0f);
+            }
+            spriteBatch.DrawRectangle(dialoguebounds, Color.White, 2);
+
+            base.Draw(spriteBatch, elapsedMiliseconds);
+        }
+        public void AddElement(UIElement element)
+        {
+            uiElements.Add(element.Id, element);
+            Instance.DebugStream.WriteLine("\tui-element with id " + element.Id + " added.");
+            updateData.Add(element.Id, default);
+            Instance.DebugStream.WriteLine("\tghost-ui-element with id " + element.Id + " added.");
+        }
+        public void RemoveElement(string elementID)
+        {
+            uiElements.Remove(elementID);
+            Instance.DebugStream.WriteLine("\tui-element with id " + elementID + " removed.");
+        }
+        public int GetMilisecondsFromText(string text)
+        {
+            return text.Length * charReadMiliseconds;
+        }
+
+        public void Queue(DialogueInfo dialogue)
+        {
+            Instance.DebugStream.WriteLine("Dialogue queued with text: " + dialogue.Text);
+            dialogueQueue.Enqueue(dialogue);
+        }
+        
+        public static class Ordering
+        {
+            public static void Order(UIElement[] uIElements,
+            ICollection<UIElementDrawData> drawDump, IDictionary<string, UIElementUpdateData> updateDump, // dumps.
+            UIDock dockstyle, Vector2 uiOrgin, // args.
+            int lineClearance = UIElement.DefaultRectangleClearance * 2 + 1, bool isMouseRelevant = true, bool exclusive = true,
+            Func<UIElement, Point, Rectangle>? rectangleProvider = null,
+            Func<UIElement, UIElementUpdateData, (string, Point)>? textProvider = null)
+            {
+                rectangleProvider ??= (element, pos) => element.GetBounds(pos, Instance.Environment.FontDimensions);
+                textProvider ??= DefaultTextProvider;
+
+                int index = 0;
+
+                for (int i = 0; i < uIElements.Length; i++)
+                {
+                    UIElement uiElement = uIElements[i];
+
+                    if (exclusive && uiElement.Dock != dockstyle) continue;
+
+                    switch (dockstyle)
+                    {
+                        case UIDock.MainMenu:
+                            {
+                                Vector2 elementPos = Centering.MiddleX(
+                                Instance.Environment.FontDimensions.X * uiElement.Text.Length,
+                                index * (Instance.Environment.FontDimensions.Y + lineClearance) * 2 + uiOrgin.Y,
+                                Instance.VirtualDimensions.X, Vector2.One);
+                                Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point(Instance.Environment.FontDimensions.X * uiElement.Text.Length, Instance.Environment.FontDimensions.Y));
+                                bool elementIsHovered = elementBounds.Contains(DLMouse.VirualPosition) && isMouseRelevant;
+                                string elementText = uiElement.Text;
+
+
+                                updateDump[uiElement.Id] = new UIElementUpdateData(elementIsHovered, uiElement.Id);
+                                var textProviderReturned = textProvider.Invoke(uiElement, updateDump[uiElement.Id]);
+                                drawDump.Add(new UIElementDrawData(uiElement.Id, textProviderReturned.Item1, uiElement.Type, elementPos + textProviderReturned.Item2.ToVector2(), Rectangle.Empty, false));
+                            }
+                            break;
+                        case UIDock.Right:
+                        case UIDock.Left:
+                            {
+                                Vector2 elementPos = uiOrgin + new Vector2(0, index * (Instance.Environment.FontDimensions.Y + lineClearance));
+                                Rectangle elementRectangle = rectangleProvider(uiElement, elementPos.ToPoint());
+                                string elementText = uiElement.Text;
+
+                                bool elementIsHovered = elementRectangle.Contains(DLMouse.VirualPosition) && isMouseRelevant;
+                                bool elementIsPressed = elementIsHovered && DLMouse.IsPressed(DLMouse.MouseButton.Left);
+                                bool drawRectangle = uiElement.Type == UIElementType.Expandable || uiElement.Type == UIElementType.Clickable;
+                                if (!drawRectangle) // if there is no rectangle, the element is not clickable (or hoverable)
+                                {
+                                    elementIsPressed = false;
+                                    elementIsHovered = false;
+                                }
+
+
+                                updateDump[uiElement.Id] = new UIElementUpdateData(elementIsHovered, uiElement.Id);
+                                var textProviderReturned = textProvider.Invoke(uiElement, updateDump[uiElement.Id]);
+                                drawDump.Add(new UIElementDrawData(uiElement.Id, textProviderReturned.Item1, uiElement.Type, elementPos + textProviderReturned.Item2.ToVector2(), elementRectangle, drawRectangle));
+
+                                if (updateDump[uiElement.Id].IsClicked) Instance.DebugStream.WriteLine("\tui-element with id " + uiElement.Id + " clicked.");
+                            }
+                            break;
+                    }
+                    index++;
+                }
+            }
+            public static (string, Point) DefaultTextProvider(UIElement element, UIElementUpdateData updateData)
+            {
+                string elementText = element.Text;
+                bool elementIsHovered = updateData.IsHovered;
+                switch (element.Dock)
+                {
+                    case UIDock.Right:
+                    case UIDock.Left: return (elementText + (elementIsHovered ? " <" : string.Empty), Point.Zero);
+                    case UIDock.MainMenu:
+                        {
+                            string postPre = element.Id switch
+                            {
+                                "quit" => "x",
+                                "specialThanks" => "!",
+                                _ => ">",
+                            };
+                            return (elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, elementIsHovered ? new Point(-Instance.Environment.FontDimensions.X * 2, 0) : Point.Zero);
+                        }
+                    default: throw new Exception();
+                };
+            }
+        }
+    }
+    public class UIElement
+    {
+        public enum UIDock
+        {
+            Left,
+            Right,
+            MainMenu,
+        }
+        public enum UIElementType
+        {
+            Divider,
+            Expandable,
+            Clickable,
+            Text,
+        }
+
+        public UIElementType Type { get; }
+        public UIDock Dock { get; }
+        public string Text { get; set; }
+        public string Id { get; }
+        public string? Order { get; }
+        public string? SubElementOf { get; }
+
+        public UIElement(string id, UIDock dock, string? text = null, UIElementType type = UIElementType.Text, string? subElementOf = null, string? order = null)
+        {
+            Text = text ?? id;
+            Type = type;
+            Id = id;
+            SubElementOf = subElementOf;
+            Order = order;
+            Dock = dock;
+        }
+        public Rectangle GetBounds(Point elementPos, Point fontDimensions, int clearance = DefaultRectangleClearance, bool supportMultiline = false, string fontId = "", int posOffsetX = 0, int posOffsetY = 0)
+            => GetBounds(elementPos, Text, fontDimensions, clearance, supportMultiline, fontId, posOffsetX, posOffsetY);
+
+        public static Rectangle GetBounds(Point elementPos, string text, Point fontDimensions, int clearance = DefaultRectangleClearance, bool supportMultiline = false, string fontId = "", int posOffsetX = 0, int posOffsetY = 0)
+        {
+
+
+            Point offset = new Point(posOffsetX, posOffsetY) + fontId switch
+            {
+                _ => new Point(-0, -1),
+            };
+
+            //switch (fontId)
+            //{
+            //    default:
+            //        offset += new Point(-0, -1);
+            //        break;
+            //}
+
+            Point boundsPos = elementPos + new Point(-clearance, -clearance) + offset;
+
+            int rectangeSizeX = fontDimensions.X * text.Length + clearance * 2;
+            int rectangeSizeY = fontDimensions.Y + clearance * 2;
+
+            return new Rectangle(boundsPos, new Point(rectangeSizeX, rectangeSizeY));
+        }
+
+        public const int DefaultRectangleClearance = 2;
+    }
+    public struct UIElementDrawData
+    {
+        public Vector2 Position { get; }
+        public bool DrawRectangle { get; }
+        public RectangleF Rectangle { get; }
+        public UIElementType Type { get; }
+        public string Text { get; }
+        public string Id { get; }
+        public UIElementDrawData(string sourceId, string text, UIElementType type, Vector2 position, RectangleF rectangle, bool drawRectangle)
+        {
+            Position = position;
+            Type = type;
+            Text = text;
+            Rectangle = rectangle;
+            DrawRectangle = drawRectangle;
+            Id = sourceId;
+        }
+        public override string ToString()
+        {
+            return "{pos: " + Position + ", text: " + Text + ", rectangle: " + Rectangle + "}";
+        }
+    }
+    public struct UIElementUpdateData
+    {
+        public bool IsHovered { get; }
+        public bool IsPressed => IsHovered && DLMouse.CurrentState.LeftButton == ButtonState.Pressed;
+        public bool IsClicked => IsPressed && DLMouse.PreviousState.LeftButton == ButtonState.Released;
+        public string SourcID { get; }
+        public UIElementUpdateData(bool isHovered, string sourcID)
+        {
+            IsHovered = isHovered;
+            SourcID = sourcID;
+        }
+    }
+}

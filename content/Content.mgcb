@@ -1,0 +1,250 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+
+#---------------------------------- Content ---------------------------------#
+
+#begin ../content/textures/box.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/box.png;textures/box.png
+
+#begin ../content/textures/box2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/box2.png;textures/box2.png
+
+#begin ../content/textures/dither8x8.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/dither8x8.png;textures/dither8x8.png
+
+#begin ../content/textures/loading1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/loading1.png;textures/loading1.png
+
+#begin ../content/textures/menuLogo/dummyTiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogo/dummyTiles.png;textures/menuLogo/dummyTiles.png
+
+#begin ../content/textures/menuLogo/filledTiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogo/filledTiles.png;textures/menuLogo/filledTiles.png
+
+#begin ../content/textures/menuLogo/lines.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogo/lines.png;textures/menuLogo/lines.png
+
+#begin ../content/textures/menuLogo/lowResFonted.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogo/lowResFonted.png;textures/menuLogo/lowResFonted.png
+
+#begin ../content/fonts/bubble-brush.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/bubble-brush.spritefont;fonts/bubble-brush.spritefont
+
+#begin ../content/fonts/Consolas.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/Consolas.spritefont;fonts/Consolas.spritefont
+
+#begin ../content/fonts/m6x11.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/m6x11.spritefont;fonts/m6x11.spritefont
+
+#begin ../content/fonts/Mini.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/Mini.spritefont;fonts/Mini.spritefont
+
+#begin ../content/fonts/Mini3x5.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/Mini3x5.spritefont;fonts/Mini3x5.spritefont
+
+#begin ../content/fonts/Monogram.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/Monogram.spritefont;fonts/Monogram.spritefont
+
+#begin ../content/fonts/TerminalFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/TerminalFont.spritefont;fonts/TerminalFont.spritefont
+
+#begin ../content/textures/splash/feyes.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/splash/feyes.png;textures/splash/feyes.png
+
+#begin ../content/textures/splash/goldsilk.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/splash/goldsilk.png;textures/splash/goldsilk.png
+
+#begin ../content/textures/splash/ilmentide.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/splash/ilmentide.png;textures/splash/ilmentide.png
+
+#begin ../content/textures/back.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/back.png;textures/back.png
+
+#begin ../content/textures/start.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/start.png;textures/start.png
+
+#begin ../content/effects/replaceColor.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/build:../content/effects/replaceColor.fx;effects/replaceColor.fx
+
+#begin ../content/textures/player0item.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/player0item.png;textures/player0item.png
+
+#begin ../content/textures/player1item.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/player1item.png;textures/player1item.png
+
+#begin ../content/textures/splash/deadline.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/splash/deadline.png;textures/splash/deadline.png
+
+#begin ../content/fonts/fiont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/fiont.spritefont;fonts/fiont.spritefont
