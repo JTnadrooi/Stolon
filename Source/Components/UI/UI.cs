@@ -1,38 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using AsitLib.XNA;
-using System.Drawing;
-using System.Linq;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
-using System;
-using System.Runtime.Versioning;
-using System.Reflection.Metadata;
-using AsitLib;
-using System.Windows;
-using System.Xml.Linq;
 using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
+using System.Linq;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using AsitLib.XNA;
+using Betwixt;
+using MonoGame.Extended;
+using static Stolon.StolonGame;
+using static Stolon.UIElement;
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using System.Diagnostics;
-using System.Collections;
-using MonoGame.Extended;
-using AsitLib.Collections;
-using MonoGame.Extended.Content;
-
-using static Stolon.StolonGame;
 using RectangleF = MonoGame.Extended.RectangleF;
-using static Stolon.UIElement;
-using MonoGame.Extended.BitmapFonts;
-using Betwixt;
-using System.Text;
 
 #nullable enable
 
@@ -272,7 +255,6 @@ namespace Stolon
             AddElement(new UIElement("options", UIDock.MainMenu, "Options", UIElementType.Clickable));
             AddElement(new UIElement("specialThanks", UIDock.MainMenu, "Special Thanks :D", UIElementType.Clickable));
             AddElement(new UIElement("quit", UIDock.MainMenu, "Quit", UIElementType.Clickable));
-            //tipId = 0;
         }
         private void ResetElementData()
         {
@@ -326,9 +308,6 @@ namespace Stolon
             //     menuRemoveTweener.Update(10);
             //     startFrame = true;
             // }
-
-            // Console.WriteLine(menuRemoveTweener.Value);
-
 
             #region inFlash
             menuLogoTileHider = new Rectangle(menuLogoDrawPos.ToPoint(), new Point((int)(menuLogoLines.Width * menuLogoScaling), (int)(rowHeight * menuLogoRowsHidden)));
@@ -427,13 +406,6 @@ namespace Stolon
             if (!menuDone) return;
             #endregion
 
-            if (startFrame)
-            {
-                // Instance.Environment.UserInterface.Textframe.Queue(10, (s, i) => s + " [" + i + "]");
-                // Instance.Environment.UserInterface.Textframe.Queue(new DialogueInfo(DLEnvironment.Instance, "2Hover this window to de-priorize it2"));
-                // Instance.Environment.UserInterface.Textframe.Queue(new DialogueInfo(DLEnvironment.Instance, "3Hover this window to de-priorize it3"));
-                // Instance.Environment.UserInterface.Textframe.Queue(new DialogueInfo(DLEnvironment.Instance, "4Hover this window to de-priorize it4"));
-            }
             menuRemoveTweener.Update(elapsedMiliseconds / 1000f);
             menuLogoDisapearFlashHandler.Update(elapsedMiliseconds);
             milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
@@ -443,7 +415,6 @@ namespace Stolon
 
             menuRemoveLineY = (int)(menuRemoveTweener.Value * Instance.VirtualDimensions.Y);
 
-            //if (milisecondsSinceMenuRemoveStart > 2000 && !loadingFinished)
             if (menuLogoDisapearFlashHandler.HasEnded && !menuRemoveTweener.Running && !loadingFinished)
             {
                 loadingFinished = true;
@@ -467,12 +438,6 @@ namespace Stolon
 
             Ordering.Order(uiElements.Values.ToArray(), drawData, updateData, UIDock.Left, new Vector2(uiLeftOffset, 0) + new Vector2(5));
             Ordering.Order(uiElements.Values.ToArray(), drawData, updateData, UIDock.Right, new Vector2(lineX2, 0) + new Vector2(5));
-
-            // end ui element section.
-            // its dialogue time.
-
-
-
         }
         /// <summary>
         /// Get random splash text.
@@ -685,19 +650,10 @@ namespace Stolon
 
         public static Rectangle GetBounds(Point elementPos, string text, Point fontDimensions, int clearance = DefaultRectangleClearance, bool supportMultiline = false, string fontId = "", int posOffsetX = 0, int posOffsetY = 0)
         {
-
-
             Point offset = new Point(posOffsetX, posOffsetY) + fontId switch
             {
                 _ => new Point(-0, -1),
             };
-
-            //switch (fontId)
-            //{
-            //    default:
-            //        offset += new Point(-0, -1);
-            //        break;
-            //}
 
             Point boundsPos = elementPos + new Point(-clearance, -clearance) + offset;
 

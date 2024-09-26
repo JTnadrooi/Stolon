@@ -1,37 +1,13 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using AsitLib.XNA;
-using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
 using System;
-using System.Runtime.Versioning;
-using System.Reflection.Metadata;
-using AsitLib;
-using System.Windows;
-using System.Xml.Linq;
-using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
-
-using Color = Microsoft.Xna.Framework.Color;
-using Point = Microsoft.Xna.Framework.Point;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
-using Math = System.Math;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using System.Diagnostics;
 using System.Collections;
-using MonoGame.Extended;
-using AsitLib.Collections;
-using MonoGame.Extended.Content;
-
-using static Stolon.StolonGame;
-using RectangleF = MonoGame.Extended.RectangleF;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+using System.Linq;
+using AsitLib;
+using static Stolon.StolonGame;
 
+using Point = Microsoft.Xna.Framework.Point;
 
 #nullable enable
 
@@ -182,38 +158,6 @@ namespace Stolon
         }
         public bool Search(int targetPlayer, SearchTarget target)
         {
-            //Instance.DebugStream.WriteLine("\t[s]searching board for " + target.Id + "..");
-            //int player;
-            //Point pos;
-            //Tile tile;
-            //int score;
-            //for (int x = 0; x < dimensions.X; x++)
-            //{
-            //    for (int y = 0; y < dimensions.Y; y++)
-            //    {
-            //        int playerid = tiles[x, y].GetOccupiedByPlayerID();
-            //        if (playerid == -1 || (!targetPlayer.HasValue)) continue;
-            //        score = 0;
-            //        for (int i = 0; i < target.Nodes.Length; i++)
-            //        {
-            //            try
-            //            {
-            //                tile = GetTile(target.Nodes[i] + new Point(x, y));
-            //            }
-            //            catch { continue; } // for when out of range.
-            //            if (tile.Player == player)
-            //            {
-            //                score++;
-            //            }
-            //        }
-            //        if (score == target.Nodes.Length)
-            //        {
-            //            return GetPlayerID(player);
-            //        }
-            //    }
-            //}
-
-
             Instance.DebugStream.WriteLine("\tsearching board for " + target.Id + "..");
 
             for (int x = 0; x < dimensions.X; x++)
@@ -271,20 +215,6 @@ namespace Stolon
         }
         public static bool Alter(ref BoardState board, Move move, bool? nextPlayer = null)
         {
-            // Console.WriteLine("move: " + move);
-            // bool autoNext = false;
-            // if (move.Origin.X >= board.Dimensions.X) throw new Exception();
-            // for (int y = board.Tiles.GetLength(1) - 1; y >= 0; y--)
-            //     if (board.Tiles[move.Origin.X, y].IsFree)
-            //     {
-            //         autoNext = Alter(ref board, new Tile(new Point(move.Origin.X, y), null, null, board.CurrentPlayer));
-            //         break;
-            //     }
-            // nextPlayer ??= autoNext;
-            // if (nextPlayer.Value) board.GoNextPlayer();
-            // return nextPlayer.Value;
-
-
             bool autoNext;
 
             if (move.Origin.X >= board.Dimensions.X) throw new Exception();

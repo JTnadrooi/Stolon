@@ -12,18 +12,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin ../content/textures/box.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:../content/textures/box.png;textures/box.png
-
 #begin ../content/textures/box2.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -143,66 +131,6 @@
 /processor:FontDescriptionProcessor
 /build:../content/fonts/TerminalFont.spritefont;fonts/TerminalFont.spritefont
 
-#begin ../content/textures/splash/feyes.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:../content/textures/splash/feyes.png;textures/splash/feyes.png
-
-#begin ../content/textures/splash/goldsilk.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:../content/textures/splash/goldsilk.png;textures/splash/goldsilk.png
-
-#begin ../content/textures/splash/ilmentide.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:../content/textures/splash/ilmentide.png;textures/splash/ilmentide.png
-
-#begin ../content/textures/back.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:../content/textures/back.png;textures/back.png
-
-#begin ../content/textures/start.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:../content/textures/start.png;textures/start.png
-
 #begin ../content/effects/replaceColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -231,18 +159,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:../content/textures/player1item.png;textures/player1item.png
-
-#begin ../content/textures/splash/deadline.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:../content/textures/splash/deadline.png;textures/splash/deadline.png
 
 #begin ../content/fonts/fiont.spritefont
 /importer:FontDescriptionImporter

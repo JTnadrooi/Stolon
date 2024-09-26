@@ -49,7 +49,7 @@ artifacts/
 
 
 # Other
-gitignore/
+.ignore/
 
 # VS Code
 .vscode/

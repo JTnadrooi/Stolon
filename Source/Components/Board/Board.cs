@@ -1,37 +1,20 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using AsitLib.XNA;
-using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
-using System;
-using System.Runtime.Versioning;
-using System.Reflection.Metadata;
 using AsitLib;
-using System.Windows;
-using System.Xml.Linq;
-using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
+using AsitLib.XNA;
+using static Stolon.StolonGame;
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using System.Diagnostics;
-using System.Collections;
-using MonoGame.Extended;
-using AsitLib.Collections;
-using MonoGame.Extended.Content;
-
-using static Stolon.StolonGame;
 using RectangleF = MonoGame.Extended.RectangleF;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-
 
 #nullable enable
 
@@ -43,7 +26,7 @@ namespace Stolon
     public class Board : AxComponent
     {
         public Camera2D Camera { get; }
-        public float Zoom { get; private set; }//
+        public float Zoom { get; private set; }
 
         public float MaxDeltaZoom => SmoothnessModifier * 10f;
         public float ZoomIntensity => (Zoom - desiredZoom) / MaxDeltaZoom;
@@ -125,7 +108,7 @@ namespace Stolon
             Camera.Position += (desiredCameraPos - Camera.Position) * 0.1f + (worldMousePos - Camera.Position) * SmoothnessModifier * Math.Abs(mouseStateCoefficient);
             Camera.Zoom = Zoom;
 
-            #region computer
+            #region computer_old
             // if (hasComputer)
             // {
             //     if (CurrentPlayer.IsComputer)
@@ -205,13 +188,12 @@ namespace Stolon
             if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
             if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked)
             {
-                Console.WriteLine("looks like the stolons gotcha!");
-                Instance.Environment.Overlayer.Activate("transition", null, () =>
-                    {
-                        Instance.Environment.ForceGameState(SLEnvironment.SLGameState.InMenu, true);
-                    }, string.Empty);
+                // Instance.Environment.Overlayer.Activate("transition", null, () =>
+                //     {
+                //         Instance.Environment.ForceGameState(SLEnvironment.SLGameState.InMenu, true);
+                //     }, string.Empty);
                 
-                // Instance.Exit();
+                Instance.Exit();
             }
 
             Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);
@@ -243,15 +225,6 @@ namespace Stolon
                     else if (tile.HasAttribute<TileAttribute.TileAttributeGravUp>()) boardSpriteBatch.DrawString(SLEnvironment.Font, ("^").ToString(), (tile.BoardPosition + new Vector2(10)), Color.White);
                     else boardSpriteBatch.DrawString(SLEnvironment.Font, ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
                 }
-            //if (rowHitBoxMouseID != -1)
-            //{
-            //    boardSpriteBatch.Draw(Instance.Pixel, rowHitBoxes[rowHitBoxMouseID].ToRectangle(), Color.White);
-            //}
-
-            //foreach (Rectangle rectangle in rowHitBoxes)
-            //{
-            //    boardSpriteBatch.DrawRectangle(rectangle, Color.Red, 2);
-            //}
             boardSpriteBatch.End();
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
@@ -382,13 +355,11 @@ namespace Stolon
             if (this.HasAttribute<TileAttribute.TileAttributeGravDown>())
             {
                 int depth = board.Tiles.GetLength(1) - y - 1;
-                //Console.WriteLine("depth: " + depth);
                 for (int i = 1; i <= depth; i++)
                 {
                     Tile tile = board.Tiles[x, y + i];
                     if (!tile.IsSolid() && tile.HasGravity())
                     {
-                        //Console.WriteLine("continuing; " + i + " out of " + depth);
                         newPos = tile.TiledPosition;
                         continue;
                     }
@@ -397,14 +368,11 @@ namespace Stolon
             else if (this.HasAttribute<TileAttribute.TileAttributeGravUp>())
             {
                 int depth = y;
-                //Console.WriteLine("gravup");
-                //Console.WriteLine("depth: " + depth);
                 for (int i = 1; i <= depth; i++)
                 {
                     Tile tile = board.Tiles[x, y - i];
                     if (!tile.IsSolid() && tile.HasGravity())
                     {
-                        //Console.WriteLine("continuing; " + i + " out of " + depth);
                         newPos = tile.TiledPosition;
                         continue;
                     }

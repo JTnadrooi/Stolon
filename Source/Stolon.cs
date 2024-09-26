@@ -1,37 +1,19 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using AsitLib.XNA;
-using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
-using System;
-using System.Runtime.Versioning;
-using System.Reflection.Metadata;
 using AsitLib;
-using System.Windows;
-using System.Xml.Linq;
-using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
+using AsitLib.Debug;
+using AsitLib.XNA;
+using MonoGame.Extended;
+using static Stolon.StolonGame;
+
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using System.Diagnostics;
-using System.Collections;
-using MonoGame.Extended;
-using AsitLib.Collections;
-using MonoGame.Extended.Content;
-
-using static Stolon.StolonGame;
-using RectangleF = MonoGame.Extended.RectangleF;
-using static Stolon.UIElement;
-using AsitLib.Debug;
-using System.Security.Cryptography;
-using System.Globalization;
 
 #nullable enable
 
@@ -67,7 +49,7 @@ namespace Stolon
 		public Color Color1 => palette[0];
 		public Color Color2 => palette[1];
 
-		public string VersionID => "0.043c (Closed Alpha)";
+		public string VersionID => "0.049c (Open Alpha)";
 
 		private Texture2D textureTest;
 
@@ -77,17 +59,13 @@ namespace Stolon
 		public StolonGame()
 #pragma warning restore CS8618
 		{
-			//new Point(GraphicsDevice.PresentationParameters.BackBufferWidth, GraphicsDevice.PresentationParameters.BackBufferHeight);
-			// GraphicsDevice.Viewport.Bounds.Size
 			Instance = this;
 			graphics = new GraphicsDeviceManager(this);
-			Content.RootDirectory = "content";
+			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 			Fonts = new Dictionary<string, SpriteFont>();
 
 			DebugStream = new AsitDebugStream();
-
-			DebugStream.WriteLine("Stolon has been set.");
 
 		}
 
@@ -120,9 +98,6 @@ namespace Stolon
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 			textures = new AxTextureCollection(Content);
 			Fonts.Add("fiont", textures.HardLoad<SpriteFont>("fonts\\fiont"));
-			//Fonts.Add("monogram", textures.HardLoad<SpriteFont>("fonts\\Monogram"));
-			//Fonts.Add("m6x11", textures.HardLoad<SpriteFont>("fonts\\m6x11plus"));
-			//Fonts.Add("bubble-brush", textures.HardLoad<SpriteFont>("fonts\\bubble-brush"));
 
 			environment = new SLEnvironment();
 
@@ -156,11 +131,6 @@ namespace Stolon
 				environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
 				if (SLKeyboard.IsClicked(Keys.F) || UserInterface.UIElementUpdateData["toggleFullscreen"].IsClicked) GoFullscreen();
-				if (SLKeyboard.IsClicked(Keys.C))
-				{
-					Console.WriteLine("desdim:" + DesiredDimensions);
-					Console.WriteLine(UserInterface.UIElementUpdateData.ToJoinedString(", "));
-				}
 			}
 			base.Update(gameTime);
 		}
@@ -258,21 +228,19 @@ namespace Stolon
 			entities = new Dictionary<string, SLEntity>();
 			FontDimensions = (Font.MeasureString("A") * SLEnvironment.FontScale).ToPoint();
 
-			RegisterCharacter(new GoldsilkEntity());
-			RegisterCharacter(new StolonEntity());
+			// RegisterCharacter(new GoldsilkEntity());
+			// RegisterCharacter(new DeadlineEntity());
 
 			scene = new SLScene(new Player[]
 			{
-				new Player("player"),
-				Entities["goldsilk"].GetPlayer()
+				new Player("player0"),
+				new Player("player1"),
+				// Entities["goldsilk"].GetPlayer()
 			});
 			userInterface = new SLUserInterface(scene, entities);
 			overlayer = new SLOverlayer();
 
 			gameState = SLGameState.InMenu;
-
-			//gameState = StolonGameState.OpenBoard;
-
 
 			overlayer.AddOverlay(new TransitionOverlay());
 			overlayer.AddOverlay(new LoadOverlay());
@@ -288,8 +256,8 @@ namespace Stolon
 						userInterface = new SLUserInterface(scene, entities);
 						scene = new SLScene(new Player[]
 						{
-							new Player("player"),
-							Entities["goldsilk"].GetPlayer()
+							new Player("player0"),
+							new Player("player1"),
 						});
 						break;
 				}

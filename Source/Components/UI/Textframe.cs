@@ -1,38 +1,16 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using AsitLib.XNA;
-using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
-using System;
-using System.Runtime.Versioning;
-using System.Reflection.Metadata;
-using AsitLib;
-using System.Windows;
-using System.Xml.Linq;
-using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
+using Betwixt;
+using MonoGame.Extended;
+using static Stolon.StolonGame;
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using System.Diagnostics;
-using System.Collections;
-using MonoGame.Extended;
-using AsitLib.Collections;
-using MonoGame.Extended.Content;
-
-using static Stolon.StolonGame;
-using RectangleF = MonoGame.Extended.RectangleF;
-using static Stolon.UIElement;
-using MonoGame.Extended.BitmapFonts;
-using Betwixt;
-using System.Text;
 
 #nullable enable
 
@@ -185,9 +163,6 @@ namespace Stolon
                     textFrameGoUp = false;
                 }
             }
-
-
-            // dialogueShowCoefficient += MathF.Pow(dialogueShowCoefficient, 2) * 0.1f * (float)(textFrameGoUp ? 1f : -1f);
 
             DynamicTweening.PushSubunitary(ref dialogueShowCoefficient, textFrameGoUp, elapsedMiliseconds, smoothness: 2);
             dialogueShowCoefficient = Math.Clamp(dialogueShowCoefficient, 0.1f, 1f);

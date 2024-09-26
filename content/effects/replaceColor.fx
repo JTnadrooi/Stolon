@@ -7,8 +7,6 @@
 #define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
-//sampler s0;
-
 sampler2D input : register(s0);
 extern float4 dcolor1;
 extern float4 dcolor2;
@@ -18,13 +16,11 @@ extern float4 color2;
 
 bool1 ColorEqual(float4 incolor1, float4 incolor2)
 {
-    //return (incolor1.r == incolor2.r && incolor1.g == incolor2.g && incolor1.b == incolor2.b);
     float maxDelta = float(0.1);
     return (abs(incolor1.r - incolor2.r) < maxDelta && abs(incolor1.g - incolor2.g) < maxDelta && abs(incolor1.b - incolor2.b) < maxDelta);
 }
 float4 MainPS(float2 uv : TEXCOORD) : COLOR
 {
-    //return mul(tex2D(input, uv), uv);
     float4 color = tex2D(input, uv.xy);
     
     if (ColorEqual(color.rgba, dcolor1))

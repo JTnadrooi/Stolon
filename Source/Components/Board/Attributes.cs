@@ -1,34 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Xml.Linq;
-using AsitLib;
-using AsitLib.Collections;
-using AsitLib.XNA;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using MonoGame.Extended.Content;
 using static Stolon.StolonGame;
-using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using Color = Microsoft.Xna.Framework.Color;
-using Math = System.Math;
-using Point = Microsoft.Xna.Framework.Point;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
-using RectangleF = MonoGame.Extended.RectangleF;
 
 #nullable enable
 
