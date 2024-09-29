@@ -34,6 +34,28 @@ The transition screen after four connected are found.
 
 Download the newest release (From here, the [STOLON Discord Server](https://discord.gg/Zm5tC42Kuu) or itch - pending.) and extract the **STOLON.zip** file. There an .exe will be found which will run the game.
 
+## Controls
+
+Key | Action
+----|-------
+F | Go fullscreen
+Left Mouse | Place marker / Zoom in
+Right Mouse | Zoom out / Drag camera
+Shift | Zoom in
+Shift + W/A/S/D | Move camera
+
+## Buttons (In Board)
+
+Button | Action
+-------|-------
+Exit game | Exit game
+Go fullscreen | Go fullscreen
+Restart | Clear board / Restart
+Search | Search the board for four connected markers
+Undo move | Undo's a move
+End move | Skips a move
+
+## P.S
 
 > [!NOTE]
 > When the itch.io page is up, this will have more info about the technical side of the game (making it mostly directed to modders.)
