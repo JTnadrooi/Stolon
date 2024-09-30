@@ -36,6 +36,7 @@ namespace Stolon
         public ref BoardState State => ref state;
         public ReadOnlyDictionary<string, SearchTarget> SearchTargets => new ReadOnlyDictionary<string, SearchTarget>(searchTargets);
         public BoardState InitialState { get; }
+        public Stack<BoardState> History { get; private set; }
 
         private SpriteBatch boardSpriteBatch;
         private BoardState state;
@@ -68,6 +69,8 @@ namespace Stolon
             firstFrame = false;
             Zoom = 1f;
             InitialState = conf.DeepCopy();
+            History = new Stack<BoardState>();
+            History.Push(conf.DeepCopy());
 
             for (int x = 0; x < conf.Dimensions.X; x++)
             {
@@ -166,6 +169,7 @@ namespace Stolon
                         }
                 if (move.HasValue)
                 {
+                    History.Push(State.DeepCopy());
                     BoardState.Alter(ref State, move!.Value, true);
                     Instance.DebugStream.Succes(1);
                 }
@@ -173,7 +177,13 @@ namespace Stolon
 
             }
 
-            if (Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked) Reset();
+            if (Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked)
+            {
+                Instance.Environment.Overlayer.Activate("transition", null, () =>
+                        {
+                            Reset();
+                        }, "");
+            }
             if (Instance.UserInterface.UIElementUpdateData["skipMove"].IsClicked) EndMove();
             if (Instance.UserInterface.UIElementUpdateData["boardSearch"].IsClicked)
             {
@@ -186,13 +196,14 @@ namespace Stolon
 
             }
             if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
+            if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked) Undo();
             if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked)
             {
-                // Instance.Environment.Overlayer.Activate("transition", null, () =>
+                // Instance.Environment.fOverlayer.Activate("transition", null, () =>
                 //     {
                 //         Instance.Environment.ForceGameState(SLEnvironment.SLGameState.InMenu, true);
                 //     }, string.Empty);
-                
+
                 Instance.Exit();
             }
 
@@ -200,9 +211,23 @@ namespace Stolon
 
             base.Update(elapsedMiliseconds);
         }
+        public void Undo()
+        {
+            Instance.DebugStream.WriteLine("Attempting move undo..");
+
+            if (History.TryPop(out BoardState temp))
+            {
+                State = temp;
+                Instance.DebugStream.Succes(1);
+            }
+            else Instance.DebugStream.Fail(1);
+
+        }
         public void Reset()
         {
+            Instance.DebugStream.WriteLine("Resetting the board..");
             State = InitialState.DeepCopy();
+            Instance.DebugStream.Succes(1);
         }
         public void EndMove()
         {

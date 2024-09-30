@@ -243,6 +243,7 @@ namespace Stolon
 
             AddElement(new UIElement("boardRegion2", UIDock.Left, string.Empty, UIElementType.Text));
             AddElement(new UIElement("boardRegion", UIDock.Left, "Board", UIElementType.Text));
+            AddElement(new UIElement("undoMove", UIDock.Left, "Undo", UIElementType.Clickable));
             AddElement(new UIElement("restartBoard", UIDock.Left, "Restart", UIElementType.Clickable));
             AddElement(new UIElement("boardSearch", UIDock.Left, "Search", UIElementType.Clickable));
             AddElement(new UIElement("skipMove", UIDock.Left, "End Move", UIElementType.Clickable));
