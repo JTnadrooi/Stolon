@@ -61,7 +61,7 @@ Entity | For
 ---------|-------
 Keescasual | Coming up with alot of the future ideas. Without him this game probably wouldn't exist.
 LandonSC | Providing contructive feedback.
-yuki | Providing contructive feedback, especially with the entity/character designs!
+yukiyo | Providing contructive feedback, especially with the entity/character designs!
 Voxuuu | Utmost critical feedback.
 
 _And thank you for playing :D_
