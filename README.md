@@ -32,7 +32,7 @@ The transition screen after four connected are found.
 
 # Install
 
-Download the newest release (From here, the [STOLON Discord Server](https://discord.gg/Zm5tC42Kuu) or itch - pending.) and extract the **STOLON.zip** file. There an .exe will be found which will run the game.
+Download the newest release from ["Releases"](https://github.com/JTnadrooi/Stolon/releases/) or the [STOLON Discord Server](https://discord.gg/Zm5tC42Kuu) and extract the **STOLON.zip** file. There an .exe will be found which will run the game.
 
 ## Controls
 
