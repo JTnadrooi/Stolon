@@ -86,11 +86,7 @@ namespace Stolon
 			DebugStream.Succes();
 			base.Initialize();
 		}
-		public void SetDesiredResolution(Point resolution)
-		{
-			desiredModifier = resolution.X / aspectRatio.X;
-		}
-
+		public void SetDesiredResolution(Point resolution) => desiredModifier = resolution.X / aspectRatio.X;
 		protected override void LoadContent()
 		{
 			DebugStream.WriteLine("[s]loading content..");
@@ -101,7 +97,7 @@ namespace Stolon
 
 			environment = new SLEnvironment();
 
-			replaceColorEffect = StolonGame.Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
+			replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
 			palette = new Color[]
 			{
 				System.Drawing.ColorTranslator.FromHtml("#f2fbeb").ToColor(),

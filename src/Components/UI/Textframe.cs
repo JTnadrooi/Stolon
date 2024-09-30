@@ -122,8 +122,8 @@ namespace Stolon
                 }
                 else
                 {
-                    Instance.DebugStream.WriteLine("No further dialogue found, awaiting further dialogue.");
-                    dialogueMilisecondsRemaining = 0; // this is done to prevent this variable going to far into the negatives (not like I need to worry about that but still).
+                    // Instance.DebugStream.WriteLine("No further dialogue found, awaiting further dialogue.");
+                    dialogueMilisecondsRemaining = -postReadMiliseconds * 2; // this is done to prevent this variable going to far into the negatives (not like I need to worry about that but still).
                 }
             }
 

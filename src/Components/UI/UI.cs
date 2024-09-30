@@ -228,6 +228,7 @@ namespace Stolon
                 "Why is Lanulox here..",
                 "Time's Up! Fate sealed.",
                 "Seems vacant..",
+                "You are week, I am month."
             };
 
             tipId = new Random().Next(0, tips.Length);
