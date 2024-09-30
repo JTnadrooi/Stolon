@@ -55,6 +55,17 @@ Search | Search the board for four connected markers
 Undo move | Undo's a move
 End move | Skips a move
 
+## Special thanks
+
+Entity | For
+---------|-------
+Keescasual | Coming up with alot of the future ideas. Without him this game probably wouldn't exist.
+LandonSC | Providing contructive feedback.
+yuki | Providing great help with drawing most of the characters/Entities.
+Voxuuu | Utmost critical feedback.
+
+_And thank you for playing :D_
+
 ## P.S
 
 > [!NOTE]
