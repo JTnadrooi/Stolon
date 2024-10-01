@@ -556,10 +556,12 @@ namespace Stolon
                                     Instance.Environment.FontDimensions.X * uiElement.Text.Length,
                                     index * (Instance.Environment.FontDimensions.Y + lineClearance) * 1.5f + uiOrgin.Y,
                                     Instance.VirtualDimensions.X, Vector2.One);
+
+                                Centering.OnPixel(ref elementPos);
+
                                 Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point(Instance.Environment.FontDimensions.X * uiElement.Text.Length, Instance.Environment.FontDimensions.Y));
                                 bool elementIsHovered = elementBounds.Contains(SLMouse.VirualPosition) && isMouseRelevant;
                                 string elementText = uiElement.Text;
-
 
                                 updateDump[uiElement.Id] = new UIElementUpdateData(elementIsHovered, uiElement.Id);
                                 var textProviderReturned = textProvider.Invoke(uiElement, updateDump[uiElement.Id]);
@@ -570,9 +572,11 @@ namespace Stolon
                         case UIDock.Left:
                             {
                                 Vector2 elementPos = uiOrgin + new Vector2(0, index * (Instance.Environment.FontDimensions.Y + lineClearance));
+
+                                Centering.OnPixel(ref elementPos);
+
                                 Rectangle elementRectangle = rectangleProvider(uiElement, elementPos.ToPoint());
                                 string elementText = uiElement.Text;
-
                                 bool elementIsHovered = elementRectangle.Contains(SLMouse.VirualPosition) && isMouseRelevant;
                                 bool elementIsPressed = elementIsHovered && SLMouse.IsPressed(SLMouse.MouseButton.Left);
                                 bool drawRectangle = uiElement.Type == UIElementType.Clickable;
