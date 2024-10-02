@@ -26,6 +26,8 @@ namespace Stolon
 		private RenderTarget2D renderTarget;
 		private SLEnvironment environment;
 		private Point aspectRatio = new Point(16, 9);
+		private float AspectRatioFloat => aspectRatio.X / aspectRatio.Y * 1.7776f;
+		// private float AspectRatioFloat => MathF.Pow(aspectRatio.X / aspectRatio.Y, 2f);
 		private int virtualModifier;
 		private int desiredModifier;
 		private Color[] palette;
@@ -51,7 +53,7 @@ namespace Stolon
 
 		public string VersionID => "0.049c (Open Alpha)";
 
-		private Texture2D textureTest;
+		Point oldWindowSize;
 
 		internal float screenScale;
 
@@ -73,6 +75,8 @@ namespace Stolon
 		{
 			DebugStream.WriteLine("[s]initializing..");
 
+			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
+
 			desiredModifier = 67; // 67
 			virtualModifier = 30; // 30
 
@@ -83,8 +87,30 @@ namespace Stolon
 
 			renderTarget = new RenderTarget2D(GraphicsDevice, VirtualDimensions.X, VirtualDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 
+			Window.ClientSizeChanged += Window_ClientSizeChanged;
 			DebugStream.Succes();
 			base.Initialize();
+		}
+		void Window_ClientSizeChanged(object? sender, EventArgs e)
+		{
+			Window.ClientSizeChanged -= new EventHandler<EventArgs>(Window_ClientSizeChanged);
+
+			if (Window.ClientBounds.Width != oldWindowSize.X)
+			{ 
+				graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+				graphics.PreferredBackBufferHeight = (int)(Window.ClientBounds.Width / AspectRatioFloat);
+			}
+			else if (Window.ClientBounds.Height != oldWindowSize.Y)
+			{
+				graphics.PreferredBackBufferWidth = (int)(Window.ClientBounds.Height * AspectRatioFloat);
+				graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+			}
+
+			graphics.ApplyChanges();
+
+			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
+
+			Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
 		}
 		public void SetDesiredResolution(Point resolution) => desiredModifier = resolution.X / aspectRatio.X;
 		protected override void LoadContent()
