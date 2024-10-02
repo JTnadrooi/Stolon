@@ -60,7 +60,7 @@ End move | Skips a move
 Entity | For
 ---------|-------
 Keescasual | Coming up with alot of the future ideas. Without him this game probably wouldn't exist.
-LandonSC | Providing contructive feedback.
+LandronSC | Providing contructive feedback.
 yukiyo | Providing contructive feedback, especially with the entity/character designs!
 Voxuuu | Utmost critical feedback.
 
