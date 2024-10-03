@@ -13,7 +13,7 @@
 
 
 > [!NOTE]
-> For planned features see the [STOLON Discord Server](https://discord.gg/Zm5tC42Kuu).
+> For planned features see the [STOLON Discord Server](https://discord.gg/qmuWrqbDG2).
 
 # Screenshots
 
@@ -32,7 +32,7 @@ The transition screen after four connected are found.
 
 # Install
 
-Download the newest release from ["Releases"](https://github.com/JTnadrooi/Stolon/releases/) or the [STOLON Discord Server](https://discord.gg/Zm5tC42Kuu) and extract the **STOLON.zip** file. There an .exe will be found which will run the game.
+Download the newest release from ["Releases"](https://github.com/JTnadrooi/Stolon/releases/) or the [STOLON Discord Server](https://discord.gg/qmuWrqbDG2) and extract the **STOLON.zip** file. There an .exe will be found which will run the game.
 
 ## Controls
 
