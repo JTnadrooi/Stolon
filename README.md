@@ -59,9 +59,9 @@ End move | Skips a move
 
 Entity | For
 ---------|-------
-Keescasual | Coming up with alot of the future ideas. Without him this game probably wouldn't exist.
-LandronSC | Providing contructive feedback.
-yukiyo | Providing contructive feedback, especially with the entity/character designs!
+Keescasual | Coming up with a lot of the future ideas. Without him this game probably wouldn't exist.
+LandronSC | Providing constructive feedback.
+yukiyo | Providing constructive feedback, especially with the entity/character designs!
 Voxuuu | Utmost critical feedback.
 
 _And thank you for playing :D_
