@@ -11,6 +11,18 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+  <Reference Include="AsitLib">
+    <HintPath>./libs/AsitLib.dll</HintPath>
+  </Reference>
+  <Reference Include="AsitLibXNA">
+    <HintPath>./libs/AsitLib.XNA.dll</HintPath>
+  </Reference>
+  <Reference Include="MonoGameExtended">
+    <HintPath>./libs/MonoGame.Extended.dll</HintPath>
+  </Reference>
+</ItemGroup>
+
+  <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
