@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using AsitLib;
 using AsitLib.XNA;
+using MonoGame.Extended;
 using static Stolon.StolonGame;
 
 using Color = Microsoft.Xna.Framework.Color;
@@ -156,7 +157,19 @@ namespace Stolon
             // }
             #endregion
 
-            if (AsitGame.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && SLMouse.Domain == SLMouse.MouseDomain.Board)
+            #region expectMove
+
+            if (State.CurrentPlayer.IsComputer)
+            {
+                computerMoveTask ??= new Task(() => State.CurrentPlayer.Computer!.DoMove(this));
+                if (computerMoveTask.Status == TaskStatus.WaitingToRun)
+                {
+                    computerMoveTask.Start();
+                    Instance.Environment.Overlayer.Activate("loading");
+                }
+                if (computerMoveTask.Status == TaskStatus.RanToCompletion) Instance.Environment.Overlayer.Deactivate("loading");
+            }
+            else if (AsitGame.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && SLMouse.Domain == SLMouse.MouseDomain.Board)
             {
                 Instance.DebugStream.WriteLine("Attempting board alter after mouseclick..");
                 Move? move = null;
@@ -174,8 +187,9 @@ namespace Stolon
                     Instance.DebugStream.Succes(1);
                 }
                 else Instance.DebugStream.Fail(1);
-
             }
+            #endregion
+
 
             if (Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked)
             {
@@ -197,6 +211,7 @@ namespace Stolon
             }
             if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
             if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked) Undo();
+            if (SLKeyboard.IsClicked(Keys.C)) Console.WriteLine(State.GetUniqueMoves().Length);
             if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked)
             {
                 // Instance.Environment.fOverlayer.Activate("transition", null, () =>
@@ -247,7 +262,7 @@ namespace Stolon
                         boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
                     else if (tile.HasAttribute<TileAttribute.TileAttributeGravDown>()) boardSpriteBatch.DrawString(SLEnvironment.Font, string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
-                    else if (tile.HasAttribute<TileAttribute.TileAttributeGravUp>()) boardSpriteBatch.DrawString(SLEnvironment.Font, ("^").ToString(), (tile.BoardPosition + new Vector2(10)), Color.White);
+                    else if (tile.HasAttribute<TileAttribute.TileAttributeGravUp>()) boardSpriteBatch.DrawString(SLEnvironment.Font, ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
                     else boardSpriteBatch.DrawString(SLEnvironment.Font, ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
                 }
             boardSpriteBatch.End();
@@ -361,8 +376,6 @@ namespace Stolon
         public Point TiledPosition { get; }
         public TileType TileType { get; set; }
         public HashSet<TileAttributeBase> Attributes { get; set; }
-
-        public bool IsFree => TileType.Name == "void";
 
         public Tile(Point tiledPosition, TileType? tileType, HashSet<TileAttributeBase>? attributes = null)
         {

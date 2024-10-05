@@ -1,4 +1,5 @@
 ﻿using System;
+using AsitLib.XNA;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static Stolon.StolonGame;
@@ -54,6 +55,14 @@ namespace Stolon
         {
             Vector2 r = Unproject(Vector2.Zero);
             return new Rectangle((int)r.X, (int)r.Y, (int)(ScreenSize.X / Zoom), (int)(ScreenSize.Y / Zoom));
+        }
+
+    }
+    public static class CameraStatic
+    {
+        public static Vector2 PixelLock(this Vector2 v, Camera2D camera2D)
+        {
+            return v;
         }
     }
 }

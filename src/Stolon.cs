@@ -27,7 +27,6 @@ namespace Stolon
 		private SLEnvironment environment;
 		private Point aspectRatio = new Point(16, 9);
 		private float AspectRatioFloat => aspectRatio.X / aspectRatio.Y * 1.7776f;
-		// private float AspectRatioFloat => MathF.Pow(aspectRatio.X / aspectRatio.Y, 2f);
 		private int virtualModifier;
 		private int desiredModifier;
 		private Color[] palette;
@@ -41,6 +40,7 @@ namespace Stolon
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); // (480, 270) (if vM = 30)
 		public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
+		Point oldWindowSize;
 
 		public AxTextureCollection Textures => textures;
 		public Dictionary<string, SpriteFont> Fonts { get; }
@@ -53,7 +53,6 @@ namespace Stolon
 
 		public string VersionID => "0.049c (Open Alpha)";
 
-		Point oldWindowSize;
 
 		internal float screenScale;
 
@@ -96,7 +95,7 @@ namespace Stolon
 			Window.ClientSizeChanged -= new EventHandler<EventArgs>(Window_ClientSizeChanged);
 
 			if (Window.ClientBounds.Width != oldWindowSize.X)
-			{ 
+			{
 				graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
 				graphics.PreferredBackBufferHeight = (int)(Window.ClientBounds.Width / AspectRatioFloat);
 			}
@@ -250,7 +249,7 @@ namespace Stolon
 			entities = new Dictionary<string, SLEntity>();
 			FontDimensions = (Font.MeasureString("A") * SLEnvironment.FontScale).ToPoint();
 
-			// RegisterCharacter(new GoldsilkEntity());
+			RegisterCharacter(new GoldsilkEntity());
 			// RegisterCharacter(new DeadlineEntity());
 
 			scene = new SLScene(new Player[]

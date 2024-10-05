@@ -97,37 +97,12 @@ namespace Stolon
         {
             CurrentPlayerID = NextPlayer;
         }
-        public Point[] GetFreeSpaces()
-        {
-            List<Point> freeSpaces = new List<Point>();
-            for (int x = 0; x < dimensions.X; x++)
-                for (int y = 0; y < dimensions.Y; y++)
-                {
-                    Tile tile = tiles[x, y];
-                    if (tile.IsFree) freeSpaces.Add(tile.TiledPosition);
-                }
-            return freeSpaces.ToArray();
-        }
-        public bool IsRowFree(int rowIndex)
-        {
-            for (int i = 0; i < tiles.GetLength(1); i++)
-            {
-                if (tiles[rowIndex, i].IsFree)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
         public Move[] GetUniqueMoves()
         {
             List<Move> toret = new List<Move>();
             for (int i = 0; i < Tiles.GetLength(0); i++)
             {
-                if (IsRowFree(i))
-                {
-                    toret.Add((Move)new Point(i, Tiles.GetLength(1)));
-                }
+                
             }
             return toret.ToArray();
         }
