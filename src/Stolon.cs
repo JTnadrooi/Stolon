@@ -34,6 +34,7 @@ namespace Stolon
 		private Color[] palette;
 		private Effect replaceColorEffect;
 		private AxTextureCollection textures;
+		public DiscordRichPresence DRP { get; set; }
 
 		public SLEnvironment Environment => environment;
 		public SLScene Scene => environment.Scene;
@@ -53,30 +54,28 @@ namespace Stolon
 		public Color Color1 => palette[0];
 		public Color Color2 => palette[1];
 
-		public string VersionID => "0.049c (Open Alpha)";
+		public string VersionID => "0.050 (Open Alpha)";
 		internal float screenScale;
 
 #pragma warning disable CS8618
-				public StolonGame()
+		public StolonGame()
 #pragma warning restore CS8618
-				{
-						Instance = this;
-						graphics = new GraphicsDeviceManager(this);
-						Content.RootDirectory = "Content";
-						IsMouseVisible = true;
-						Fonts = new Dictionary<string, SpriteFont>();
+		{
+			Instance = this;
+			graphics = new GraphicsDeviceManager(this);
+			Content.RootDirectory = "Content";
+			IsMouseVisible = true;
+			Fonts = new Dictionary<string, SpriteFont>();
 
-						DebugStream = new AsitDebugStream();
-				}
+			DebugStream = new AsitDebugStream();
+		}
 
-				protected override void Initialize()
+		protected override void Initialize()
 		{
 			DebugStream.WriteLine("[s]initializing..");
 
-			GlobalRPC.rpc = new DiscordRichPresence();
-						GlobalRPC.rpc.InitializeRPC();
-						GlobalRPC.rpc.UpdateDetails("Initializing");
-						GlobalRPC.rpc.UpdateState("");
+			DRP = new DiscordRichPresence();
+			DRP.UpdateDetails("Initializing..");
 
 			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
 
@@ -135,6 +134,11 @@ namespace Stolon
 
 			DebugStream.Succes();
 			base.LoadContent();
+		}
+		public void SLExit()
+		{
+			DRP.DisposeRPC();
+			Exit();
 		}
 		protected override void Update(GameTime gameTime)
 		{
@@ -293,32 +297,25 @@ namespace Stolon
 		public override void Update(int elapsedMiliseconds)
 		{
 			userInterface.Update(elapsedMiliseconds);
-			var currentPresence = "";
+
 			switch (gameState)
 			{
 				case SLGameState.OpenBoard:
 					scene.Update(elapsedMiliseconds);
-					if(currentPresence != "board") {
-						GlobalRPC.rpc.UpdateDetails("In the board");
-						GlobalRPC.rpc.UpdateState("");
-						currentPresence = "board";
-					}
 					break;
 				case SLGameState.InMenu:
-					if(currentPresence != "menu") {
-						GlobalRPC.rpc.UpdateDetails("In the main menu");
-						GlobalRPC.rpc.UpdateState("");
-						currentPresence = "menu";
-					}
 					break;
 				case SLGameState.Loading:
-					if(currentPresence != "loading") {
-						GlobalRPC.rpc.UpdateDetails("Loading");
-						GlobalRPC.rpc.UpdateState("");
-						currentPresence = "loading";
-					}
 					break;
 			}
+
+			StolonGame.Instance.DRP.UpdateDetails(gameState switch
+			{
+				SLGameState.OpenBoard => "Placing some markers..",
+				SLGameState.InMenu => "Admiring the main menu..",
+				SLGameState.Loading => "Loading STOLON..",
+				_ => throw new Exception()
+			});
 
 			overlayer.Update(elapsedMiliseconds);
 			base.Update(elapsedMiliseconds);
@@ -326,7 +323,6 @@ namespace Stolon
 
 		public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
 		{
-			var previousScreen = gameState;
 			switch (gameState)
 			{
 				case SLGameState.OpenBoard:
@@ -393,8 +389,4 @@ namespace Stolon
 		public static bool IsPressed(Keys key) => IsPressed(CurrentState, key);
 		public static bool IsClicked(Keys key) => IsPressed(CurrentState, key) && !IsPressed(PreviousState, key);
 	}
-	public static class GlobalRPC
-		{
-				public static DiscordRichPresence? rpc;
-		}
 }

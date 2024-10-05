@@ -402,7 +402,7 @@ namespace Stolon
             }
             if (updateData["quit"].IsClicked)
             {
-                Instance.Exit();
+                Instance.SLExit();
             }
 
             if (!menuDone) return;

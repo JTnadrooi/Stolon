@@ -214,12 +214,7 @@ namespace Stolon
             if (SLKeyboard.IsClicked(Keys.C)) Console.WriteLine(State.GetUniqueMoves().Length);
             if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked)
             {
-                // Instance.Environment.fOverlayer.Activate("transition", null, () =>
-                //     {
-                //         Instance.Environment.ForceGameState(SLEnvironment.SLGameState.InMenu, true);
-                //     }, string.Empty);
-
-                Instance.Exit();
+                Instance.SLExit();
             }
 
             Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);

@@ -2,70 +2,66 @@ using System;
 using DiscordRPC;
 using DiscordRPC.Logging;
 
-namespace DiscordRPC {
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using AsitLib;
+using AsitLib.XNA;
+using MonoGame.Extended;
+using static Stolon.StolonGame;
+
+using Color = Microsoft.Xna.Framework.Color;
+using Point = Microsoft.Xna.Framework.Point;
+using Math = System.Math;
+using RectangleF = MonoGame.Extended.RectangleF;
+
+#nullable enable
+namespace DiscordRPC
+{
 	public class DiscordRichPresence
 	{
-		public static DiscordRpcClient client;
+		public DiscordRpcClient client;
 		private RichPresence presence; // Store the current RichPresence
 
-		public void InitializeRPC()
+		public DiscordRichPresence()
 		{
 			client = new DiscordRpcClient("1291994415207944255");
-
-			client.Logger = new ConsoleLogger() { Level = LogLevel.Warning };
-
-			client.OnReady += (sender, e) =>
+			client.Logger = new ConsoleLogger()
 			{
-				Console.WriteLine("--RPC-- Received Ready from user {0}", e.User.Username);
+				Level = LogLevel.Warning,
 			};
-
-			client.OnPresenceUpdate += (sender, e) =>
-			{
-				Console.WriteLine("--RPC-- Received Update! {0}", e.Presence);
-			};
-
 			client.Initialize();
-
-			// Initialize the RichPresence and store it
 			presence = new RichPresence()
 			{
 				Details = "Stolon",
-				State = "",
+				State = string.Empty,
 				Assets = new Assets()
 				{
 					LargeImageKey = "stolonicon",
 					LargeImageText = "Stolon",
-					SmallImageKey = ""
+					SmallImageKey = string.Empty,
 				}
 			};
-
-			// Set the initial presence
 			client.SetPresence(presence);
 		}
 
-		// Method to update the State
-		public void UpdateState(string newState)
+		public void UpdateState(string newState = "")
 		{
-			if (presence != null)
-			{
-				presence.State = newState;
-				client.SetPresence(presence); // Update the presence on Discord
-			}
+			presence.State = newState;
+			client.SetPresence(presence);
 		}
 
-		// Method to update the Details
-		public void UpdateDetails(string newDetails)
+		public void UpdateDetails(string newDetails = "")
 		{
-			if (presence != null)
-			{
-				presence.Details = newDetails;
-				client.SetPresence(presence); // Update the presence on Discord
-			}
+			presence.Details = newDetails;
+			client.SetPresence(presence);
 		}
 
-		public void DisposeRPC()
-		{
-			client.Dispose();
-		}
+		public void DisposeRPC() => client.Dispose();
 	}
 }
