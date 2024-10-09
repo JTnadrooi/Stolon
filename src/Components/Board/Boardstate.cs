@@ -75,7 +75,10 @@ namespace Stolon
         public Player[] Players => players;
         public SearchTargetCollection WinSearchTargets => winSearchTargets;
         public int CurrentPlayerID { get; private set; }
+        public int TileCount { get; set; }
         public Player CurrentPlayer => Players[CurrentPlayerID];
+
+        public Stack<UndoObj> undoStack;
 
         public int NextPlayer => CurrentPlayerID == 0 ? 1 : 0; //NONPOLY
 
@@ -92,20 +95,13 @@ namespace Stolon
             dimensions = new Point(tiles.GetLength(0), tiles.GetLength(1));
             this.winSearchTargets = searchTargets;
             CurrentPlayerID = currentPlayer;
+            undoStack = new Stack<UndoObj>();
         }
         public void GoNextPlayer()
         {
             CurrentPlayerID = NextPlayer;
         }
-        public Move[] GetUniqueMoves()
-        {
-            List<Move> toret = new List<Move>();
-            for (int i = 0; i < Tiles.GetLength(0); i++)
-            {
-                
-            }
-            return toret.ToArray();
-        }
+        public int DistanceFromCenter(int x) => Math.Min(x, 8 / 2);
         public BoardState DeepCopy()
         {
             Tile[,] tiles2 = new Tile[tiles.GetLength(0), tiles.GetLength(1)];
@@ -116,7 +112,11 @@ namespace Stolon
                     tiles2[x, y] = tiles[x, y].Clone();
                 }
             }
-            return new BoardState(tiles2, players, winSearchTargets, CurrentPlayerID);
+            BoardState toret = new BoardState(tiles2, players, winSearchTargets, CurrentPlayerID)
+            {
+                TileCount = this.TileCount,
+            };
+            return toret;
         }
         public Tile GetTile(Point p) => tiles[p.X, p.Y];
         public bool Search(int targetPlayer, SearchTargetCollection? targets = null)
@@ -133,7 +133,7 @@ namespace Stolon
         }
         public bool Search(int targetPlayer, SearchTarget target)
         {
-            Instance.DebugStream.WriteLine("\tsearching board for " + target.Id + "..");
+            //Instance.DebugStream.WriteLine("\tsearching board for " + target.Id + "..");
 
             for (int x = 0; x < dimensions.X; x++)
             {
@@ -158,7 +158,7 @@ namespace Stolon
                     }
                     if (score == target.Nodes.Length)
                     {
-                        Instance.DebugStream.WriteLine("\t\tfound.");
+                        //Instance.DebugStream.WriteLine("\t\tfound.");
                         return true;
                     }
                 }
@@ -168,45 +168,70 @@ namespace Stolon
 
         public int SearchAny(SearchTargetCollection? targets = null)
         {
-            Instance.DebugStream.WriteLine("searching board for any searchtarget..");
+            //Instance.DebugStream.WriteLine("searching board for any searchtarget..");
             for (int i = 0; i < 2; i++)
             {
                 if (Search(i, targets))
                 {
-                    Instance.DebugStream.WriteLine("found any for player " + i + ".");
-                    Instance.DebugStream.Succes();
+                    //Instance.DebugStream.WriteLine("found any for player " + i + ".");
+                    //Instance.DebugStream.Succes();
                     return i;
                 }
             }
-            Instance.DebugStream.Fail();
+            //Instance.DebugStream.Fail();
             return -1;
         }
         public int GetPlayerID(Player player) => players.GetFirstIndexWhere(p => p.Equals(player));
-        public static bool Alter(ref BoardState board, Tile overridenTile)
+        public bool Alter(Tile overridenTile)
         {
-            board.Tiles[overridenTile.TiledPosition.X, overridenTile.TiledPosition.Y].Attributes = overridenTile.Attributes;
-            board.Tiles[overridenTile.TiledPosition.X, overridenTile.TiledPosition.Y].TileType = overridenTile.TileType;
+            Tiles[overridenTile.TiledPosition.X, overridenTile.TiledPosition.Y].Attributes = overridenTile.Attributes;
+            Tiles[overridenTile.TiledPosition.X, overridenTile.TiledPosition.Y].TileType = overridenTile.TileType;
             return true;
         }
-        public static bool Alter(ref BoardState board, Move move, bool? nextPlayer = null)
+        public bool Alter(Move move, bool? nextPlayer = null)
         {
             bool autoNext;
 
-            if (move.Origin.X >= board.Dimensions.X) throw new Exception();
-            if (move.Origin.Y >= board.Dimensions.Y) throw new Exception();
+            if (move.Origin.X >= Dimensions.X) throw new Exception();
+            if (move.Origin.Y >= Dimensions.Y) throw new Exception();
 
             HashSet<TileAttributeBase> toadd = new HashSet<TileAttributeBase>()
             {
-                TileAttribute.TileAttributes["Player" + board.CurrentPlayerID + "Occupied"],
+                TileAttribute.TileAttributes["Player" + CurrentPlayerID + "Occupied"],
                 TileAttribute.Get<TileAttribute.TileAttributeSolid>(),
             };
-            toadd.UnionWith(board.Tiles[move.Origin.X, move.Origin.Y].Attributes);
+            toadd.UnionWith(Tiles[move.Origin.X, move.Origin.Y].Attributes);
 
-            autoNext = Alter(ref board, new Tile(new Point(move.Origin.X, move.Origin.Y), null, toadd).Simulate(board));
+            Tile sim = new Tile(new Point(move.Origin.X, move.Origin.Y), null, toadd).Simulate(this);
+            autoNext = Alter(sim);
+            undoStack.Push(new UndoObj(sim));
 
             nextPlayer ??= autoNext;
-            if (nextPlayer.Value) board.GoNextPlayer();
+            if (nextPlayer.Value) GoNextPlayer();
+
+            TileCount++;
+
             return nextPlayer.Value;
+        }
+        public void Undo()
+        {
+            UndoObj undoObj = undoStack.Pop();
+
+            TileCount--;
+            CurrentPlayerID = CurrentPlayerID == 0 ? 1 : 0;
+
+            undoObj.Sim.Attributes.Remove(TileAttribute.TileAttributes["Player" + CurrentPlayerID + "Occupied"]);
+            undoObj.Sim.Attributes.Remove(TileAttribute.Get<TileAttribute.TileAttributeSolid>());
+
+            Alter(new Tile(undoObj.Sim.TiledPosition, undoObj.Sim.TileType, undoObj.Sim.Attributes));
+        }
+        public struct UndoObj
+        {
+            public Tile Sim { get; }
+            public UndoObj(Tile sim)
+            {
+                Sim = sim;
+            }
         }
     }
 }

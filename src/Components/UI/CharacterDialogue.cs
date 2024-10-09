@@ -96,9 +96,9 @@ namespace Stolon
 
         public abstract void DoMove(Board board);
 
-        public Player GetPlayer(Board board)
+        public Player GetPlayer(BoardState state)
         {
-            Player[] players = board.State.Players.ToArray();
+            Player[] players = state.Players.ToArray();
             for (int i = 0; i < players.Length; i++)
             {
                 if (players[i].Computer == this)

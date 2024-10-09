@@ -16,6 +16,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Math = System.Math;
 using RectangleF = MonoGame.Extended.RectangleF;
+using System.Diagnostics;
 
 #nullable enable
 
@@ -39,6 +40,7 @@ namespace Stolon
         public BoardState InitialState { get; }
         public Stack<BoardState> History { get; private set; }
 
+
         private SpriteBatch boardSpriteBatch;
         private BoardState state;
 
@@ -53,6 +55,8 @@ namespace Stolon
         private RectangleF[] rowHitBoxes;
         private BoardState.SearchTargetCollection searchTargets;
         private const float confZoomCoefficient = 0.98f; // 0.98f
+
+        public UniqueMoveBoardMap UniqueMoveBoardMap { get; }
 
         public Board(SLScene source, BoardState conf) : base(source)
         {
@@ -72,6 +76,8 @@ namespace Stolon
             InitialState = conf.DeepCopy();
             History = new Stack<BoardState>();
             History.Push(conf.DeepCopy());
+
+            UniqueMoveBoardMap = new UniqueMoveBoardMap();
 
             for (int x = 0; x < conf.Dimensions.X; x++)
             {
@@ -183,7 +189,7 @@ namespace Stolon
                 if (move.HasValue)
                 {
                     History.Push(State.DeepCopy());
-                    BoardState.Alter(ref State, move!.Value, true);
+                    State.Alter(move!.Value, true);
                     Instance.DebugStream.Succes(1);
                 }
                 else Instance.DebugStream.Fail(1);
@@ -211,11 +217,41 @@ namespace Stolon
             }
             if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
             if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked) Undo();
-            if (SLKeyboard.IsClicked(Keys.C)) Console.WriteLine(State.GetUniqueMoves().Length);
-            if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked)
+            if (SLKeyboard.IsClicked(Keys.Z))
             {
-                Instance.SLExit();
+                Console.WriteLine(UniqueMoveBoardMap.GetAllMoves(state).ToJoinedString(", "));
             }
+            if (SLKeyboard.IsClicked(Keys.X))
+            {
+                state.Undo();
+            }
+            if (SLKeyboard.IsClicked(Keys.C))
+            {
+                Stopwatch a = new Stopwatch();
+                a.Start();
+                // for (int i = 0; i < 16; i++)
+                // {
+                //     Console.WriteLine(i);
+                //     Console.WriteLine(UniqueMoveBoardMap.GetMovePos(i));
+                //     Console.WriteLine(UniqueMoveBoardMap.IsValid(i, state));
+                // }
+
+                //Console.WriteLine(GoldsilkCom.Evaluate(state, 1));
+                Console.WriteLine("yooooooooooo");
+                GoldsilkCom.count = 0;
+                Console.WriteLine(GoldsilkCom.Search(state, UniqueMoveBoardMap));
+                Console.WriteLine(GoldsilkCom.count + " counted.");
+                Console.WriteLine("and it took " + a.ElapsedMilliseconds + "ms.");
+
+
+
+                a.Stop();
+
+                Console.WriteLine("rate: " + (a.ElapsedMilliseconds / (float)GoldsilkCom.count) + " ms/i.");
+
+
+            }
+            if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) Instance.SLExit();
 
             Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);
 
@@ -442,7 +478,7 @@ namespace Stolon
             }
             return tiles;
         }
-        public Tile Clone() => new Tile(TiledPosition, TileType, Attributes);
+        public Tile Clone() => new Tile(TiledPosition, new TileType(TileType.Name, TileType.Texture), new HashSet<TileAttributeBase>(Attributes));
         object ICloneable.Clone()
         {
             return Clone();

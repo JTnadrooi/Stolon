@@ -31,10 +31,10 @@ namespace DiscordRPC
 		public DiscordRichPresence()
 		{
 			client = new DiscordRpcClient("1291994415207944255");
-			client.Logger = new ConsoleLogger()
-			{
-				Level = LogLevel.Warning,
-			};
+			//client.Logger = new ConsoleLogger()
+			//{
+			//	Level = LogLevel.Warning,
+			//};
 			client.Initialize();
 			presence = new RichPresence()
 			{

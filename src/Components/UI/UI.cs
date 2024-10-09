@@ -303,13 +303,13 @@ namespace Stolon
             bool startFrame = false;
             int menuLogoBoundingBoxClearing = 8;
 
-            // if (milisecondsSinceStartup < 10000) // to skip start button click and animation
-            // {
-            //     milisecondsSinceStartup = 10001;
-            //     menuDone = true;
-            //     menuRemoveTweener.Update(10);
-            //     startFrame = true;
-            // }
+             if (milisecondsSinceStartup < 10000) // to skip start button click and animation
+            {
+                milisecondsSinceStartup = 10001;
+                menuDone = true;
+                menuRemoveTweener.Update(10);
+                startFrame = true;
+            }
 
             #region inFlash
             menuLogoTileHider = new Rectangle(menuLogoDrawPos.ToPoint(), new Point((int)(menuLogoLines.Width * menuLogoScaling), (int)(rowHeight * menuLogoRowsHidden)));
