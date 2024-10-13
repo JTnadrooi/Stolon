@@ -164,3 +164,8 @@
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /build:../content/fonts/fiont.spritefont;fonts/fiont.spritefont
+
+#begin ../content/effects/Bloom.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/build:../content/effects/Bloom.fx;effects/Bloom.fx

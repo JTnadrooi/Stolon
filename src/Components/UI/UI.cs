@@ -23,7 +23,6 @@ namespace Stolon
 {
     public class SLUserInterface : AxComponent
     {
-        private Board board;
         private SLEnvironment environment;
 
         private List<UIElementDrawData> drawData;
@@ -132,16 +131,21 @@ namespace Stolon
         public SLTextframe Textframe => textframe;
         public int LineWidth => lineWidth;
 
-        internal SLUserInterface(SLScene scene, Dictionary<string, SLEntity> sLEntities) : base(Instance.Environment)
+        private Player[]? startPlayers;
+
+        internal SLUserInterface(Dictionary<string, SLEntity> sLEntities) : base(Instance.Environment)
         {
             environment = Instance.Environment;
-            board = scene.Board;
 
             lineOffset = 96f;
             lineWidth = 2;
 
             uifont = Instance.Fonts["fiont"];
-
+            startPlayers = new Player[]
+                        {
+                            new Player("player0"),
+                            sLEntities["goldsilk"].GetPlayer()
+                        };
 
             menuLogoLines = Instance.Textures.GetReference("textures\\menuLogo\\lines");
             menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogo\\dummyTiles");
@@ -210,6 +214,7 @@ namespace Stolon
                 "Galore!",
                 "The start of the unending.",
                 "There,",
+                "No shaders?",
                 "All colors, Her.",
                 "Thanks for playing! :D",
                 "\"Call that a Natural Deadline.\"",
@@ -228,7 +233,13 @@ namespace Stolon
                 "Why is Lanulox here..",
                 "Time's Up! Fate sealed.",
                 "Seems vacant..",
-                "You are week, I am month."
+                "You are week, I am month.",
+                "Lanu X4",
+                "Welcome.",
+                "Welcome!",
+                "Galore.",
+                "NOT solved.",
+                "Tiory?",
             };
 
             tipId = new Random().Next(0, tips.Length);
@@ -303,13 +314,13 @@ namespace Stolon
             bool startFrame = false;
             int menuLogoBoundingBoxClearing = 8;
 
-             if (milisecondsSinceStartup < 10000) // to skip start button click and animation
-            {
-                milisecondsSinceStartup = 10001;
-                menuDone = true;
-                menuRemoveTweener.Update(10);
-                startFrame = true;
-            }
+            // if (milisecondsSinceStartup < 10000) // to skip start button click and animation
+            //{
+            //    milisecondsSinceStartup = 10001;
+            //    menuDone = true;
+            //    menuRemoveTweener.Update(10);
+            //    startFrame = true;
+            //}
 
             #region inFlash
             menuLogoTileHider = new Rectangle(menuLogoDrawPos.ToPoint(), new Point((int)(menuLogoLines.Width * menuLogoScaling), (int)(rowHeight * menuLogoRowsHidden)));
@@ -382,6 +393,12 @@ namespace Stolon
             if (updateData["startXp"].IsClicked)
             {
                 startFrame = !menuDone;
+                startPlayers = new Player[]
+                        {
+                            new Player("player0"),
+                            new Player("player1"),
+                        };
+
                 menuDone = true;
             }
             if (updateData["options"].IsClicked)
@@ -394,7 +411,15 @@ namespace Stolon
             }
             if (updateData["startCom"].IsClicked)
             {
-                textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+                //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+                startFrame = !menuDone;
+                startPlayers = new Player[]
+                        {
+                            new Player("player0"),
+                            Instance.Environment.Entities["goldsilk"].GetPlayer()
+                        };
+
+                menuDone = true;
             }
             if (updateData["specialThanks"].IsClicked)
             {
@@ -420,14 +445,17 @@ namespace Stolon
             if (menuLogoDisapearFlashHandler.HasEnded && !menuRemoveTweener.Running && !loadingFinished)
             {
                 loadingFinished = true;
-                SLEnvironment.Instance.ForceGameState(SLEnvironment.SLGameState.OpenBoard);
+                //SLEnvironment.Instance.ForceGameState(SLEnvironment.SLGameState.OpenBoard);
+                if (startPlayers == null) throw new Exception();
+                Instance.Scene = new SLScene(startPlayers);
+                Instance.Environment.GameState = SLEnvironment.SLGameState.OpenBoard;
             }
 
             Centering.OnPixel(ref menuLogoDrawPos);
         }
         public void UpdateBoardUI(int elapsedMiliseconds)
         {
-            float zoomIntensity = board.ZoomIntensity;
+            float zoomIntensity = Instance.Environment.Scene.Board.ZoomIntensity;
             float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
 
             bool mouseIsOnUI = SLMouse.Domain == SLMouse.MouseDomain.UserInterfaceLow;

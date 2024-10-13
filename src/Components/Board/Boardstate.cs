@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AsitLib;
+using AsitLib.IO;
+using static Stolon.BoardState;
 using static Stolon.StolonGame;
 
 using Point = Microsoft.Xna.Framework.Point;
@@ -13,7 +15,7 @@ using Point = Microsoft.Xna.Framework.Point;
 
 namespace Stolon
 {
-    public struct BoardState
+    public class BoardState
     {
         public class SearchTargetCollection : IDictionary<string, SearchTarget>
         {
@@ -41,33 +43,38 @@ namespace Stolon
             public bool TryGetValue(string key, [MaybeNullWhen(false)] out SearchTarget value) => ((IDictionary<string, SearchTarget>)dictionary).TryGetValue(key, out value);
             IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)dictionary).GetEnumerator();
 
-            public static ReadOnlyDictionary<string, SearchTarget> DefaultWinTargets => new ReadOnlyDictionary<string, SearchTarget>(new Dictionary<string, SearchTarget>(new SearchTarget[]
+            public static ReadOnlyDictionary<string, SearchTarget> DefaultWinTargets { get; }
+
+            static SearchTargetCollection()
             {
-                new SearchTarget("vertical4r", new Point[]
+                DefaultWinTargets = new ReadOnlyDictionary<string, SearchTarget>(new Dictionary<string, SearchTarget>(new SearchTarget[]
                 {
-                    new Point(0, 1),
-                    new Point(0, 2),
-                    new Point(0, 3),
-                }),
-                new SearchTarget("horizontal4r", new Point[]
-                {
-                    new Point(1, 0),
-                    new Point(2, 0),
-                    new Point(3, 0),
-                }),
-                new SearchTarget("diagonal4rDD", new Point[]
-                {
-                    new Point(1, 1),
-                    new Point(2, 2),
-                    new Point(3, 3),
-                }),
-                new SearchTarget("diagonal4rDU", new Point[]
-                {
-                    new Point(1, -1),
-                    new Point(2, -2),
-                    new Point(3, -3),
-                }),
-            }.Select(st => new KeyValuePair<string, SearchTarget>(st.Id, st))));
+                    new SearchTarget("vertical4r", new Point[]
+                    {
+                        new Point(0, 1),
+                        new Point(0, 2),
+                        new Point(0, 3),
+                    }),
+                    new SearchTarget("horizontal4r", new Point[]
+                    {
+                        new Point(1, 0),
+                        new Point(2, 0),
+                        new Point(3, 0),
+                    }),
+                    new SearchTarget("diagonal4rDD", new Point[]
+                    {
+                        new Point(1, 1),
+                        new Point(2, 2),
+                        new Point(3, 3),
+                    }),
+                    new SearchTarget("diagonal4rDU", new Point[]
+                    {
+                        new Point(1, -1),
+                        new Point(2, -2),
+                        new Point(3, -3),
+                    }),
+                }.Select(st => new KeyValuePair<string, SearchTarget>(st.Id, st))));
+            }
         }
 
         public Point Dimensions => dimensions;
@@ -79,6 +86,7 @@ namespace Stolon
         public Player CurrentPlayer => Players[CurrentPlayerID];
 
         public Stack<UndoObj> undoStack;
+        public Collection<UndoObj> undoSet;
 
         public int NextPlayer => CurrentPlayerID == 0 ? 1 : 0; //NONPOLY
 
@@ -96,6 +104,7 @@ namespace Stolon
             this.winSearchTargets = searchTargets;
             CurrentPlayerID = currentPlayer;
             undoStack = new Stack<UndoObj>();
+            undoSet = new Collection<UndoObj>();
         }
         public void GoNextPlayer()
         {
@@ -131,34 +140,33 @@ namespace Stolon
             }
             return false;
         }
+        public int SearchAny(SearchTargetCollection? targets = null)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                if (Search(i, targets))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public bool Search(int targetPlayer, SearchTarget target)
         {
-            //Instance.DebugStream.WriteLine("\tsearching board for " + target.Id + "..");
-
+            //Console.WriteLine(targetPlayer);
             for (int x = 0; x < dimensions.X; x++)
             {
                 for (int y = 0; y < dimensions.Y; y++)
                 {
+                    //Console.WriteLine(new Point(x, y) == new Point(4, 4));
                     int playerid = tiles[x, y].GetOccupiedByPlayerID();
-                    if (playerid == -1) continue;
-
-                    int score = 0;
-                    for (int i = 0; i < target.Nodes.Length; i++)
+                    if (playerid == -1 || playerid != targetPlayer) continue;
                     {
-                        Tile tile;
-                        try
-                        {
-                            tile = GetTile(target.Nodes[i] + new Point(x, y));
-                        }
-                        catch { continue; } // for when out of range.
-                        if (tile.GetOccupiedByPlayerID() == targetPlayer)
-                        {
-                            score++;
-                        }
+                        //Console.WriteLine(new Point(x, y) + " " + playerid + " not");
                     }
-                    if (score == target.Nodes.Length)
+                    if (SearchFrom(new Point(x, y), target, false, playerid).Succes)
                     {
-                        //Instance.DebugStream.WriteLine("\t\tfound.");
                         return true;
                     }
                 }
@@ -166,21 +174,92 @@ namespace Stolon
             return false;
         }
 
-        public int SearchAny(SearchTargetCollection? targets = null)
+        public SquaredSearchData DeepSearchFrom(Point pos, out int outPlayerId, SearchTargetCollection? targets = null)
         {
-            //Instance.DebugStream.WriteLine("searching board for any searchtarget..");
-            for (int i = 0; i < 2; i++)
+            targets ??= winSearchTargets;
+            int playerid = tiles[pos.X, pos.Y].GetOccupiedByPlayerID();
+            int score = 0;
+            outPlayerId = playerid;
+            if (playerid == -1)
             {
-                if (Search(i, targets))
-                {
-                    //Instance.DebugStream.WriteLine("found any for player " + i + ".");
-                    //Instance.DebugStream.Succes();
-                    return i;
-                }
+                return SquaredSearchData.False;
             }
-            //Instance.DebugStream.Fail();
-            return -1;
+
+            foreach (string targetKey in targets.Keys)
+            {
+                SearchTarget target = targets[targetKey];
+                SearchData toret = SearchFrom(pos, target, true, playerid);
+                score += toret.Score * toret.Score;
+                if (toret.Succes) return new SquaredSearchData(score, toret.Succes);
+            }
+            return new SquaredSearchData(score, false);
         }
+
+        public SearchData SearchFrom(Point pos, SearchTargetCollection? targets = null, bool twotry = false) => SearchFrom(pos, out _, targets, twotry);
+        public SearchData SearchFrom(Point pos, out int outPlayerId, SearchTargetCollection? targets = null, bool twotry = false)
+        {
+            targets ??= winSearchTargets;
+            int playerid = tiles[pos.X, pos.Y].GetOccupiedByPlayerID();
+            int score = 0;
+            outPlayerId = playerid;
+            if (playerid == -1)
+            {
+                return SearchData.False;
+            }
+
+            foreach (string targetKey in targets.Keys)
+            {
+                SearchTarget target = targets[targetKey];
+                SearchData toret = SearchFrom(pos, target, twotry, playerid);
+                score += toret.Score;
+                if (toret.Succes) return new SearchData(score, toret.Succes);
+            }
+            return new SearchData(score, false);
+        }
+
+        public SearchData SearchFrom(Point pos, SearchTarget target, bool twotry = false, int occuPlayerId = -1)
+        {
+            occuPlayerId = occuPlayerId == -1 ? tiles[pos.X, pos.Y].GetOccupiedByPlayerID() : occuPlayerId;
+            if (occuPlayerId == -1) return SearchData.False;
+            //Console.WriteLine();
+
+            //Console.WriteLine("nodes: " + target.Nodes.ToJoinedString(", "));
+            //Console.WriteLine("revnodes: " + target.InvertedNodes.ToJoinedString(", "));
+
+            int SearchFromInternallly(Point[] nodes, Point newPos)
+            {
+                //Console.WriteLine("reversing with orgin: " + newPos);
+                int score = 0;
+                if (occuPlayerId == -1) return 0;
+
+                for (int i = 0; i < nodes.Length; i++)
+                {
+                    Tile tile;
+                    try
+                    {
+                        //Console.WriteLine("trying: " + (nodes[i] + newPos));
+                        tile = GetTile(nodes[i] + newPos);
+                    }
+                    catch { continue; }
+                    if (tile.GetOccupiedByPlayerID() == occuPlayerId) score++;
+                }
+                return score;
+            }
+
+            Point[] nodes = target.Nodes;
+
+            int score = SearchFromInternallly(nodes, pos);
+
+            if (score == nodes.Length) return new SearchData(score, true);
+            else if (twotry)
+            {
+                int siscore = SearchFromInternallly(target.InvertedNodes, nodes[score - 1] + pos);
+                return new SearchData(siscore, siscore == target.InvertedNodes.Length);
+            }
+
+            return new SearchData(score, false);
+        }
+
         public int GetPlayerID(Player player) => players.GetFirstIndexWhere(p => p.Equals(player));
         public bool Alter(Tile overridenTile)
         {
@@ -188,39 +267,54 @@ namespace Stolon
             Tiles[overridenTile.TiledPosition.X, overridenTile.TiledPosition.Y].TileType = overridenTile.TileType;
             return true;
         }
-        public bool Alter(Move move, bool? nextPlayer = null)
+        public Point Alter(Move move, bool nextPlayer = false)
         {
-            bool autoNext;
 
             if (move.Origin.X >= Dimensions.X) throw new Exception();
             if (move.Origin.Y >= Dimensions.Y) throw new Exception();
 
-            HashSet<TileAttributeBase> toadd = new HashSet<TileAttributeBase>()
-            {
-                TileAttribute.TileAttributes["Player" + CurrentPlayerID + "Occupied"],
-                TileAttribute.Get<TileAttribute.TileAttributeSolid>(),
-            };
-            toadd.UnionWith(Tiles[move.Origin.X, move.Origin.Y].Attributes);
+            //HashSet<TileAttributeBase> toadd = new HashSet<TileAttributeBase>()
+            //{
+            //    (TileAttributeBase)TileAttribute.TileAttributes["Player" + CurrentPlayerID + "Occupied"],
+            //    TileAttribute.Get<TileAttribute.TileAttributeSolid>(),
+            //};
+            //toadd.UnionWith(Tiles[move.Origin.X, move.Origin.Y].Attributes);
 
-            Tile sim = new Tile(new Point(move.Origin.X, move.Origin.Y), null, toadd).Simulate(this);
-            autoNext = Alter(sim);
-            undoStack.Push(new UndoObj(sim));
+            //Tile sim = new Tile(new Point(move.Origin.X, move.Origin.Y), null, toadd).Simulate(this);
+            Tile sim = move.ToTile(CurrentPlayerID, Tiles[move.Origin.X, move.Origin.Y].Attributes).Simulate(this);
 
-            nextPlayer ??= autoNext;
-            if (nextPlayer.Value) GoNextPlayer();
+
+            Alter(sim);
+            undoStack.Push(new UndoObj(sim, nextPlayer));
+            undoSet.Add(undoStack.Peek());
+
+            if (nextPlayer) GoNextPlayer();
 
             TileCount++;
 
-            return nextPlayer.Value;
+            return sim.TiledPosition;
+        }
+        public int GetStateCode()
+        {
+            int value = 0;
+            //int v2 = 0;
+            foreach (var item in undoSet)
+            { 
+                //value = HashCode.Combine(item.GetHashCode(), value);
+                value += item.GetHashCode();
+            }
+            value = HashCode.Combine(TileCount, CurrentPlayerID, value);
+            return value;
         }
         public void Undo()
         {
             UndoObj undoObj = undoStack.Pop();
+            undoSet.Remove(undoObj);
 
             TileCount--;
-            CurrentPlayerID = CurrentPlayerID == 0 ? 1 : 0;
+            if (undoObj.NextPlayer) CurrentPlayerID = CurrentPlayerID == 0 ? 1 : 0;
 
-            undoObj.Sim.Attributes.Remove(TileAttribute.TileAttributes["Player" + CurrentPlayerID + "Occupied"]);
+            undoObj.Sim.Attributes.Remove((TileAttributeBase)TileAttribute.TileAttributes["Player" + CurrentPlayerID + "Occupied"]);
             undoObj.Sim.Attributes.Remove(TileAttribute.Get<TileAttribute.TileAttributeSolid>());
 
             Alter(new Tile(undoObj.Sim.TiledPosition, undoObj.Sim.TileType, undoObj.Sim.Attributes));
@@ -228,10 +322,61 @@ namespace Stolon
         public struct UndoObj
         {
             public Tile Sim { get; }
-            public UndoObj(Tile sim)
+            public bool NextPlayer { get; }
+            public UndoObj(Tile sim, bool nextPlayer)
             {
                 Sim = sim;
+                NextPlayer = nextPlayer;
+            }
+            public override int GetHashCode()
+            {
+                return Sim.GetHashCode();
             }
         }
+
+        public struct SearchData
+        {
+            public int Score { get; }
+            public bool Succes { get; }
+            public SearchData(int score, bool succes)
+            {
+                Score = score;
+                Succes = succes;
+            }
+
+            public override string ToString() => $"Score: {Score}, Success: {Succes}";
+
+            static SearchData()
+            {
+                False = new SearchData(0, false);
+            }
+            public static SearchData False { get; }
+        }
+
+
+        public struct SquaredSearchData
+        {
+            public int Score { get; }
+            public bool Succes { get; }
+            public SquaredSearchData(int score, bool succes)
+            {
+                Score = score;
+                Succes = succes;
+            }
+
+            public override string ToString() => $"[SQUARED] Score: {Score}, Success: {Succes}";
+
+            static SquaredSearchData()
+            {
+                False = new SquaredSearchData(0, false);
+            }
+            public static SquaredSearchData False { get; }
+        }
+        //public struct DeepSearchData
+        //{
+        //    public int Score { get; }
+        //    public bool Succes { get; }
+
+        //}
     }
 }

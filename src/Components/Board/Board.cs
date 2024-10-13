@@ -17,6 +17,8 @@ using Point = Microsoft.Xna.Framework.Point;
 using Math = System.Math;
 using RectangleF = MonoGame.Extended.RectangleF;
 using System.Diagnostics;
+using System.Xml.Linq;
+using MonoGame.Extended.Tiled;
 
 #nullable enable
 
@@ -40,6 +42,8 @@ namespace Stolon
         public BoardState InitialState { get; }
         public Stack<BoardState> History { get; private set; }
 
+        public bool MouseIsOnBoard => SLMouse.Domain == SLMouse.MouseDomain.Board;
+        public Vector2 WorldMousePos { get; private set; }
 
         private SpriteBatch boardSpriteBatch;
         private BoardState state;
@@ -50,7 +54,7 @@ namespace Stolon
         bool firstFrame;
 
         private Task? computerMoveTask;
-        private const bool hasComputer = false;
+        private bool locked;
 
         private RectangleF[] rowHitBoxes;
         private BoardState.SearchTargetCollection searchTargets;
@@ -86,6 +90,15 @@ namespace Stolon
             }
         }
 
+        public void Lock()
+        {
+            locked = true;
+        }
+        public void Unlock()
+        {
+            locked = false;
+        }
+
         /// <summary>
         /// Update method. 
         /// </summary>
@@ -94,9 +107,7 @@ namespace Stolon
         {
             if (!firstFrame) firstFrame = true;
 
-            Vector2 mousepos = SLMouse.VirualPosition;
-            Vector2 worldMousePos = Camera.Unproject(mousepos);
-            bool isOnBoard = SLMouse.Domain == SLMouse.MouseDomain.Board;
+            WorldMousePos = Camera.Unproject(SLMouse.VirualPosition);
 
             mouseStateCoefficient = SLMouse.CurrentState.GetMouseStateCoefficient();
 
@@ -115,87 +126,10 @@ namespace Stolon
 
             if (SLMouse.IsPressed(SLMouse.MouseButton.Right)) desiredCameraPos += (SLMouse.PreviousState.Position - SLMouse.CurrentState.Position).ToVector2();
             Zoom += (desiredZoom - Zoom) * 0.1f + mouseStateCoefficient * SmoothnessModifier;
-            Camera.Position += (desiredCameraPos - Camera.Position) * 0.1f + (worldMousePos - Camera.Position) * SmoothnessModifier * Math.Abs(mouseStateCoefficient);
+            Camera.Position += (desiredCameraPos - Camera.Position) * 0.1f + (WorldMousePos - Camera.Position) * SmoothnessModifier * Math.Abs(mouseStateCoefficient);
             Camera.Zoom = Zoom;
 
-            #region computer_old
-            // if (hasComputer)
-            // {
-            //     if (CurrentPlayer.IsComputer)
-            //     {
-            //         if (computerMoveTask == null)
-            //         {
-            //             computerMoveTask = Task.Run(() => CurrentPlayer.Computer!.DoMove(this));
-            //             Instance.Environment.Overlayer.Activate("loading");
-            //             //computerMoveTask.Start();
-            //         }
-
-            //     }
-            //     if (computerMoveTask != null && computerMoveTask.IsCompleted)
-            //     {
-            //         Instance.Environment.Overlayer.Deactiviate("loading");
-            //         computerMoveTask.Dispose();
-            //         computerMoveTask = null;
-            //     }
-            //     else if (AsitGame.IsMouseClicked(DLMouse.CurrentState, DLMouse.PreviousState) && DLMouse.Domain == DLMouse.MouseDomain.Board)
-            //     {
-            //         int toDropAt = -1;
-            //         for (int i = 0; i < rowHitBoxes.Length; i++)
-            //         {
-            //             if (rowHitBoxes[i].Contains(worldMousePos.ToPoint()))
-            //             {
-            //                 toDropAt = i;
-            //                 continue;
-            //             }
-            //             else
-            //             {
-
-            //             }
-            //         }
-            //         if (toDropAt != -1)
-            //         {
-            //             if (Alter(new Move(toDropAt, dimensions.Y - 1), CurrentPlayer))
-            //             {
-            //                 EndMove();
-            //             }
-            //         }
-            //     }
-            // }
-            #endregion
-
-            #region expectMove
-
-            if (State.CurrentPlayer.IsComputer)
-            {
-                computerMoveTask ??= new Task(() => State.CurrentPlayer.Computer!.DoMove(this));
-                if (computerMoveTask.Status == TaskStatus.WaitingToRun)
-                {
-                    computerMoveTask.Start();
-                    Instance.Environment.Overlayer.Activate("loading");
-                }
-                if (computerMoveTask.Status == TaskStatus.RanToCompletion) Instance.Environment.Overlayer.Deactivate("loading");
-            }
-            else if (AsitGame.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && SLMouse.Domain == SLMouse.MouseDomain.Board)
-            {
-                Instance.DebugStream.WriteLine("Attempting board alter after mouseclick..");
-                Move? move = null;
-                for (int x = 0; x < state.Tiles.GetLength(0); x++)
-                    for (int y = 0; y < state.Tiles.GetLength(1); y++)
-                        if (state.Tiles[x, y].HitBox.Contains(worldMousePos) && !state.Tiles[x, y].IsSolid())
-                        {
-                            move = new Move(x, y);
-                            break;
-                        }
-                if (move.HasValue)
-                {
-                    History.Push(State.DeepCopy());
-                    State.Alter(move!.Value, true);
-                    Instance.DebugStream.Succes(1);
-                }
-                else Instance.DebugStream.Fail(1);
-            }
-            #endregion
-
+            Listen();
 
             if (Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked)
             {
@@ -217,39 +151,14 @@ namespace Stolon
             }
             if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
             if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked) Undo();
-            if (SLKeyboard.IsClicked(Keys.Z))
+            if (SLKeyboard.IsClicked(Keys.Z)) // debug keys
             {
-                Console.WriteLine(UniqueMoveBoardMap.GetAllMoves(state).ToJoinedString(", "));
             }
             if (SLKeyboard.IsClicked(Keys.X))
             {
-                state.Undo();
             }
             if (SLKeyboard.IsClicked(Keys.C))
             {
-                Stopwatch a = new Stopwatch();
-                a.Start();
-                // for (int i = 0; i < 16; i++)
-                // {
-                //     Console.WriteLine(i);
-                //     Console.WriteLine(UniqueMoveBoardMap.GetMovePos(i));
-                //     Console.WriteLine(UniqueMoveBoardMap.IsValid(i, state));
-                // }
-
-                //Console.WriteLine(GoldsilkCom.Evaluate(state, 1));
-                Console.WriteLine("yooooooooooo");
-                GoldsilkCom.count = 0;
-                Console.WriteLine(GoldsilkCom.Search(state, UniqueMoveBoardMap));
-                Console.WriteLine(GoldsilkCom.count + " counted.");
-                Console.WriteLine("and it took " + a.ElapsedMilliseconds + "ms.");
-
-
-
-                a.Stop();
-
-                Console.WriteLine("rate: " + (a.ElapsedMilliseconds / (float)GoldsilkCom.count) + " ms/i.");
-
-
             }
             if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) Instance.SLExit();
 
@@ -260,19 +169,61 @@ namespace Stolon
         public void Undo()
         {
             Instance.DebugStream.WriteLine("Attempting move undo..");
-
-            if (History.TryPop(out BoardState temp))
+            state.Undo();
+        }
+        public bool Listen()
+        {
+            if (locked)
             {
-                State = temp;
-                Instance.DebugStream.Succes(1);
+                computerMoveTask = null;
+                Instance.Environment.Overlayer.Deactivate("loading");
+                return false;
             }
-            else Instance.DebugStream.Fail(1);
+            if (computerMoveTask != null && computerMoveTask.IsCompletedSuccessfully)
+            {
+                Instance.Environment.Overlayer.Deactivate("loading");
+                computerMoveTask = null;
+            }
+            if (State.CurrentPlayer.IsComputer)
+            {
+                computerMoveTask ??= new Task(() => State.CurrentPlayer.Computer!.DoMove(this));
 
+                if (computerMoveTask.Status == TaskStatus.Created)
+                {
+                    computerMoveTask.Start();
+                    Instance.Environment.Overlayer.Activate("loading");
+                }
+            }
+            else if (AsitGame.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && MouseIsOnBoard)
+            {
+                Instance.DebugStream.WriteLine("Attempting board alter after mouseclick..");
+                Move? move = null;
+                for (int x = 0; x < state.Tiles.GetLength(0); x++)
+                    for (int y = 0; y < state.Tiles.GetLength(1); y++)
+                        if (state.Tiles[x, y].HitBox.Contains(WorldMousePos) && !state.Tiles[x, y].IsSolid())
+                        {
+                            move = new Move(x, y);
+                            break;
+                        }
+                if (move.HasValue)
+                {
+                    History.Push(State.DeepCopy());
+                    State.Alter(move!.Value, true);
+                    Instance.DebugStream.Succes(1);
+                    return true;
+                }
+                else Instance.DebugStream.Fail(1);
+            }
+            return false;
         }
         public void Reset()
         {
             Instance.DebugStream.WriteLine("Resetting the board..");
+
+            computerMoveTask = null;
             State = InitialState.DeepCopy();
+
+
             Instance.DebugStream.Succes(1);
         }
         public void EndMove()
@@ -324,9 +275,21 @@ namespace Stolon
         public Point[] Nodes { get; }
         public int? TurnsRemaining { get; private set; }
         public string Id { get; }
+        public Point[] InvertedNodes { get; }
         public SearchTarget(string id, Point[] nodes, bool playerBound = true, int? turnsRemaining = null)
         {
-            Nodes = nodes.Concat(Point.Zero.ToSingleArray()).ToArray();
+            Nodes = Point.Zero.ToSingleArray().Concat(nodes).ToArray();
+
+            List<Point> rev = new List<Point>() { Point.Zero };
+            foreach (Point node in nodes)
+            {
+                rev.Add(node * new Point(-1, -1));
+            }
+            InvertedNodes = rev.ToArray();
+
+            //Nodes.CopyTo(InvertedNodes, 0);
+            //Array.Reverse(InvertedNodes);
+
             PlayerBound = playerBound;
             TurnsRemaining = turnsRemaining;
             Id = id;
@@ -339,6 +302,7 @@ namespace Stolon
             else TurnsRemaining--;
             return TurnsRemaining == 0;
         }
+
     }
     /// <summary>
     /// Represent a single move.
@@ -364,6 +328,15 @@ namespace Stolon
             Origin = origin;
         }
 
+        public Tile ToTile(int playerID, BoardState state) => ToTile(playerID, state.Tiles);
+        public Tile ToTile(int playerID, Tile[,] tiles) => ToTile(playerID, tiles[Origin.X, Origin.Y].Attributes);
+        public Tile ToTile(int playerID, HashSet<TileAttributeBase> OGattributes)
+        {
+            HashSet<TileAttributeBase> a = TileAttribute.GetPlayerAttributes(playerID);
+            a.UnionWith(OGattributes);
+            return new Tile(new Point(Origin.X, Origin.Y), null, a);
+        }
+
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
             return Origin == ((Move)obj!).Origin;
@@ -373,6 +346,7 @@ namespace Stolon
             Random random = new Random();
             return uniqueMoves[random.Next(0, uniqueMoves.Length)];
         }
+
         public static Move Invalid => new Move(-1, -1);
         public static implicit operator Point(Move m) => m.Origin;
         public static explicit operator Move(Point p) => new Move(p);
@@ -450,11 +424,12 @@ namespace Stolon
 
             return new Tile(newPos, TileType, Attributes);
         }
+        public bool HasAttribute(TileAttributeBase attribute) => Attributes.Contains(attribute);
         public bool HasAttribute(params TileAttributeBase[] attributes)
         {
             if (attributes.Length == 0) throw new Exception();
             for (int i = 0; i < attributes.Length; i++)
-                if (Attributes.Contains(attributes[i])) return true;
+                if (HasAttribute(attributes[i])) return true;
             return false;
         }
 
@@ -482,6 +457,10 @@ namespace Stolon
         object ICloneable.Clone()
         {
             return Clone();
+        }
+        public override int GetHashCode()
+        {
+            return TiledPosition.GetHashCode();
         }
     }
     public class TileType

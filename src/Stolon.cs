@@ -26,7 +26,9 @@ namespace Stolon
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
 		private RenderTarget2D renderTarget;
-		private SLEnvironment environment;
+
+        private RenderTarget2D bloomRenderTarget;
+        private SLEnvironment environment;
 		private Point aspectRatio = new Point(16, 9);
 		private float AspectRatioFloat => aspectRatio.X / aspectRatio.Y * 1.7776f;
 		private int virtualModifier;
@@ -35,9 +37,14 @@ namespace Stolon
 		private Effect replaceColorEffect;
 		private AxTextureCollection textures;
 		public DiscordRichPresence DRP { get; set; }
+        private BloomFilter _bloomFilter;
 
-		public SLEnvironment Environment => environment;
-		public SLScene Scene => environment.Scene;
+        public SLEnvironment Environment => environment;
+		public SLScene Scene
+		{
+			get => environment.Scene;
+			set => environment.Scene = value;
+        }
 		public SLUserInterface UserInterface => environment.UserInterface;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); // (480, 270) (if vM = 30)
@@ -57,9 +64,9 @@ namespace Stolon
 		public string VersionID => "0.050 (Open Alpha)";
 		internal float screenScale;
 
-#pragma warning disable CS8618
+		#pragma warning disable CS8618
 		public StolonGame()
-#pragma warning restore CS8618
+		#pragma warning restore CS8618
 		{
 			Instance = this;
 			graphics = new GraphicsDeviceManager(this);
@@ -68,6 +75,7 @@ namespace Stolon
 			Fonts = new Dictionary<string, SpriteFont>();
 
 			DebugStream = new AsitDebugStream();
+			Console.WriteLine("gello..");
 		}
 
 		protected override void Initialize()
@@ -87,9 +95,11 @@ namespace Stolon
 			Window.AllowUserResizing = true;
 			graphics.ApplyChanges();
 
-			renderTarget = new RenderTarget2D(GraphicsDevice, VirtualDimensions.X, VirtualDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+            renderTarget = new RenderTarget2D(GraphicsDevice, VirtualDimensions.X, VirtualDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24); 
+            bloomRenderTarget = new RenderTarget2D(GraphicsDevice, DesiredDimensions.X, DesiredDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 
-			Window.ClientSizeChanged += Window_ClientSizeChanged;
+
+            Window.ClientSizeChanged += Window_ClientSizeChanged;
 			DebugStream.Succes();
 			base.Initialize();
 		}
@@ -132,12 +142,20 @@ namespace Stolon
 				System.Drawing.ColorTranslator.FromHtml("#171219").ToColor(),
 			};
 
-			DebugStream.Succes();
+            _bloomFilter = new BloomFilter();
+			_bloomFilter.Load(GraphicsDevice, Content, aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
+
+            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Small;
+
+            DebugStream.Succes();
 			base.LoadContent();
 		}
-		public void SLExit()
+        protected override void UnloadContent()
+        {
+            _bloomFilter.Dispose();
+        }
+        public void SLExit()
 		{
-			DRP.DisposeRPC();
 			Exit();
 		}
 		protected override void Update(GameTime gameTime)
@@ -178,6 +196,7 @@ namespace Stolon
 				graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
 				graphics.ApplyChanges();
 			}
+			_bloomFilter.UpdateResolution(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 			graphics.ToggleFullScreen();
 			graphics.ApplyChanges();
 		}
@@ -198,16 +217,30 @@ namespace Stolon
 			spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * SLEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
-			spriteBatch.End();
-			GraphicsDevice.SetRenderTarget(null);
+            spriteBatch.End();
+            GraphicsDevice.SetRenderTarget(bloomRenderTarget);
 			GraphicsDevice.Clear(Instance.Color2);
 
-			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
 				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(screenScale), effect: replaceColorEffect);
-			spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
-			spriteBatch.End();
+            spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
+            spriteBatch.End();
 
-			replaceColorEffect.CurrentTechnique.Passes[0].Apply();
+            Texture2D bloom = _bloomFilter.Draw(bloomRenderTarget, DesiredDimensions.X, DesiredDimensions.Y);
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Instance.Color2);
+
+			//spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+
+			spriteBatch.Draw(bloomRenderTarget, Vector2.Zero, Color.White);
+            //spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
+
+
+
+            replaceColorEffect.CurrentTechnique.Passes[0].Apply();
 
 			base.Draw(gameTime);
 		}
@@ -218,138 +251,7 @@ namespace Stolon
 		public static StolonGame Instance { get; private set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	}
-	public class SLEnvironment : AxComponent, IDialogueProvider
-	{
-		public enum SLGameState
-		{
-			OpenBoard,
-			Loading,
-			InMenu,
-		}
-
-		private SLScene scene;
-		private SLUserInterface userInterface;
-		private SLOverlayer overlayer;
-		private SLGameState gameState;
-
-		public SLGameState GameState => gameState;
-		public SLScene Scene => scene;
-		public SLUserInterface UserInterface => userInterface;
-		public SLOverlayer Overlayer => overlayer;
-		public ReadOnlyDictionary<string, SLEntity> Entities => new ReadOnlyDictionary<string, SLEntity>(entities);
-		public const float FontScale = 0.5f;
-		public static SpriteFont Font { get; }
-
-		private Dictionary<string, SLEntity> entities;
-
-		public static SLEnvironment Instance => StolonGame.Instance.Environment;
-		public string SymbolNotation => "Ev";
-		public string Name => "Environment";
-		public Point FontDimensions { get; private set; }
-
-		static SLEnvironment()
-		{
-			Font = StolonGame.Instance.Fonts["fiont"];
-		}
-
-		public SLEnvironment() : base(null)
-		{
-			entities = new Dictionary<string, SLEntity>();
-			FontDimensions = (Font.MeasureString("A") * SLEnvironment.FontScale).ToPoint();
-
-			RegisterCharacter(new GoldsilkEntity());
-			// RegisterCharacter(new DeadlineEntity());
-
-			scene = new SLScene(new Player[]
-			{
-				new Player("player0"),
-				new Player("player1"),
-				// Entities["goldsilk"].GetPlayer()
-			});
-			userInterface = new SLUserInterface(scene, entities);
-			overlayer = new SLOverlayer();
-
-			gameState = SLGameState.InMenu;
-
-			overlayer.AddOverlay(new TransitionOverlay());
-			overlayer.AddOverlay(new LoadOverlay());
-		}
-
-		public void ForceGameState(SLGameState newState, bool unexpect = true)
-		{
-			if (unexpect)
-			{
-				switch (newState)
-				{
-					case SLGameState.InMenu:
-						userInterface = new SLUserInterface(scene, entities);
-						scene = new SLScene(new Player[]
-						{
-							new Player("player0"),
-							new Player("player1"),
-						});
-						break;
-				}
-			}
-			gameState = newState;
-		}
-
-		public override void Update(int elapsedMiliseconds)
-		{
-			userInterface.Update(elapsedMiliseconds);
-
-			switch (gameState)
-			{
-				case SLGameState.OpenBoard:
-					scene.Update(elapsedMiliseconds);
-					break;
-				case SLGameState.InMenu:
-					break;
-				case SLGameState.Loading:
-					break;
-			}
-
-			StolonGame.Instance.DRP.UpdateDetails(gameState switch
-			{
-				SLGameState.OpenBoard => "Placing some markers..",
-				SLGameState.InMenu => "Admiring the main menu..",
-				SLGameState.Loading => "Loading STOLON..",
-				_ => throw new Exception()
-			});
-
-			overlayer.Update(elapsedMiliseconds);
-			base.Update(elapsedMiliseconds);
-		}
-
-		public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
-		{
-			switch (gameState)
-			{
-				case SLGameState.OpenBoard:
-					scene.Draw(spriteBatch, elapsedMiliseconds);
-					break;
-				case SLGameState.InMenu:
-					break;
-				case SLGameState.Loading:
-					break;
-			}
-
-			userInterface.Draw(spriteBatch, elapsedMiliseconds);
-
-
-			overlayer.Draw(spriteBatch, elapsedMiliseconds);
-			base.Draw(spriteBatch, elapsedMiliseconds);
-		}
-
-		public void RegisterCharacter(SLEntity character)
-		{
-			entities.Add(character.Id, character);
-		}
-		public void DeregisterCharacter(string characterId)
-		{
-			entities.Remove(characterId);
-		}
-	}
+	
 	public static class SLMouse
 	{
 		public enum MouseButton

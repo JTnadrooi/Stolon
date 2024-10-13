@@ -45,9 +45,13 @@ namespace Stolon
 
         public void Activate(string overlayId, params object?[] args)
         {
-            Instance.DebugStream.WriteLine("\t[s]activating overlay of id " + overlayId + ".");
-            overlays[overlayId].Initialize(this, args);
-            initialized.Add(overlayId);
+            
+            if (!initialized.Contains(overlayId))
+            {
+                Instance.DebugStream.WriteLine("\t[s]activating overlay of id " + overlayId + ".");
+                overlays[overlayId].Initialize(this, args);
+                initialized.Add(overlayId);
+            }
         }
 
         public bool IsActive(IOverlay overlay) => IsActive(overlay.ID);
@@ -58,9 +62,9 @@ namespace Stolon
 
         public void Deactivate(string overlayId) // ensure
         {
-            Instance.DebugStream.WriteLine("\t[s]deactivating overlay of id " + overlayId + ".");
             if (initialized.Contains(overlayId))
             {
+                Instance.DebugStream.WriteLine("\t[s]deactivating overlay of id " + overlayId + ".");
                 overlays[overlayId].Reset();
             }
             initialized.Remove(overlayId);
