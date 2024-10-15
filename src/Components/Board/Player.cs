@@ -25,5 +25,16 @@ namespace Stolon
         public override int GetHashCode() => Name.GetHashCode();
 
         public object Clone() => new Player(Name, Computer);
+
+        public static Player[] TwoPlayers => new Player[]
+                        {
+                            new Player("player0"),
+                            new Player("player1"),
+                        };
+        public static Player[] PlayersCom => new Player[]
+                        {
+                            new Player("player0"),
+                            SLEnvironment.Instance.Entities["goldsilk"].GetPlayer()
+                        };
     }
 }

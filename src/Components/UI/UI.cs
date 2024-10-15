@@ -131,8 +131,6 @@ namespace Stolon
         public SLTextframe Textframe => textframe;
         public int LineWidth => lineWidth;
 
-        private Player[]? startPlayers;
-
         internal SLUserInterface(Dictionary<string, SLEntity> sLEntities) : base(Instance.Environment)
         {
             environment = Instance.Environment;
@@ -141,11 +139,7 @@ namespace Stolon
             lineWidth = 2;
 
             uifont = Instance.Fonts["fiont"];
-            startPlayers = new Player[]
-                        {
-                            new Player("player0"),
-                            sLEntities["goldsilk"].GetPlayer()
-                        };
+            
 
             menuLogoLines = Instance.Textures.GetReference("textures\\menuLogo\\lines");
             menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogo\\dummyTiles");
@@ -393,11 +387,11 @@ namespace Stolon
             if (updateData["startXp"].IsClicked)
             {
                 startFrame = !menuDone;
-                startPlayers = new Player[]
+                SLScene.MainInstance.SetBoard(new Player[]
                         {
                             new Player("player0"),
                             new Player("player1"),
-                        };
+                        });
 
                 menuDone = true;
             }
@@ -413,12 +407,11 @@ namespace Stolon
             {
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
                 startFrame = !menuDone;
-                startPlayers = new Player[]
+                SLScene.MainInstance.SetBoard(new Player[]
                         {
                             new Player("player0"),
                             Instance.Environment.Entities["goldsilk"].GetPlayer()
-                        };
-
+                        });
                 menuDone = true;
             }
             if (updateData["specialThanks"].IsClicked)
@@ -444,10 +437,12 @@ namespace Stolon
 
             if (menuLogoDisapearFlashHandler.HasEnded && !menuRemoveTweener.Running && !loadingFinished)
             {
-                loadingFinished = true;
                 //SLEnvironment.Instance.ForceGameState(SLEnvironment.SLGameState.OpenBoard);
-                if (startPlayers == null) throw new Exception();
-                Instance.Scene = new SLScene(startPlayers);
+                if (Board.MainInstance == null) throw new Exception();
+
+
+                loadingFinished = true;
+                //Instance.Scene = new SLScene();
                 Instance.Environment.GameState = SLEnvironment.SLGameState.OpenBoard;
             }
 

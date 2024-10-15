@@ -15,7 +15,7 @@ using Point = Microsoft.Xna.Framework.Point;
 
 namespace Stolon
 {
-    public class BoardState
+    public partial class BoardState
     {
         public class SearchTargetCollection : IDictionary<string, SearchTarget>
         {
@@ -96,12 +96,12 @@ namespace Stolon
         private readonly SearchTargetCollection winSearchTargets;
 
         public BoardState(Tile[,] tiles, Player[] players, SearchTarget[] searchTargets, int currentPlayer = 0) : this(tiles, players, new SearchTargetCollection(searchTargets), currentPlayer) { }
-        public BoardState(Tile[,] tiles, Player[] players, SearchTargetCollection searchTargets, int currentPlayer = 0)
+        public BoardState(Tile[,] tiles, Player[] players, SearchTargetCollection? searchTargets, int currentPlayer = 0)
         {
             this.tiles = tiles;
             this.players = players;
             dimensions = new Point(tiles.GetLength(0), tiles.GetLength(1));
-            this.winSearchTargets = searchTargets;
+            this.winSearchTargets = searchTargets ?? new SearchTargetCollection();
             CurrentPlayerID = currentPlayer;
             undoStack = new Stack<UndoObj>();
             undoSet = new Collection<UndoObj>();

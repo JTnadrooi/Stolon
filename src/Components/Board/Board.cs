@@ -27,7 +27,7 @@ namespace Stolon
     /// <summary>
     /// The representor of the board in the STOLON environment.
     /// </summary>
-    public class Board : AxComponent
+    public partial class Board : AxComponent
     {
         public Camera2D Camera { get; }
         public float Zoom { get; private set; }
@@ -154,12 +154,8 @@ namespace Stolon
             if (SLKeyboard.IsClicked(Keys.Z)) // debug keys
             {
             }
-            if (SLKeyboard.IsClicked(Keys.X))
-            {
-            }
-            if (SLKeyboard.IsClicked(Keys.C))
-            {
-            }
+            if (SLKeyboard.IsClicked(Keys.X)) { }
+            if (SLKeyboard.IsClicked(Keys.C)) { }
             if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) Instance.SLExit();
 
             Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);

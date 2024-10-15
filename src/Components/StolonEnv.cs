@@ -65,7 +65,7 @@ namespace Stolon
 
         public SLEnvironment() : base(null)
         {
-            scene = null!; // yeah
+            scene = new SLScene();
             entities = new Dictionary<string, SLEntity>();
             FontDimensions = (Font.MeasureString("A") * SLEnvironment.FontScale).ToPoint();
 
@@ -80,25 +80,6 @@ namespace Stolon
             overlayer.AddOverlay(new TransitionOverlay());
             overlayer.AddOverlay(new LoadOverlay());
         }
-
-        //public void ForceGameState(SLGameState newState, bool unexpect = true)
-        //{
-        //    if (unexpect)
-        //    {
-        //        switch (newState)
-        //        {
-        //            case SLGameState.InMenu:
-        //                userInterface = new SLUserInterface(entities);
-        //                scene = new SLScene(new Player[]
-        //                {
-        //                    new Player("player0"),
-        //                    Entities["goldsilk"].GetPlayer()
-        //                });
-        //                break;
-        //        }
-        //    }
-        //    gameState = newState;
-        //}
 
         public override void Update(int elapsedMiliseconds)
         {
