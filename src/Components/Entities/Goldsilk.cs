@@ -54,41 +54,15 @@ namespace Stolon
             int current = board.State.CurrentPlayerID;
             board.State.Alter(Search(board.State, board.UniqueMoveBoardMap).Move, true);
 
-            //int ret = board.State.SearchAny();
-            //if (ret == current)
-            //    Instance.Environment.Overlayer.Activate("transition", null, () =>
-            //    {
-            //        board.Reset();
-            //    }, "4 Connected found for player " + board.GetPlayerTile(ret) + "!");
+            int ret = board.State.SearchAny();
+            if (ret == current) // this makes it so when goldsilk finds a connect four right after the player does, she wins. This is a bug but I'm calling it a feature.
+                Instance.Environment.Overlayer.Activate("transition", null, () =>
+                {
+                    board.Reset();
+                }, "4 Connected found for player " + board.GetPlayerTile(ret) + "!");
 
 
         }
-        //public static Move Search(BoardState state, UniqueMoveBoardMap map)
-        //{
-        //    Move bestMove = Move.Invalid;
-        //    Instance.DebugStream.WriteLine("\t[s]initializing parallel alpha-beta algorithm..");
-        //    List<Move> moves = map.GetAllMoves(state);
-        //    try
-        //    {
-        //        Parallel.For(0, moves.Count, i =>
-        //        {
-        //            BoardState child = state.DeepCopy();
-        //            Point sim = child.Alter(moves[i], true);
-
-        //            Console.WriteLine(-Negamax(child, sim, map, 4, -100, 100, -1) + " move: " + moves[i]);
-        //        });
-        //        //for (int i = 0; i < moves.Count; i++)
-        //        //{
-
-        //        //    BoardState child = state.DeepCopy();
-        //        //    Point sim = child.Alter(moves[i], true);
-        //        //    Console.WriteLine(-Negamax(child, sim, map, 3, -100, 100, -1) + " move: " + moves[i]);
-        //        //}
-        //    }
-        //    catch { }
-        //    Instance.DebugStream.Succes(1);
-        //    return bestMove;
-        //}
 
         private static int negaCount = 0;
         public static NegamaxEndResult Search(BoardState state, UniqueMoveBoardMap map, int depth = 3)
@@ -103,13 +77,6 @@ namespace Stolon
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             negaCount = 0;
-
-
-            //Console.WriteLine(color);
-            //Console.WriteLine(moves.ToJoinedString(", "));
-            //Console.WriteLine(state.Tiles[7, 4].GetOccupiedByPlayerID());
-            //Console.WriteLine(state.Tiles[7, 4].Attributes.ToJoinedString(", "));
-
             //color = -1;
             //try
             {

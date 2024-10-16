@@ -136,7 +136,7 @@ namespace Stolon
                 Instance.Environment.Overlayer.Activate("transition", null, () =>
                         {
                             Reset();
-                        }, "");
+                        }, "Resetting the Board..");
             }
             if (Instance.UserInterface.UIElementUpdateData["skipMove"].IsClicked) EndMove();
             if (Instance.UserInterface.UIElementUpdateData["boardSearch"].IsClicked)
@@ -150,7 +150,14 @@ namespace Stolon
 
             }
             if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
-            if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked) Undo();
+            if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked)
+            {
+                if (state.Players.Any(p => p.IsComputer))
+                {
+                    Instance.Environment.UserInterface.Textframe.Queue(new DialogueInfo(Instance.Environment, "Not valid when against AI but coming soon!"));
+                }
+                Undo();
+            }
             if (SLKeyboard.IsClicked(Keys.Z)) // debug keys
             {
             }

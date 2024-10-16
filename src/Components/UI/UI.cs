@@ -305,7 +305,6 @@ namespace Stolon
             bool menuFlashEnded = milisecondsSinceStartup > menuFlashEnd;
             int uiElementOffsetY = (int)(130f + menuRemoveTweenerOffset);
             int logoYoffset = 30;
-            bool startFrame = false;
             int menuLogoBoundingBoxClearing = 8;
 
             // if (milisecondsSinceStartup < 10000) // to skip start button click and animation
@@ -386,14 +385,13 @@ namespace Stolon
 
             if (updateData["startXp"].IsClicked)
             {
-                startFrame = !menuDone;
                 SLScene.MainInstance.SetBoard(new Player[]
                         {
                             new Player("player0"),
                             new Player("player1"),
                         });
 
-                menuDone = true;
+                Leave();
             }
             if (updateData["options"].IsClicked)
             {
@@ -406,13 +404,12 @@ namespace Stolon
             if (updateData["startCom"].IsClicked)
             {
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
-                startFrame = !menuDone;
                 SLScene.MainInstance.SetBoard(new Player[]
                         {
                             new Player("player0"),
                             Instance.Environment.Entities["goldsilk"].GetPlayer()
                         });
-                menuDone = true;
+                Leave();
             }
             if (updateData["specialThanks"].IsClicked)
             {
@@ -474,6 +471,10 @@ namespace Stolon
             int tipId = new Random().Next(0, tips.Length);
             i = tipId;
             return tips[tipId];
+        }
+        public void Leave()
+        {
+            menuDone = true;
         }
         public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)

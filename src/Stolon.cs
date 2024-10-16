@@ -75,7 +75,6 @@ namespace Stolon
 			Fonts = new Dictionary<string, SpriteFont>();
 
 			DebugStream = new AsitDebugStream();
-			Console.WriteLine("gello..");
 		}
 
 		protected override void Initialize()
@@ -145,7 +144,7 @@ namespace Stolon
             _bloomFilter = new BloomFilter();
 			_bloomFilter.Load(GraphicsDevice, Content, aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 
-            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.Small;
+            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
 
             DebugStream.Succes();
 			base.LoadContent();
@@ -203,6 +202,7 @@ namespace Stolon
 
 		protected override void Draw(GameTime gameTime)
 		{
+			// replaceColor shader values setting.
 			replaceColorEffect.Parameters["dcolor1"].SetValue(Color.White.ToVector4());
 			replaceColorEffect.Parameters["dcolor2"].SetValue(Color.Black.ToVector4());
 
@@ -218,24 +218,25 @@ namespace Stolon
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
             spriteBatch.End();
-            GraphicsDevice.SetRenderTarget(bloomRenderTarget);
-			GraphicsDevice.Clear(Instance.Color2);
+            //GraphicsDevice.SetRenderTarget(bloomRenderTarget);
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Instance.Color2);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
 				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(screenScale), effect: replaceColorEffect);
             spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
             spriteBatch.End();
 
-            Texture2D bloom = _bloomFilter.Draw(bloomRenderTarget, DesiredDimensions.X, DesiredDimensions.Y);
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Instance.Color2);
+   //         Texture2D bloom = _bloomFilter.Draw(bloomRenderTarget, DesiredDimensions.X, DesiredDimensions.Y);
+   //         GraphicsDevice.SetRenderTarget(null);
+   //         GraphicsDevice.Clear(Instance.Color2);
 
-			//spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
+			////spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+			//spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
 
-			spriteBatch.Draw(bloomRenderTarget, Vector2.Zero, Color.White);
-            //spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
-            spriteBatch.End();
+			//spriteBatch.Draw(bloomRenderTarget, Vector2.Zero, Color.White);
+			//spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
+			//spriteBatch.End();
 
 
 
