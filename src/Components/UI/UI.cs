@@ -16,11 +16,15 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using RectangleF = MonoGame.Extended.RectangleF;
+using static Stolon.SLUserInterface;
 
 #nullable enable
 
 namespace Stolon
 {
+    /// <summary>
+    /// The user interface for the <see cref="SLEnvironment"/>.
+    /// </summary>
     public class SLUserInterface : AxComponent
     {
         private SLEnvironment environment;
@@ -91,7 +95,7 @@ namespace Stolon
         private float uiRightOffset;
 
 
-        private Dictionary<string, UIElement> uiElements;
+        private Dictionary<string, UIElement> AllUIElements;
 
         private SpriteFont uifont;
 
@@ -122,16 +126,32 @@ namespace Stolon
         /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> containing all the <see cref="UIElementDrawData"/> objects from all the <see cref="UIElement"/> objects refreched AFTER the UI update.
         /// </summary>
         public ReadOnlyDictionary<string, UIElementUpdateData> UIElementUpdateData => new ReadOnlyDictionary<string, UIElementUpdateData>(updateData);
-        public ReadOnlyDictionary<string, UIElement> UIElements => new ReadOnlyDictionary<string, UIElement>(uiElements);
+        /// <summary>
+        /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> containing all <see cref="UIElement"/> added via the <see cref="AddElement(UIElement)"/> method.
+        /// </summary>
+        public ReadOnlyDictionary<string, UIElement> UIElements => new ReadOnlyDictionary<string, UIElement>(AllUIElements);
 
         #endregion
 
-
+        public const string titleParentId = "titleParent";
+        public const string boardLeftParentId = "boardLeftParent";
+        public const string boardRightParentId = "boardRightParent";
         private SLTextframe textframe;
+
+        /// <summary>
+        /// The <see cref="SLTextframe"/> managed by the <see cref="SLUserInterface"/>.
+        /// </summary>
         public SLTextframe Textframe => textframe;
+
+        /// <summary>
+        /// The width of a <see cref="SLUserInterface"/> line. <i>(Why did I make this public again?)</i>
+        /// </summary>
         public int LineWidth => lineWidth;
 
-        internal SLUserInterface(Dictionary<string, SLEntity> sLEntities) : base(Instance.Environment)
+        /// <summary>
+        /// Main UIInterface contructor.
+        /// </summary>
+        internal SLUserInterface() : base(Instance.Environment)
         {
             environment = Instance.Environment;
 
@@ -139,7 +159,7 @@ namespace Stolon
             lineWidth = 2;
 
             uifont = Instance.Fonts["fiont"];
-            
+
 
             menuLogoLines = Instance.Textures.GetReference("textures\\menuLogo\\lines");
             menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogo\\dummyTiles");
@@ -147,7 +167,7 @@ namespace Stolon
             menuLogoLowResFonted = Instance.Textures.GetReference("textures\\menuLogo\\lowResFonted");
             dither8x8 = Instance.Textures.GetReference("textures\\dither8x8");
 
-            uiElements = new Dictionary<string, UIElement>();
+            AllUIElements = new Dictionary<string, UIElement>();
 
             drawData = new List<UIElementDrawData>();
 
@@ -215,7 +235,6 @@ namespace Stolon
                 "Nue not included!",
                 "Assembling the Pharos..",
                 "Fishing update when?",
-                "Hitting the Deadline!",
                 "\"What even is a Stolon?\"",
                 "The Sun is gone..",
                 "Comparing chaos to disorder..",
@@ -233,40 +252,49 @@ namespace Stolon
                 "Welcome!",
                 "Galore.",
                 "NOT solved.",
+                "NOT CLUELESS!",
                 "Tiory?",
+                "27 Compile errors.",
+                "Simply Rendering,",
+                "Behold, The \"Sky Train\"!",
+                "dot hat :drool:"
             };
 
             tipId = new Random().Next(0, tips.Length);
 
 
             StolonGame.Instance.DebugStream.WriteLine("\t[s]initializing ui..");
-            AddElement(new UIElement("exitGame", UIDock.Left, "Exit Game", UIElementType.Clickable));
+            AddElement(new UIElement("exitGame", boardLeftParentId, "Exit Game", UIElementType.Clickable));
 
-            AddElement(new UIElement("screenRegion2", UIDock.Left, string.Empty, UIElementType.Text));
-            AddElement(new UIElement("screenRegion", UIDock.Left, "Screen & Camera", UIElementType.Text));
-            AddElement(new UIElement("toggleFullscreen", UIDock.Left, "Go Fullscreen", UIElementType.Clickable));
-            AddElement(new UIElement("centerCamera", UIDock.Left, "Center Camera", UIElementType.Clickable));
+            AddElement(new UIElement("screenRegion2", boardLeftParentId, string.Empty, UIElementType.Text));
+            AddElement(new UIElement("screenRegion", boardLeftParentId, "Screen & Camera", UIElementType.Text));
+            AddElement(new UIElement("toggleFullscreen", boardLeftParentId, "Go Fullscreen", UIElementType.Clickable));
+            AddElement(new UIElement("centerCamera", boardLeftParentId, "Center Camera", UIElementType.Clickable));
 
-            AddElement(new UIElement("boardRegion2", UIDock.Left, string.Empty, UIElementType.Text));
-            AddElement(new UIElement("boardRegion", UIDock.Left, "Board", UIElementType.Text));
-            AddElement(new UIElement("undoMove", UIDock.Left, "Undo", UIElementType.Clickable));
-            AddElement(new UIElement("restartBoard", UIDock.Left, "Restart", UIElementType.Clickable));
-            AddElement(new UIElement("boardSearch", UIDock.Left, "Search", UIElementType.Clickable));
-            AddElement(new UIElement("skipMove", UIDock.Left, "End Move", UIElementType.Clickable));
+            AddElement(new UIElement("boardRegion2", boardLeftParentId, string.Empty, UIElementType.Text));
+            AddElement(new UIElement("boardRegion", boardLeftParentId, "Board", UIElementType.Text));
+            AddElement(new UIElement("undoMove", boardLeftParentId, "Undo", UIElementType.Clickable));
+            AddElement(new UIElement("restartBoard", boardLeftParentId, "Restart", UIElementType.Clickable));
+            AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Clickable));
+            AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Clickable));
 
-            AddElement(new UIElement("currentPlayer", UIDock.Right, null, UIElementType.Text));
+            AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Text));
 
-            AddElement(new UIElement("startStory", UIDock.MainMenu, "Story", UIElementType.Clickable));
-            AddElement(new UIElement("startCom", UIDock.MainMenu, "COM", UIElementType.Clickable));
-            AddElement(new UIElement("startXp", UIDock.MainMenu, "2P", UIElementType.Clickable));
-            AddElement(new UIElement("options", UIDock.MainMenu, "Options", UIElementType.Clickable));
-            AddElement(new UIElement("specialThanks", UIDock.MainMenu, "Special Thanks :D", UIElementType.Clickable));
-            AddElement(new UIElement("quit", UIDock.MainMenu, "Quit", UIElementType.Clickable));
+            AddElement(new UIElement("startStory", titleParentId, "Story", UIElementType.Clickable));
+            AddElement(new UIElement("startCom", titleParentId, "COM", UIElementType.Clickable));
+            AddElement(new UIElement("startXp", titleParentId, "2P", UIElementType.Clickable));
+            AddElement(new UIElement("options", titleParentId, "Options", UIElementType.Clickable));
+            AddElement(new UIElement("specialThanks", titleParentId, "Special Thanks :D", UIElementType.Clickable));
+            AddElement(new UIElement("quit", titleParentId, "Quit", UIElementType.Clickable));
         }
+        /// <summary>
+        /// Clears both the updatedata and drawdata collections, making them ready to be repopulated by the methods in the <see cref="UIOrdering"/> class.<br/>
+        /// <i>Does populate the updatedata collection with unhovered <see cref="UIElementDrawData"/> objects.</i>
+        /// </summary>
         private void ResetElementData()
         {
             updateData.Clear();
-            foreach (UIElement uiElement in uiElements.Values)
+            foreach (UIElement uiElement in AllUIElements.Values)
                 updateData.Add(uiElement.Id, new UIElementUpdateData(false, uiElement.Id));
             drawData.Clear();
         }
@@ -288,16 +316,7 @@ namespace Stolon
             }
             base.Update(elapsedMiliseconds);
         }
-
-        internal void GameForced()
-        {
-            milisecondsSinceStartup = 16;
-            menuDone = false;
-            menuRemoveTweener.Reset();
-            menuRemoveTweener.Start();
-        }
-
-        public void UpdateMenuUI(int elapsedMiliseconds)
+        private void UpdateMenuUI(int elapsedMiliseconds)
         {
             int rowHeight = (int)(menuLogoLines.Height / (float)menuLogoRowCount);
             float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
@@ -378,10 +397,7 @@ namespace Stolon
                         (i >= menuDitherTexturePositions.Length / 2f) ? menuLine2X : menuLine1X - dither8x8.Width,
                         (i % (int)(menuDitherTexturePositions.Length / 2f)) * dither8x8.Height);
 
-            Ordering.Order(uiElements.Values.ToArray(),
-                drawData, updateData,
-                UIDock.MainMenu, new Vector2(0, uiElementOffsetY), 2, true);
-
+            UIOrdering.Order(AllUIElements.Values.ToArray(), titleParentId, drawData, updateData, new Vector2(0, uiElementOffsetY), OrderProviders.Menu);
 
             if (updateData["startXp"].IsClicked)
             {
@@ -403,7 +419,6 @@ namespace Stolon
             }
             if (updateData["startCom"].IsClicked)
             {
-                //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
                 SLScene.MainInstance.SetBoard(new Player[]
                         {
                             new Player("player0"),
@@ -445,7 +460,7 @@ namespace Stolon
 
             Centering.OnPixel(ref menuLogoDrawPos);
         }
-        public void UpdateBoardUI(int elapsedMiliseconds)
+        private void UpdateBoardUI(int elapsedMiliseconds)
         {
             float zoomIntensity = Instance.Environment.Scene.Board.ZoomIntensity;
             float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
@@ -458,25 +473,33 @@ namespace Stolon
             lineX1 = (int)(lineOffset + uiLeftOffset);
             lineX2 = (int)(Instance.VirtualDimensions.X - lineOffset + uiRightOffset);
 
-            Ordering.Order(uiElements.Values.ToArray(), drawData, updateData, UIDock.Left, new Vector2(uiLeftOffset, 0) + new Vector2(5));
-            Ordering.Order(uiElements.Values.ToArray(), drawData, updateData, UIDock.Right, new Vector2(lineX2, 0) + new Vector2(5));
+            UIOrdering.Order(AllUIElements.Values.ToArray(), boardLeftParentId, drawData, updateData, new Vector2(uiLeftOffset, 0) + new Vector2(5), OrderProviders.BoardSide);
+            UIOrdering.Order(AllUIElements.Values.ToArray(), boardRightParentId, drawData, updateData, new Vector2(lineX2, 0) + new Vector2(5), OrderProviders.BoardSide);
         }
         /// <summary>
         /// Get random splash text.
         /// </summary>
         /// <returns>A random splash text.</returns>
         public string GetRandomSplashText() => tips[new Random().Next(0, tips.Length)];
-        public string GetRandomSplashText(ref int i)
+        /// <summary>
+        /// Get a random splash text and get the <paramref name="i"/> as index.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public string GetRandomSplashText(out int i)
         {
             int tipId = new Random().Next(0, tips.Length);
             i = tipId;
             return tips[tipId];
         }
+        /// <summary>
+        /// Leave the main menu.
+        /// </summary>
         public void Leave()
         {
             menuDone = true;
         }
-        public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
+        //public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
             switch (SLEnvironment.Instance.GameState)
@@ -539,145 +562,202 @@ namespace Stolon
             textframe.Draw(spriteBatch, elapsedMiliseconds);
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
+        /// <summary>
+        /// Add an element to the <see cref="SLUserInterface"/>.
+        /// </summary>
+        /// <param name="element">The <see cref="UIElement"/> to add.</param>
         public void AddElement(UIElement element)
         {
-            uiElements.Add(element.Id, element);
+            AllUIElements.Add(element.Id, element);
             Instance.DebugStream.WriteLine("\tui-element with id " + element.Id + " added.");
             updateData.Add(element.Id, default);
             Instance.DebugStream.WriteLine("\tghost-ui-element with id " + element.Id + " added.");
         }
+        /// <summary>
+        /// Remove an <see cref="UIElement"/> from the <see cref="SLUserInterface"/>.
+        /// </summary>
+        /// <param name="elementID">The <see cref="UIElement.Id"/> of the <see cref="UIElement"/> to remove.</param>
         public void RemoveElement(string elementID)
         {
-            uiElements.Remove(elementID);
+            AllUIElements.Remove(elementID);
             Instance.DebugStream.WriteLine("\tui-element with id " + elementID + " removed.");
         }
 
-        public static class Ordering
+        
+    }
+
+    /// <summary>
+    /// A class to allow objects to state a way of ordering <see cref="UIElement"/> objects.
+    /// </summary>
+    public interface IOrderProvider
+    {
+        /// <summary>
+        /// Cast a <see cref="UIElement"/> to a <see cref="UIElementDrawData"/> object.
+        /// </summary>
+        /// <param name="element">The <see cref="UIElement"/> to convert.</param>
+        /// <param name="UIOrgin">The orgin of the drawing UI.</param>
+        /// <param name="index">The index of the current <see cref="UIElement"/>.</param>
+        /// <returns>A <see cref="Tuple{T1, T2}"/> holding both the newly created <see cref="UIElementDrawData"/> and a value indicating if the <see cref="UIElement"/> is hovered or not.</returns>
+        public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index);
+    }
+
+    /// <summary>
+    /// The <see cref="IOrderProvider"/> that orders the main menu.
+    /// </summary> 
+    public class MenuOrderProvider : IOrderProvider
+    {
+        public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
         {
-            public static void Order(UIElement[] uIElements,
-                ICollection<UIElementDrawData> drawDump, IDictionary<string, UIElementUpdateData> updateDump, // dumps.
-                UIDock dockstyle, Vector2 uiOrgin, // args.
-                int lineClearance = UIElement.DefaultRectangleClearance * 2 + 1, bool isMouseRelevant = true, bool exclusive = true,
-                Func<UIElement, Point, Rectangle>? rectangleProvider = null,
-                Func<UIElement, UIElementUpdateData, (string, Point)>? textProvider = null)
+            Vector2 elementPos = Centering.MiddleX(
+                                Instance.Environment.FontDimensions.X * element.Text.Length,
+                                index * (Instance.Environment.FontDimensions.Y + 2) * 1.5f + UIOrgin.Y,
+                                Instance.VirtualDimensions.X, Vector2.One);
+
+            Centering.OnPixel(ref elementPos);
+
+            Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point(Instance.Environment.FontDimensions.X * element.Text.Length, Instance.Environment.FontDimensions.Y));
+            string elementText = element.Text;
+
+            string postPre = element.Id switch
             {
-                rectangleProvider ??= (element, pos) => element.GetBounds(pos, Instance.Environment.FontDimensions);
-                textProvider ??= DefaultTextProvider;
+                "quit" => "x",
+                "specialThanks" => "!",
+                _ => ">",
+            };
+            bool elementIsHovered = elementBounds.Contains(SLMouse.VirualPosition);
 
-                int index = 0;
+            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, element.Type, elementPos + (elementIsHovered ? new Point(-Instance.Environment.FontDimensions.X * 2, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
+        }
+    }
+    /// <summary>
+    /// The <see cref="IOrderProvider"/> that orders both sides of the board ui.
+    /// </summary>
+    public class BoardSideProvider : IOrderProvider
+    {
+        public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
+        {
+            Vector2 elementPos = UIOrgin + new Vector2(0, index * (Instance.Environment.FontDimensions.Y + UIElement.LongDefaultRectangleClearance));
+            Centering.OnPixel(ref elementPos);
 
-                for (int i = 0; i < uIElements.Length; i++)
-                {
-                    UIElement uiElement = uIElements[i];
+            Rectangle elementRectangle = element.GetBounds(elementPos.ToPoint(), Instance.Environment.FontDimensions);
+            string elementText = element.Text;
+            bool elementIsHovered = elementRectangle.Contains(SLMouse.VirualPosition);
+            bool drawRectangle = element.Type == UIElementType.Clickable;
+            return (new UIElementDrawData(element.Id, elementText + ((elementIsHovered && drawRectangle) ? " <" : string.Empty), element.Type, elementPos + Vector2.Zero, elementRectangle, drawRectangle), elementIsHovered);
+        }
+    }
 
-                    if (exclusive && uiElement.Dock != dockstyle) continue;
+    /// <summary>
+    /// A static list of the most common <see cref="IOrderProvider"/> objects.
+    /// </summary>
+    public static class OrderProviders
+    {
+        static OrderProviders()
+        {
+            Menu = new MenuOrderProvider();
+            BoardSide = new BoardSideProvider();
+        }
+        /// <summary>
+        /// The <see cref="IOrderProvider"/> that orders the main menu.
+        /// </summary>
+        public static IOrderProvider Menu { get; }
+        /// <summary>
+        /// The <see cref="IOrderProvider"/> that orders both sides of the board ui.
+        /// </summary>
+        public static IOrderProvider BoardSide { get; }
+    }
 
-                    switch (dockstyle)
-                    {
-                        case UIDock.MainMenu:
-                            {
-                                Vector2 elementPos = Centering.MiddleX(
-                                    Instance.Environment.FontDimensions.X * uiElement.Text.Length,
-                                    index * (Instance.Environment.FontDimensions.Y + lineClearance) * 1.5f + uiOrgin.Y,
-                                    Instance.VirtualDimensions.X, Vector2.One);
-
-                                Centering.OnPixel(ref elementPos);
-
-                                Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point(Instance.Environment.FontDimensions.X * uiElement.Text.Length, Instance.Environment.FontDimensions.Y));
-                                bool elementIsHovered = elementBounds.Contains(SLMouse.VirualPosition) && isMouseRelevant;
-                                string elementText = uiElement.Text;
-
-                                updateDump[uiElement.Id] = new UIElementUpdateData(elementIsHovered, uiElement.Id);
-                                var textProviderReturned = textProvider.Invoke(uiElement, updateDump[uiElement.Id]);
-                                drawDump.Add(new UIElementDrawData(uiElement.Id, textProviderReturned.Item1, uiElement.Type, elementPos + textProviderReturned.Item2.ToVector2(), Rectangle.Empty, false));
-                            }
-                            break;
-                        case UIDock.Right:
-                        case UIDock.Left:
-                            {
-                                Vector2 elementPos = uiOrgin + new Vector2(0, index * (Instance.Environment.FontDimensions.Y + lineClearance));
-
-                                Centering.OnPixel(ref elementPos);
-
-                                Rectangle elementRectangle = rectangleProvider(uiElement, elementPos.ToPoint());
-                                string elementText = uiElement.Text;
-                                bool elementIsHovered = elementRectangle.Contains(SLMouse.VirualPosition) && isMouseRelevant;
-                                bool elementIsPressed = elementIsHovered && SLMouse.IsPressed(SLMouse.MouseButton.Left);
-                                bool drawRectangle = uiElement.Type == UIElementType.Clickable;
-                                if (!drawRectangle) // if there is no rectangle, the element is not clickable (or hoverable)
-                                {
-                                    elementIsPressed = false;
-                                    elementIsHovered = false;
-                                }
-
-
-                                updateDump[uiElement.Id] = new UIElementUpdateData(elementIsHovered, uiElement.Id);
-                                var textProviderReturned = textProvider.Invoke(uiElement, updateDump[uiElement.Id]);
-                                drawDump.Add(new UIElementDrawData(uiElement.Id, textProviderReturned.Item1, uiElement.Type, elementPos + textProviderReturned.Item2.ToVector2(), elementRectangle, drawRectangle));
-
-                                if (updateDump[uiElement.Id].IsClicked) Instance.DebugStream.WriteLine("\tui-element with id " + uiElement.Id + " clicked.");
-                            }
-                            break;
-                    }
-                    index++;
-                }
-            }
-            public static (string, Point) DefaultTextProvider(UIElement element, UIElementUpdateData updateData)
+    /// <summary>
+    /// Provides methods for ordering <see cref="UIElement"/> objects. (Casting them to <see cref="UIElementDrawData"/> or/and <see cref="UIElementUpdateData"/>.
+    /// </summary>
+    public static class UIOrdering
+    {
+        public static void Order(UIElement[] uIElements, string parentID, ICollection<UIElementDrawData> drawDump, IDictionary<string, UIElementUpdateData> updateDump,
+            Vector2 uiOrgin, IOrderProvider orderProvider, bool isMouseRelevant = true)
+        {
+            uIElements = uIElements.Where(e => e.ChildOf == parentID).ToArray(); // slow
+            for (int i = 0; i < uIElements.Length; i++)
             {
-                string elementText = element.Text;
-                bool elementIsHovered = updateData.IsHovered;
-                switch (element.Dock)
-                {
-                    case UIDock.Right:
-                    case UIDock.Left: return (elementText + (elementIsHovered ? " <" : string.Empty), Point.Zero);
-                    case UIDock.MainMenu:
-                        {
-                            string postPre = element.Id switch
-                            {
-                                "quit" => "x",
-                                "specialThanks" => "!",
-                                _ => ">",
-                            };
-                            return (elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, elementIsHovered ? new Point(-Instance.Environment.FontDimensions.X * 2, 0) : Point.Zero);
-                        }
-                    default: throw new Exception();
-                };
+                //if (uIElements[i].ChildOf != parentID) continue; // works, this does not?
+                var ret = orderProvider.GetElementDrawData(uIElements[i], uiOrgin, i);
+                updateDump[uIElements[i].Id] = new UIElementUpdateData(ret.isHovered && isMouseRelevant, uIElements[i].Id);
+                drawDump.Add(ret.drawData);
             }
         }
     }
+    /// <summary>
+    /// Reprecents a button or textplane in the UI. Add new elements to the <see cref="SLUserInterface"/> using the <see cref="SLUserInterface.AddElement(UIElement)"/> method.
+    /// </summary>
     public class UIElement
     {
-        public enum UIDock
-        {
-            Left,
-            Right,
-            MainMenu,
-        }
+        /// <summary>
+        /// What type the <see cref="UIElement"/> is. When <see cref="Clickable"/>, "collisions" with the mouse will be calculated for its hitbox.
+        /// </summary>
         public enum UIElementType
         {
+            /// <summary>
+            /// Its relevant when this <see cref="UIElement"/> gets clicked.
+            /// </summary>
             Clickable,
+            /// <summary>
+            /// Its not relevant when this <see cref="UIElement"/> gets clicked.
+            /// </summary>
             Text,
         }
-
+        /// <summary>
+        /// The type of the <see cref="UIElement"/>.
+        /// </summary>
         public UIElementType Type { get; }
-        public UIDock Dock { get; }
+        /// <summary>
+        /// The text in this <see cref="UIElement"/>.
+        /// </summary>
         public string Text { get; set; }
+        /// <summary>
+        /// The ID of the <see cref="UIElement"/>.
+        /// </summary>
         public string Id { get; }
+        /// <summary>
+        /// The order of this <see cref="UIElement"/>. From top to bottom. Yet to be implemented.
+        /// </summary>
         public string? Order { get; }
-        public string? SubElementOf { get; }
+        /// <summary>
+        /// The <see cref="UIElement.Id"/> of the <see cref="UIElement"/> this is a child of. 
+        /// </summary>
+        public string ChildOf { get; }
 
-        public UIElement(string id, UIDock dock, string? text = null, UIElementType type = UIElementType.Text, string? subElementOf = null, string? order = null)
+        public UIElement(string id, string childOf, string? text = null, UIElementType type = UIElementType.Text, string? order = null)
         {
             Text = text ?? id;
             Type = type;
             Id = id;
-            SubElementOf = subElementOf;
             Order = order;
-            Dock = dock;
+            ChildOf = childOf;
         }
+        /// <summary>
+        /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
+        /// </summary>
+        /// <param name="elementPos">The position of the <see cref="UIElement"/>.</param>
+        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="SLEnvironment.FontDimensions"/>.</i></param>
+        /// <param name="clearance">The clearance between the text and the bounds. <i>(Or margin for the CSS enjoyers)</i></param>
+        /// <param name="supportMultiline"></param>
+        /// <param name="fontId"></param>
+        /// <param name="posOffsetX"></param>
+        /// <param name="posOffsetY"></param>
+        /// <returns>The bounds of a <see cref="UIElement"/>.</returns>
         public Rectangle GetBounds(Point elementPos, Point fontDimensions, int clearance = DefaultRectangleClearance, bool supportMultiline = false, string fontId = "", int posOffsetX = 0, int posOffsetY = 0)
             => GetBounds(elementPos, Text, fontDimensions, clearance, supportMultiline, fontId, posOffsetX, posOffsetY);
 
+        /// <summary>
+        /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
+        /// </summary>
+        /// <param name="elementPos">The position of the <see cref="UIElement"/>.</param>
+        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="SLEnvironment.FontDimensions"/>.</i></param>
+        /// <param name="clearance">The clearance between the text and the bounds. <i>(Or margin for the CSS enjoyers)</i></param>
+        /// <param name="supportMultiline"></param>
+        /// <param name="fontId"></param>
+        /// <param name="posOffsetX"></param>
+        /// <param name="posOffsetY"></param>
+        /// <returns>The bounds of a <see cref="UIElement"/>.</returns>
         public static Rectangle GetBounds(Point elementPos, string text, Point fontDimensions, int clearance = DefaultRectangleClearance, bool supportMultiline = false, string fontId = "", int posOffsetX = 0, int posOffsetY = 0)
         {
             Point offset = new Point(posOffsetX, posOffsetY) + fontId switch
@@ -693,16 +773,52 @@ namespace Stolon
             return new Rectangle(boundsPos, new Point(rectangeSizeX, rectangeSizeY));
         }
 
+        public override string ToString()
+        {
+            return "{"  + $"Id={Id}, Type={Type}, Text={Text}, Order={Order}, ChildOf={ChildOf}" + "}";
+        }
+
         public const int DefaultRectangleClearance = 2;
+        public const int LongDefaultRectangleClearance = 5; // might delete later
     }
+    /// <summary>
+    /// The data element relevant for draw methods.
+    /// </summary>
     public struct UIElementDrawData
     {
+        /// <summary>
+        /// The position of the "drawdataified" <see cref="UIElement"/>.
+        /// </summary>
         public Vector2 Position { get; }
+        /// <summary>
+        /// If a bounding <see cref="RectangleF"/> must be drawn.
+        /// </summary>
         public bool DrawRectangle { get; }
+        /// <summary>
+        /// The bounding rectangle to draw.
+        /// </summary>
         public RectangleF Rectangle { get; }
+        /// <summary>
+        /// The type of the <see cref="UIElement"/>. Sometimes relevant for drawing.
+        /// </summary>
         public UIElementType Type { get; }
+        /// <summary>
+        /// The text to draw inside the <see cref="Rectangle"/>.
+        /// </summary>
         public string Text { get; }
+        /// <summary>
+        /// The <see cref="UIElement.Id"/> of the source <see cref="UIElement"/>.
+        /// </summary>
         public string Id { get; }
+        /// <summary>
+        /// Create a new <see cref="UIElementDrawData"/> object.
+        /// </summary>
+        /// <param name="sourceId">The source <see cref="UIElement.Id"/>.</param>
+        /// <param name="text"></param>
+        /// <param name="type"></param>
+        /// <param name="position"></param>
+        /// <param name="rectangle"></param>
+        /// <param name="drawRectangle"></param>
         public UIElementDrawData(string sourceId, string text, UIElementType type, Vector2 position, RectangleF rectangle, bool drawRectangle)
         {
             Position = position;
@@ -717,12 +833,32 @@ namespace Stolon
             return "{pos: " + Position + ", text: " + Text + ", rectangle: " + Rectangle + "}";
         }
     }
+    /// <summary>
+    /// The data element relevant for update methods. <i>(Knowing when an <see cref="UIElement"/> is clicked.)</i>
+    /// </summary>
     public struct UIElementUpdateData
     {
+        /// <summary>
+        /// A value indicating if the source <see cref="UIElement"/> is hovered by the mouse.
+        /// </summary>
         public bool IsHovered { get; }
+        /// <summary>
+        /// A value indicating if the source <see cref="UIElement"/> is pressed by the mouse.
+        /// </summary>
         public bool IsPressed => IsHovered && SLMouse.CurrentState.LeftButton == ButtonState.Pressed;
+        /// <summary>
+        /// A value indicating if the source <see cref="UIElement"/> is clicked by the mouse.
+        /// </summary>
         public bool IsClicked => IsPressed && SLMouse.PreviousState.LeftButton == ButtonState.Released;
+        /// <summary>
+        /// The <see cref="UIElement.Id"/> of the source <see cref="UIElement"/>.
+        /// </summary>
         public string SourcID { get; }
+        /// <summary>
+        /// Create a new <see cref="UIElementUpdateData"/> with the propeties <see cref="IsHovered"/> and <see cref="SourcID"/> set.
+        /// </summary>
+        /// <param name="isHovered">A value indicating if the source <see cref="UIElement"/> is hovered by the mouse.</param>
+        /// <param name="sourcID">The <see cref="UIElement.Id"/> of the source <see cref="UIElement"/>.</param>
         public UIElementUpdateData(bool isHovered, string sourcID)
         {
             IsHovered = isHovered;

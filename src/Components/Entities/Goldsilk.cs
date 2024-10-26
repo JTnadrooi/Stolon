@@ -20,6 +20,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Stolon
 {
+    /// <summary>
+    /// Goldsilk hates the player.
+    /// </summary>
     public class GoldsilkEntity : SLEntity
     {
         public override SLComputer Computer => computer;
@@ -38,9 +41,11 @@ namespace Stolon
             return new DialogueInfo(this, "Lets goooo");
         }
     }
+    /// <summary>
+    /// The computer <see cref="GoldsilkEntity"/> uses to play.
+    /// </summary>
     public class GoldsilkCom : SLComputer
     {
-
         private Player player;
         private int playerId;
 

@@ -21,58 +21,99 @@ using DiscordRPC.Events;
 
 namespace Stolon
 {
+    /// <summary>
+    /// The enviroment of the <see cref="Stolon"/> game.
+    /// </summary>
     public class SLEnvironment : AxComponent, IDialogueProvider
     {
+        /// <summary>
+        /// The current state of the game.
+        /// </summary>
         public enum SLGameState
         {
+            /// <summary>
+            /// The board is open.
+            /// </summary>
             OpenBoard,
+            /// <summary>
+            /// The game is loading.
+            /// </summary>
             Loading,
+            /// <summary>
+            /// The menu is open.
+            /// </summary>
             InMenu,
         }
 
-        private SLScene scene;
-        private SLUserInterface userInterface;
-        private SLOverlayer overlayer;
-        private SLGameState gameState;
-
+        /// <summary>
+        /// The current state of the game.
+        /// </summary>
         public SLGameState GameState
         {
             get => gameState; 
             set => gameState = value;
         }
+        /// <summary>
+        /// The current <see cref="SLScene"/>.
+        /// </summary>
         public SLScene Scene
         {
             get => scene;
             set => scene = value;
         }
-        public SLUserInterface UserInterface => userInterface;
+        /// <summary>
+        /// The <see cref="SLUserInterface"/>.
+        /// </summary>
+        public SLUserInterface UI => userInterface;
+        /// <summary>
+        /// The <see cref="SLOverlayer"/>.
+        /// </summary>
         public SLOverlayer Overlayer => overlayer;
+        /// <summary>
+        /// A <see cref="Dictionary{TKey, TValue}"/> listing all <see cref="SLEntity"/> objects and their <see cref="SLEntity.Id"/>.
+        /// </summary>
         public ReadOnlyDictionary<string, SLEntity> Entities => new ReadOnlyDictionary<string, SLEntity>(entities);
+        /// <summary>
+        /// The scaling applied to the <see cref="Font"/>.
+        /// </summary>
         public const float FontScale = 0.5f;
+        /// <summary>
+        /// The main font used for most text.
+        /// </summary>
         public static SpriteFont Font { get; }
 
-        private Dictionary<string, SLEntity> entities;
-
+        /// <summary>
+        /// The main instance of the game.
+        /// </summary>
         public static SLEnvironment Instance => StolonGame.Instance.Environment;
         public string SymbolNotation => "Ev";
         public string Name => "Environment";
+        /// <summary>
+        /// The dimensions of a single capital letter ("A").
+        /// </summary>
         public Point FontDimensions { get; private set; }
+
+        private SLScene scene;
+        private SLUserInterface userInterface;
+        private SLOverlayer overlayer;
+        private SLGameState gameState;
+        private Dictionary<string, SLEntity> entities;
 
         static SLEnvironment()
         {
             Font = StolonGame.Instance.Fonts["fiont"];
         }
 
-        public SLEnvironment() : base(null)
+        internal SLEnvironment() : base(null)
         {
             scene = new SLScene();
             entities = new Dictionary<string, SLEntity>();
             FontDimensions = (Font.MeasureString("A") * SLEnvironment.FontScale).ToPoint();
 
-            RegisterCharacter(new GoldsilkEntity());
+            RegisterEntity(new GoldsilkEntity());
             // RegisterCharacter(new DeadlineEntity());
 
-            userInterface = new SLUserInterface(entities);
+            userInterface = new SLUserInterface();
             overlayer = new SLOverlayer();
 
             gameState = SLGameState.InMenu;
@@ -120,19 +161,25 @@ namespace Stolon
                 case SLGameState.Loading:
                     break;
             }
-
             userInterface.Draw(spriteBatch, elapsedMiliseconds);
-
 
             overlayer.Draw(spriteBatch, elapsedMiliseconds);
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
 
-        public void RegisterCharacter(SLEntity character)
+        /// <summary>
+        /// Register a new <see cref="SLEntity"/>.
+        /// </summary>
+        /// <param name="entity">The entity to register.</param>
+        public void RegisterEntity(SLEntity entity)
         {
-            entities.Add(character.Id, character);
+            entities.Add(entity.Id, entity);
         }
-        public void DeregisterCharacter(string characterId)
+        /// <summary>
+        /// Deregister a new <see cref="SLEntity"/>. <strong>Should never be used.</strong>
+        /// </summary>
+        /// <param name="entity">The entity to deregister.</param>
+        public void DeregisterEntity(string characterId)
         {
             entities.Remove(characterId);
         }

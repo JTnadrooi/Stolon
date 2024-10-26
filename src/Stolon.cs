@@ -45,7 +45,7 @@ namespace Stolon
 			get => environment.Scene;
 			set => environment.Scene = value;
         }
-		public SLUserInterface UserInterface => environment.UserInterface;
+		public SLUserInterface UserInterface => environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); // (480, 270) (if vM = 30)
 		public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
@@ -168,7 +168,7 @@ namespace Stolon
 				SLKeyboard.CurrentState = Keyboard.GetState();
 
 				if (!GraphicsDevice.Viewport.Bounds.Contains(SLMouse.CurrentState.Position)) SLMouse.Domain = SLMouse.MouseDomain.OfScreen;
-				else if (Environment.UserInterface.Textframe.DialogueBounds.Contains(SLMouse.VirualPosition)) SLMouse.Domain = SLMouse.MouseDomain.Dialogue;
+				else if (Environment.UI.Textframe.DialogueBounds.Contains(SLMouse.VirualPosition)) SLMouse.Domain = SLMouse.MouseDomain.Dialogue;
 				else if (SLMouse.VirualPosition.X > (int)UserInterface.Line1X && SLMouse.VirualPosition.X < (int)UserInterface.Line2X) SLMouse.Domain = SLMouse.MouseDomain.Board;
 				else SLMouse.Domain = SLMouse.MouseDomain.UserInterfaceLow;
 

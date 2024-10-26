@@ -154,7 +154,7 @@ namespace Stolon
             {
                 if (state.Players.Any(p => p.IsComputer))
                 {
-                    Instance.Environment.UserInterface.Textframe.Queue(new DialogueInfo(Instance.Environment, "Not valid when against AI but coming soon!"));
+                    Instance.Environment.UI.Textframe.Queue(new DialogueInfo(Instance.Environment, "Not valid when against AI but coming soon!"));
                 }
                 Undo();
             }
@@ -335,7 +335,7 @@ namespace Stolon
         public Tile ToTile(int playerID, Tile[,] tiles) => ToTile(playerID, tiles[Origin.X, Origin.Y].Attributes);
         public Tile ToTile(int playerID, HashSet<TileAttributeBase> OGattributes)
         {
-            HashSet<TileAttributeBase> a = TileAttribute.GetPlayerAttributes(playerID);
+            HashSet<TileAttributeBase> a = TileAttribute.GetNewPlayerAttributes(playerID);
             a.UnionWith(OGattributes);
             return new Tile(new Point(Origin.X, Origin.Y), null, a);
         }

@@ -1,6 +1,11 @@
 ﻿#nullable enable
 
+using AsitLib;
 using DiscordRPC;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Stolon
 {
@@ -8,7 +13,6 @@ namespace Stolon
     {
         public static void Main()
         {
-            //run the game
             using StolonGame game = new StolonGame();
             game.Run();
         }
