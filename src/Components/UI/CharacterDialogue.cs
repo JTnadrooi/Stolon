@@ -13,41 +13,41 @@ namespace Stolon
     public interface IDialogueProvider
     {
         /// <summary>
-        /// The symbolnotation of this <see cref="SLEntity"/>, example: DL for Deadline.
+        /// The symbolnotation of this <see cref="EntityBase"/>, example: DL for Deadline.
         /// </summary>
         public string SymbolNotation { get; }
         /// <summary>
-        /// The name of this <see cref="SLEntity"/>, example: Deadline.
+        /// The name of this <see cref="EntityBase"/>, example: Deadline.
         /// </summary>
         public string Name { get; }
     }
     /// <summary>
-    /// Represent the main component of a <see cref="SLEntity"/>.
+    /// Represent the main component of a <see cref="EntityBase"/>.
     /// </summary>
-    public abstract class SLEntity : IDialogueProvider
+    public abstract class EntityBase : IDialogueProvider
     {
         /// <summary>
-        /// Create a new <see cref="SLEntity"/> with set values.
+        /// Create a new <see cref="EntityBase"/> with set values.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="name"></param>
         /// <param name="symbolNotation"></param>
-        public SLEntity(string id, string name, string symbolNotation)
+        public EntityBase(string id, string name, string symbolNotation)
         {
             Id = id;
             Name = name;
             SymbolNotation = symbolNotation;
         }
         /// <summary>
-        /// Get the <see cref="Player"/> of this <see cref="SLEntity"/>.
+        /// Get the <see cref="Player"/> of this <see cref="EntityBase"/>.
         /// </summary>
-        /// <returns>A new <see cref="Player"/> created from this <see cref="SLEntity"/>.</returns>
+        /// <returns>A new <see cref="Player"/> created from this <see cref="EntityBase"/>.</returns>
         public Player GetPlayer()
         {
             return new Player(Name, Computer);
         }
         /// <summary>
-        /// Get the <see cref="SLComputer"/> of this <see cref="SLEntity"/>.
+        /// Get the <see cref="SLComputer"/> of this <see cref="EntityBase"/>.
         /// </summary>
         public abstract SLComputer Computer { get; }
         /// <summary>
@@ -55,13 +55,13 @@ namespace Stolon
         /// </summary>
         public abstract Texture2D Splash { get; }
         /// <summary>
-        /// A short description of this <see cref="SLEntity"/>.
+        /// A short description of this <see cref="EntityBase"/>.
         /// </summary>
         public virtual string? Description { get; }
 
         public abstract DialogueInfo GetReaction(PrimitiveReactOption reactOption); // unused.
         /// <summary>
-        /// The unique ID of this <see cref="SLEntity"/>, no capital letters.
+        /// The unique ID of this <see cref="EntityBase"/>, no capital letters.
         /// </summary>
         public string Id { get; private set; }
         public string Name { get; private set; }
@@ -110,19 +110,19 @@ namespace Stolon
     public abstract class SLComputer
     {
         /// <summary>
-        /// The source <see cref="SLEntity"/>.
+        /// The source <see cref="EntityBase"/>.
         /// </summary>
-        public SLEntity? Source { get; }
+        public EntityBase? Source { get; }
         /// <summary>
-        /// Create a new <see cref="SLComputer"/> with a set <see cref="Source"/> <see cref="SLEntity"/>.
+        /// Create a new <see cref="SLComputer"/> with a set <see cref="Source"/> <see cref="EntityBase"/>.
         /// </summary>
-        /// <param name="source">The source <see cref="SLEntity"/>.</param>
-        public SLComputer(SLEntity? source)
+        /// <param name="source">The source <see cref="EntityBase"/>.</param>
+        public SLComputer(EntityBase? source)
         {
             Source = source;
         }
         /// <summary>
-        /// Do a move best for the <see cref="Source"/> <see cref="SLEntity"/> on the <paramref name="board"/>.
+        /// Do a move best for the <see cref="Source"/> <see cref="EntityBase"/> on the <paramref name="board"/>.
         /// </summary>
         /// <param name="board">The <see cref="Board"/> to do a move on.</param>
         public abstract void DoMove(Board board);

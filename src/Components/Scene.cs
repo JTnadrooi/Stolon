@@ -9,7 +9,7 @@ using MonoGame.Extended.Collisions.Layers;
 
 namespace Stolon
 {
-    public class SLScene : AxComponent
+    public class Scene : AxComponent
     {
         public enum SLScenePreset
         {
@@ -17,12 +17,12 @@ namespace Stolon
         }
 
         public Board Board => board ?? throw new Exception();
-        public static SLScene MainInstance => Instance.Scene;
+        public static Scene MainInstance => Instance.Scene;
         public bool HasBoard => board != null;
 
         private Board? board;
 
-        public SLScene(SLScenePreset preset = SLScenePreset.Empty) : base(Instance.Environment)
+        public Scene(SLScenePreset preset = SLScenePreset.Empty) : base(Instance.Environment)
         {
             
         }

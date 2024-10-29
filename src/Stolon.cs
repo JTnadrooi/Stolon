@@ -29,7 +29,7 @@ namespace Stolon
 		private RenderTarget2D renderTarget;
 
 		private RenderTarget2D bloomRenderTarget;
-		private SLEnvironment environment;
+		private StolonEnvironment environment;
 		private Point aspectRatio = new Point(16, 9);
 		private float AspectRatioFloat => aspectRatio.X / aspectRatio.Y * 1.7776f;
 		private int virtualModifier;
@@ -40,13 +40,13 @@ namespace Stolon
 		public DiscordRichPresence DRP { get; set; }
 		private BloomFilter _bloomFilter;
 
-		public SLEnvironment Environment => environment;
-		public SLScene Scene
+		public StolonEnvironment Environment => environment;
+		public Scene Scene
 		{
 			get => environment.Scene;
 			set => environment.Scene = value;
 		}
-		public SLUserInterface UserInterface => environment.UI;
+		public UserInterface UserInterface => environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); // (480, 270) (if vM = 30)
 		public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
@@ -133,7 +133,7 @@ namespace Stolon
 			textures = new AxTextureCollection(Content);
 			Fonts.Add("fiont", textures.HardLoad<SpriteFont>("fonts\\fiont"));
 
-			environment = new SLEnvironment();
+			environment = new StolonEnvironment();
 			environment.Initialize();
 
 			replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
@@ -158,7 +158,7 @@ namespace Stolon
 		public void SLExit()
 		{
 			MediaPlayer.Stop();
-			AudioPlaybackEngine.Instance.Dispose();
+			AudioEngine.Instance.Dispose();
 			Exit();
 		}
 		protected override void Update(GameTime gameTime)
@@ -218,7 +218,7 @@ namespace Stolon
 			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
 			environment.Draw(spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
-			spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * SLEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+			spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * StolonEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
 			spriteBatch.End();

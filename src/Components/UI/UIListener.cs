@@ -16,7 +16,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using RectangleF = MonoGame.Extended.RectangleF;
-using static Stolon.SLUserInterface;
+using static Stolon.UserInterface;
 using AsitLib;
 using System.Collections;
 

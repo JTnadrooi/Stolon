@@ -62,7 +62,7 @@ namespace Stolon
 
         public UniqueMoveBoardMap UniqueMoveBoardMap { get; }
 
-        public Board(SLScene source, BoardState conf) : base(source)
+        public Board(Scene source, BoardState conf) : base(source)
         {
             Camera = new Camera2D();
             TurnNumber = 0;
@@ -246,9 +246,9 @@ namespace Stolon
                     {
                         boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
-                    else if (tile.HasAttribute<TileAttribute.TileAttributeGravDown>()) boardSpriteBatch.DrawString(SLEnvironment.Font, string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
-                    else if (tile.HasAttribute<TileAttribute.TileAttributeGravUp>()) boardSpriteBatch.DrawString(SLEnvironment.Font, ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
-                    else boardSpriteBatch.DrawString(SLEnvironment.Font, ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) boardSpriteBatch.DrawString(StolonEnvironment.Font, string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) boardSpriteBatch.DrawString(StolonEnvironment.Font, ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
+                    else boardSpriteBatch.DrawString(StolonEnvironment.Font, ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
                 }
             boardSpriteBatch.End();
             base.Draw(spriteBatch, elapsedMiliseconds);
@@ -335,7 +335,7 @@ namespace Stolon
         public Tile ToTile(int playerID, Tile[,] tiles) => ToTile(playerID, tiles[Origin.X, Origin.Y].Attributes);
         public Tile ToTile(int playerID, HashSet<TileAttributeBase> OGattributes)
         {
-            HashSet<TileAttributeBase> a = TileAttribute.GetNewPlayerAttributes(playerID);
+            HashSet<TileAttributeBase> a = TileAttributes.GetNewPlayerAttributes(playerID);
             a.UnionWith(OGattributes);
             return new Tile(new Point(Origin.X, Origin.Y), null, a);
         }
@@ -398,7 +398,7 @@ namespace Stolon
 
             Point newPos = TiledPosition;
 
-            if (this.HasAttribute<TileAttribute.TileAttributeGravDown>())
+            if (this.HasAttribute<TileAttributes.TileAttributeGravDown>())
             {
                 int depth = board.Tiles.GetLength(1) - y - 1;
                 for (int i = 1; i <= depth; i++)
@@ -411,7 +411,7 @@ namespace Stolon
                     }
                 }
             }
-            else if (this.HasAttribute<TileAttribute.TileAttributeGravUp>())
+            else if (this.HasAttribute<TileAttributes.TileAttributeGravUp>())
             {
                 int depth = y;
                 for (int i = 1; i <= depth; i++)
@@ -447,9 +447,9 @@ namespace Stolon
             {
                 for (int y = 0; y < dimensions.Y; y++)
                 {
-                    HashSet<TileAttributeBase> tileAttributes = new HashSet<TileAttributeBase>(TileAttribute.DefaultAttributes);
+                    HashSet<TileAttributeBase> tileAttributes = new HashSet<TileAttributeBase>(TileAttributes.DefaultAttributes);
 
-                    if (y < (int)(dimensions.Y / 2)) tileAttributes.ReplaceAttribute<TileAttribute.TileAttributeGravDown, TileAttribute.TileAttributeGravUp>();
+                    if (y < (int)(dimensions.Y / 2)) tileAttributes.ReplaceAttribute<TileAttributes.TileAttributeGravDown, TileAttributes.TileAttributeGravUp>();
 
                     tiles[x, y] = new Tile(new Point(x, y), TileType.Void, tileAttributes);
                 }

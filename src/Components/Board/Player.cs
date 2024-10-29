@@ -49,7 +49,7 @@ namespace Stolon
         public static Player[] PlayersCom => new Player[]
                         {
                             new Player("player0"),
-                            SLEnvironment.Instance.Entities["goldsilk"].GetPlayer()
+                            StolonEnvironment.Instance.Entities["goldsilk"].GetPlayer()
                         };
     }
 }

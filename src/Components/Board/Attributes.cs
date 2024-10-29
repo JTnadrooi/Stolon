@@ -36,19 +36,19 @@ namespace Stolon
     /// <summary>
     /// Provides some static methods for working with <see cref="TileAttributeBase"/> implementing classes.
     /// </summary>
-    public static class TileAttribute
+    public static class TileAttributes
     {
         /// <summary>
         /// A <see cref="FrozenDictionary{TKey, TValue}"/> holding all registered <see cref="TileAttributeBase"/> objects.
         /// </summary>
-        public static FrozenDictionary<string, TileAttributeBase> TileAttributes { get; }
+        public static FrozenDictionary<string, TileAttributeBase> Attributes { get; }
         /// <summary>
         /// A <see cref="FrozenSet"/>
         /// </summary>
         public static FrozenSet<TileAttributeBase> DefaultAttributes { get; }
 
 
-        static TileAttribute()
+        static TileAttributes()
         {
             Dictionary<string, TileAttributeBase>  tileAttributes = new Dictionary<string, TileAttributeBase>();
 
@@ -60,7 +60,7 @@ namespace Stolon
             Register(new TileAttributeGravUp(), tileAttributes);
             Register(new TileAttributeSolid(), tileAttributes);
 
-            TileAttributes = tileAttributes.ToFrozenDictionary();
+            Attributes = tileAttributes.ToFrozenDictionary();
 
             DefaultAttributes = new HashSet<TileAttributeBase>()
             {
@@ -72,7 +72,7 @@ namespace Stolon
         /// </summary>
         /// <param name="tile">The tile to check.</param>
         /// <returns>A value indicating if a <see cref="Tile"/> is occupied by any <see cref="Player"/>.</returns>
-        public static bool IsOccupiedByPlayer(this Tile tile) => tile.HasAttribute((TileAttributeBase)TileAttributes["Player0Occupied"], (TileAttributeBase)TileAttributes["Player1Occupied"]);
+        public static bool IsOccupiedByPlayer(this Tile tile) => tile.HasAttribute((TileAttributeBase)Attributes["Player0Occupied"], (TileAttributeBase)Attributes["Player1Occupied"]);
         /// <summary>
         /// Gets the <strong>board relative id</strong> of the player occupying the <paramref name="tile"/> or <strong>-1</strong> if no player occupy the <paramref name="tile"/>.
         /// </summary>
@@ -80,8 +80,8 @@ namespace Stolon
         /// <returns>The <strong>board relative id</strong> of the player occupying the <paramref name="tile"/> or <strong>-1</strong> if no player occupy the <paramref name="tile"/>.</returns>
         public static int GetOccupiedByPlayerID(this Tile tile)
         {
-            if (tile.HasAttribute((TileAttributeBase)TileAttributes["Player0Occupied"])) return 0;
-            if (tile.HasAttribute((TileAttributeBase)TileAttributes["Player1Occupied"])) return 1;
+            if (tile.HasAttribute((TileAttributeBase)Attributes["Player0Occupied"])) return 0;
+            if (tile.HasAttribute((TileAttributeBase)Attributes["Player1Occupied"])) return 1;
             return -1;
         }
         /// <summary>
@@ -91,8 +91,8 @@ namespace Stolon
         /// <returns>A new <see cref="HashSet{T}"/> containing a list of <see cref="TileAttributeBase"/> objects fit for indicating a <see cref="Tile"/> is occupied.</returns>
         public static HashSet<TileAttributeBase> GetNewPlayerAttributes(int playerID) => new HashSet<TileAttributeBase>()
             {
-                (TileAttributeBase)TileAttribute.TileAttributes["Player" + playerID + "Occupied"],
-                TileAttribute.Get<TileAttribute.TileAttributeSolid>(),
+                (TileAttributeBase)Stolon.TileAttributes.Attributes["Player" + playerID + "Occupied"],
+                Stolon.TileAttributes.Get<TileAttributes.TileAttributeSolid>(),
             }; // keep new
         /// <summary>
         /// Get a value indicating if the <paramref name="tile"/> has gravity.
@@ -133,7 +133,7 @@ namespace Stolon
         /// <typeparam name="TTileAttribute">The type of <see cref="TileAttributeBase"/> to get.</typeparam>
         /// <returns>A <see cref="TileAttributeBase"/> from the specified type.</returns>
         public static TileAttributeBase Get<TTileAttribute>() where TTileAttribute : TileAttributeBase
-            => (TileAttributeBase)TileAttributes[GetName<TTileAttribute>()];
+            => (TileAttributeBase)Attributes[GetName<TTileAttribute>()];
         /// <summary>
         /// Get a value indicating if a <paramref name="tile"/> has a specified <see cref="TileAttributeBase"/>.
         /// </summary>

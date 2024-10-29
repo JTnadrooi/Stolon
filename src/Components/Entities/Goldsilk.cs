@@ -23,7 +23,7 @@ namespace Stolon
     /// <summary>
     /// Goldsilk hates the player.
     /// </summary>
-    public class GoldsilkEntity : SLEntity
+    public class GoldsilkEntity : EntityBase
     {
         public override SLComputer Computer => computer;
         public override Texture2D Splash => Instance.Textures.GetReference("textures\\splash\\goldsilk"); // unrelevant in first ver

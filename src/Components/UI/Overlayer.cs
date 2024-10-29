@@ -16,13 +16,13 @@ using Math = System.Math;
 
 namespace Stolon
 {
-    public class SLOverlayer : AxComponent
+    public class OverlayEngine : AxComponent
     {
         private Dictionary<string, IOverlay> overlays;
         private List<string> initialized;
 
 
-        public SLOverlayer() : base(SLEnvironment.Instance)
+        public OverlayEngine() : base(StolonEnvironment.Instance)
         {
             overlays = new Dictionary<string, IOverlay>();
             initialized = new List<string>();
@@ -97,7 +97,7 @@ namespace Stolon
 
     public interface IOverlay
     {
-        public void Initialize(SLOverlayer overlayer, params object?[] args);
+        public void Initialize(OverlayEngine overlayer, params object?[] args);
         public void Update(int elapsedMiliseconds);
         public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds);
         public void Reset();
@@ -128,7 +128,7 @@ namespace Stolon
 
         }
 
-        public void Initialize(SLOverlayer overlayer, params object?[] args)
+        public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
             pos = (Vector2)((args.Length > 0 ? args[0] : null) ?? pos);
         }
@@ -156,7 +156,7 @@ namespace Stolon
         public bool Ended { get; private set; }
 
         private Rectangle area;
-        private SLOverlayer overlayer;
+        private OverlayEngine overlayer;
         private Tweener<float> tweener;
         private string text;
 
@@ -196,7 +196,7 @@ namespace Stolon
             heightCoefficient = tweener.Value;
 
             drawArea = new Rectangle(area.Location, new Point(area.Width, (int)(desiredHeight * heightCoefficient)));
-            textPos = Centering.MiddleXY(SLEnvironment.Font.MeasureString(text).ToPoint(), drawArea, new Vector2(SLEnvironment.FontScale) * TextSizeMod);
+            textPos = Centering.MiddleXY(StolonEnvironment.Font.MeasureString(text).ToPoint(), drawArea, new Vector2(StolonEnvironment.FontScale) * TextSizeMod);
             textPos = new Vector2(textPos.X, Math.Min(textPos.Y, drawArea.Height - Instance.Environment.FontDimensions.Y * TextSizeMod));
 
             Centering.OnPixel(ref textPos);
@@ -206,10 +206,10 @@ namespace Stolon
         {
             spriteBatch.Draw(Instance.Textures.Pixel, drawArea, Color.Black);
             spriteBatch.DrawRectangle(drawArea, Color.White);
-            spriteBatch.DrawString(SLEnvironment.Font, text, textPos, Color.White, 0f, Vector2.Zero, SLEnvironment.FontScale * TextSizeMod, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(StolonEnvironment.Font, text, textPos, Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale * TextSizeMod, SpriteEffects.None, 0f);
         }
 
-        public void Initialize(SLOverlayer overlayer, params object?[] args)
+        public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
             Ended = false;
             tweener = new Tweener<float>(0f, 1f, Duration / 1000f / 2, Ease.Sine.Out);

@@ -16,7 +16,7 @@ using Math = System.Math;
 
 namespace Stolon
 {
-    public class SLTextframe : AxComponent
+    public class Textframe : AxComponent
     {
         private Queue<DialogueInfo> dialogueQueue;
         private Rectangle dialoguebounds;
@@ -43,9 +43,9 @@ namespace Stolon
         private const int charReadMiliseconds = 75; // per char
         private const int postReadMiliseconds = charReadMiliseconds * 10; // how long the dialogue stagnates after its finished.
 
-        private SLUserInterface userInterface;
+        private UserInterface userInterface;
 
-        public SLTextframe(SLUserInterface userInterface)
+        public Textframe(UserInterface userInterface)
         {
             dialogueQueue = new Queue<DialogueInfo>();
             dialogueTextPos = Point.Zero;
@@ -97,7 +97,7 @@ namespace Stolon
         {
             Instance.DebugStream.WriteLine("Mass queueing a stream of size: " + count);
             selector = selector ?? new Func<string, int, string>((s, i) => s);
-            for (int i = 0; i < count; i++) Queue(new DialogueInfo(SLEnvironment.Instance, selector.Invoke(Instance.UserInterface.GetRandomSplashText(), i)));
+            for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke(Instance.UserInterface.GetRandomSplashText(), i)));
             Instance.DebugStream.Succes(1);
         }
 
@@ -138,11 +138,11 @@ namespace Stolon
                     currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
 
                 dialogueTextPos = dialoguebounds.Location
-                    + new Point((int)(dialoguebounds.Width / 2f - SLEnvironment.Font.MeasureString(toDrawDialogueText).X * SLEnvironment.FontScale / 2f),
+                    + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(toDrawDialogueText).X * StolonEnvironment.FontScale / 2f),
                     (int)(dialoguebounds.Height / 2f - Instance.Environment.FontDimensions.Y / 2f));
 
                 providerTextPos = dialoguebounds.Location
-                    + new Point((int)(dialoguebounds.Width / 2f - SLEnvironment.Font.MeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient * SLEnvironment.FontScale / 2f), 2);
+                    + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient * StolonEnvironment.FontScale / 2f), 2);
             }
 
             if (awaitingMouseDialogueHover)
@@ -176,8 +176,8 @@ namespace Stolon
             spriteBatch.Draw(Instance.Textures.Pixel, dialoguebounds, Color.Black);
             if (currentDialogue.HasValue)
             {
-                spriteBatch.DrawString(SLEnvironment.Font, toDrawDialogueText, dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, SLEnvironment.FontScale, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(SLEnvironment.Font, currentDialogue.Value.Provider.Name.ToUpper(), providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, providerTextScaleCoefficient * SLEnvironment.FontScale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(StolonEnvironment.Font, toDrawDialogueText, dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(StolonEnvironment.Font, currentDialogue.Value.Provider.Name.ToUpper(), providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, providerTextScaleCoefficient * StolonEnvironment.FontScale, SpriteEffects.None, 0f);
             }
             spriteBatch.DrawRectangle(dialoguebounds, Color.White, userInterface.LineWidth);
 

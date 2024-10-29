@@ -24,7 +24,7 @@ namespace Stolon
     /// <summary>
     /// The enviroment of the <see cref="Stolon"/> game.
     /// </summary>
-    public class SLEnvironment : AxComponent, IDialogueProvider
+    public class StolonEnvironment : AxComponent, IDialogueProvider
     {
         /// <summary>
         /// The current state of the game.
@@ -54,25 +54,25 @@ namespace Stolon
             set => gameState = value;
         }
         /// <summary>
-        /// The current <see cref="SLScene"/>.
+        /// The current <see cref="Stolon.Scene"/>.
         /// </summary>
-        public SLScene Scene
+        public Scene Scene
         {
             get => scene;
             set => scene = value;
         }
         /// <summary>
-        /// The <see cref="SLUserInterface"/>.
+        /// The <see cref="UserInterface"/>.
         /// </summary>
-        public SLUserInterface UI => userInterface;
+        public UserInterface UI => userInterface;
         /// <summary>
-        /// The <see cref="SLOverlayer"/>.
+        /// The <see cref="Stolon.OverlayEngine"/>.
         /// </summary>
-        public SLOverlayer Overlayer => overlayer;
+        public OverlayEngine Overlayer => overlayer;
         /// <summary>
-        /// A <see cref="Dictionary{TKey, TValue}"/> listing all <see cref="SLEntity"/> objects and their <see cref="SLEntity.Id"/>.
+        /// A <see cref="Dictionary{TKey, TValue}"/> listing all <see cref="EntityBase"/> objects and their <see cref="EntityBase.Id"/>.
         /// </summary>
-        public ReadOnlyDictionary<string, SLEntity> Entities => new ReadOnlyDictionary<string, SLEntity>(entities);
+        public ReadOnlyDictionary<string, EntityBase> Entities => new ReadOnlyDictionary<string, EntityBase>(entities);
         /// <summary>
         /// The scaling applied to the <see cref="Font"/>.
         /// </summary>
@@ -85,7 +85,7 @@ namespace Stolon
         /// <summary>
         /// The main instance of the game.
         /// </summary>
-        public static SLEnvironment Instance => StolonGame.Instance.Environment;
+        public static StolonEnvironment Instance => StolonGame.Instance.Environment;
         public string SymbolNotation => "Ev";
         public string Name => "Environment";
         /// <summary>
@@ -93,33 +93,33 @@ namespace Stolon
         /// </summary>
         public Point FontDimensions { get; private set; }
 
-        private SLScene scene;
-        private SLUserInterface userInterface;
-        private SLOverlayer overlayer;
+        private Scene scene;
+        private UserInterface userInterface;
+        private OverlayEngine overlayer;
         private SLGameState gameState;
-        private Dictionary<string, SLEntity> entities;
+        private Dictionary<string, EntityBase> entities;
 
-        static SLEnvironment()
+        static StolonEnvironment()
         {
             Font = StolonGame.Instance.Fonts["fiont"];
         }
 
-        internal SLEnvironment() : base(null)
+        internal StolonEnvironment() : base(null)
         {
-            scene = new SLScene();
-            entities = new Dictionary<string, SLEntity>();
+            scene = new Scene();
+            entities = new Dictionary<string, EntityBase>();
         }
         internal void Initialize()
         {
-            FontDimensions = (Font.MeasureString("A") * SLEnvironment.FontScale).ToPoint();
+            FontDimensions = (Font.MeasureString("A") * StolonEnvironment.FontScale).ToPoint();
 
             RegisterEntity(new GoldsilkEntity());
             // RegisterCharacter(new DeadlineEntity());
 
-            userInterface = new SLUserInterface();
+            userInterface = new UserInterface();
             userInterface.Initialize();
 
-            overlayer = new SLOverlayer();
+            overlayer = new OverlayEngine();
 
             gameState = SLGameState.InMenu;
 
@@ -173,15 +173,15 @@ namespace Stolon
         }
 
         /// <summary>
-        /// Register a new <see cref="SLEntity"/>.
+        /// Register a new <see cref="EntityBase"/>.
         /// </summary>
         /// <param name="entity">The entity to register.</param>
-        public void RegisterEntity(SLEntity entity)
+        public void RegisterEntity(EntityBase entity)
         {
             entities.Add(entity.Id, entity);
         }
         /// <summary>
-        /// Deregister a new <see cref="SLEntity"/>. <strong>Should never be used.</strong>
+        /// Deregister a new <see cref="EntityBase"/>. <strong>Should never be used.</strong>
         /// </summary>
         /// <param name="entity">The entity to deregister.</param>
         public void DeregisterEntity(string characterId)

@@ -16,7 +16,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using RectangleF = MonoGame.Extended.RectangleF;
-using static Stolon.SLUserInterface;
+using static Stolon.UserInterface;
 using AsitLib;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -29,9 +29,9 @@ using System.Reflection.Metadata;
 namespace Stolon
 {
     /// <summary>
-    /// The user interface for the <see cref="SLEnvironment"/>.
+    /// The user interface for the <see cref="StolonEnvironment"/>.
     /// </summary>
-    public class SLUserInterface : AxComponent
+    public class UserInterface : AxComponent
     {
 
         public enum BoardSide
@@ -39,7 +39,7 @@ namespace Stolon
             Left,
             Right,
         }
-        private SLEnvironment environment;
+        private StolonEnvironment environment;
 
         private List<UIElementDrawData> drawData;
 
@@ -150,15 +150,15 @@ namespace Stolon
         public const string titleParentId = "titleParent";
         public const string boardLeftParentId = "boardLeftParent";
         public const string boardRightParentId = "boardRightParent";
-        private SLTextframe textframe;
+        private Textframe textframe;
 
         /// <summary>
-        /// The <see cref="SLTextframe"/> managed by the <see cref="SLUserInterface"/>.
+        /// The <see cref="Stolon.Textframe"/> managed by the <see cref="UserInterface"/>.
         /// </summary>
-        public SLTextframe Textframe => textframe;
+        public Textframe Textframe => textframe;
 
         /// <summary>
-        /// The width of a <see cref="SLUserInterface"/> line. <i>(Why did I make this public again?)</i>
+        /// The width of a <see cref="UserInterface"/> line. <i>(Why did I make this public again?)</i>
         /// </summary>
         public int LineWidth => lineWidth;
 
@@ -166,7 +166,7 @@ namespace Stolon
         /// <summary>
         /// Main UIInterface contructor.
         /// </summary>
-        internal SLUserInterface() : base(Instance.Environment)
+        internal UserInterface() : base(Instance.Environment)
         {
             environment = Instance.Environment;
 
@@ -191,7 +191,7 @@ namespace Stolon
             mouseClickFillElementTexture = new AxTexture(AxPalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
             ((Texture2D)mouseClickFillElementTexture).SetData(new Color[] { Color.White });
 
-            textframe = new SLTextframe(this);
+            textframe = new Textframe(this);
 
 
             drawMenuLogoLines = true;
@@ -357,13 +357,13 @@ namespace Stolon
             textframe.Update(elapsedMiliseconds);
             switch (Instance.Environment.GameState)
             {
-                case SLEnvironment.SLGameState.OpenBoard:
+                case StolonEnvironment.SLGameState.OpenBoard:
                     UpdateBoardUI(elapsedMiliseconds);
                     break;
-                case SLEnvironment.SLGameState.InMenu:
+                case StolonEnvironment.SLGameState.InMenu:
                     UpdateMenuUI(elapsedMiliseconds);
                     break;
-                case SLEnvironment.SLGameState.Loading:
+                case StolonEnvironment.SLGameState.Loading:
                     break;
             }
             base.Update(elapsedMiliseconds);
@@ -453,7 +453,7 @@ namespace Stolon
 
             if (updateData["startXp"].IsClicked)
             {
-                SLScene.MainInstance.SetBoard(new Player[]
+                Scene.MainInstance.SetBoard(new Player[]
                         {
                             new Player("player0"),
                             new Player("player1"),
@@ -465,7 +465,8 @@ namespace Stolon
             {
                 Console.WriteLine(UIElement.GetSelfPath("options"));
                 Console.WriteLine(UIElement.GetParentPath("options"));
-                MenuPath = UIElement.GetSelfPath("options"); AudioPlaybackEngine.Instance.PlaySound("content/tracks/cityLights.mp3");
+                MenuPath = UIElement.GetSelfPath("options"); 
+                AudioEngine.Instance.PlayAudio("tracks\\cityLights.mp3");
                 //Console.WriteLine(GetParentIDs().ToJoinedString(", "));
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
@@ -479,7 +480,7 @@ namespace Stolon
             }
             if (updateData["startCom"].IsClicked)
             {
-                SLScene.MainInstance.SetBoard(new Player[]
+                Scene.MainInstance.SetBoard(new Player[]
                         {
                             new Player("player0"),
                             Instance.Environment.Entities["goldsilk"].GetPlayer()
@@ -526,7 +527,7 @@ namespace Stolon
 
                 loadingFinished = true;
                 //Instance.Scene = new SLScene();
-                Instance.Environment.GameState = SLEnvironment.SLGameState.OpenBoard;
+                Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
             }
 
             Centering.OnPixel(ref menuLogoDrawPos);
@@ -573,9 +574,9 @@ namespace Stolon
         //public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            switch (SLEnvironment.Instance.GameState)
+            switch (StolonEnvironment.Instance.GameState)
             {
-                case SLEnvironment.SLGameState.OpenBoard:
+                case StolonEnvironment.SLGameState.OpenBoard:
                     spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(Point.Zero, new Point((int)lineX1, 500)), Color.Black);
                     spriteBatch.DrawLine(lineX1, -10f, lineX1, 500f, Color.White, lineWidth);
                     spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle((int)lineX2, 0, Instance.VirtualDimensions.X - (int)lineX2, 500), Color.Black);
@@ -585,10 +586,10 @@ namespace Stolon
                     else mouseClickElementBoundsCoefficient = 0f; // I really shouldent be altering this in the Draw() method..
 
                     break;
-                case SLEnvironment.SLGameState.InMenu:
+                case StolonEnvironment.SLGameState.InMenu:
                     spriteBatch.DrawLine(menuLine1X, -10f, menuLine1X, menuLineLenght, Color.White, menuLineWidth);
                     spriteBatch.DrawLine(menuLine2X, -10f, menuLine2X, menuLineLenght, Color.White, menuLineWidth);
-                    if (menuDone) spriteBatch.DrawString(uifont, tips[tipId], tipPos, Color.White, 0f, Vector2.Zero, SLEnvironment.FontScale, SpriteEffects.None, 1f);
+                    if (menuDone) spriteBatch.DrawString(uifont, tips[tipId], tipPos, Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 1f);
 
                     if (drawMenuLogoLowResFonted)
                     {
@@ -619,12 +620,12 @@ namespace Stolon
                     spriteBatch.DrawLine(width, -10f, width, menuRemoveLineY, Color.White, lineWidth);
                     spriteBatch.DrawLine(Instance.VirtualDimensions.X - width, -10f, Instance.VirtualDimensions.X - width, menuRemoveLineY, Color.White, lineWidth);
                     break;
-                case SLEnvironment.SLGameState.Loading:
+                case StolonEnvironment.SLGameState.Loading:
                     break;
             }
             foreach (UIElementDrawData elementDrawData in drawData)
             {
-                spriteBatch.DrawString(uifont, elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, SLEnvironment.FontScale, SpriteEffects.None, 1f);
+                spriteBatch.DrawString(uifont, elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 1f);
                 if (elementDrawData.DrawRectangle)
                 {
                     spriteBatch.DrawRectangle(elementDrawData.Rectangle, Color.White, 1f);
@@ -634,7 +635,7 @@ namespace Stolon
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
         /// <summary>
-        /// Add an element to the <see cref="SLUserInterface"/>.
+        /// Add an element to the <see cref="UserInterface"/>.
         /// </summary>
         /// <param name="element">The <see cref="UIElement"/> to add.</param>
         public void AddElement(UIElement element)
@@ -645,7 +646,7 @@ namespace Stolon
             //Instance.DebugStream.WriteLine("\t\tstale-ui-element with id " + element.Id + " added.");
         }
         /// <summary>
-        /// Remove an <see cref="UIElement"/> from the <see cref="SLUserInterface"/>.
+        /// Remove an <see cref="UIElement"/> from the <see cref="UserInterface"/>.
         /// </summary>
         /// <param name="elementID">The <see cref="UIElement.Id"/> of the <see cref="UIElement"/> to remove.</param>
         public void RemoveElement(string elementID)
@@ -792,7 +793,7 @@ namespace Stolon
         public override bool Equals([NotNullWhen(true)] object? obj) => obj.GetHashCode() == GetHashCode();
     }
     /// <summary>
-    /// Reprecents a button or textplane in the UI. Add new elements to the <see cref="SLUserInterface"/> using the <see cref="SLUserInterface.AddElement(UIElement)"/> method.
+    /// Reprecents a button or textplane in the UI. Add new elements to the <see cref="UserInterface"/> using the <see cref="UserInterface.AddElement(UIElement)"/> method.
     /// </summary>
     public class UIElement
     {
@@ -848,7 +849,7 @@ namespace Stolon
         /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
         /// </summary>
         /// <param name="elementPos">The position of the <see cref="UIElement"/>.</param>
-        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="SLEnvironment.FontDimensions"/>.</i></param>
+        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="StolonEnvironment.FontDimensions"/>.</i></param>
         /// <param name="clearance">The clearance between the text and the bounds. <i>(Or margin for the CSS enjoyers)</i></param>
         /// <param name="supportMultiline"></param>
         /// <param name="fontId"></param>
@@ -869,7 +870,7 @@ namespace Stolon
         /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
         /// </summary>
         /// <param name="elementPos">The position of the <see cref="UIElement"/>.</param>
-        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="SLEnvironment.FontDimensions"/>.</i></param>
+        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="StolonEnvironment.FontDimensions"/>.</i></param>
         /// <param name="clearance">The clearance between the text and the bounds. <i>(Or padding for the CSS enjoyers)</i></param>
         /// <param name="supportMultiline"></param>
         /// <param name="fontId"></param>

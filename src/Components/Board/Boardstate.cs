@@ -314,8 +314,8 @@ namespace Stolon
             TileCount--;
             if (undoObj.NextPlayer) CurrentPlayerID = CurrentPlayerID == 0 ? 1 : 0;
 
-            undoObj.Sim.Attributes.Remove((TileAttributeBase)TileAttribute.TileAttributes["Player" + CurrentPlayerID + "Occupied"]);
-            undoObj.Sim.Attributes.Remove(TileAttribute.Get<TileAttribute.TileAttributeSolid>());
+            undoObj.Sim.Attributes.Remove((TileAttributeBase)TileAttributes.Attributes["Player" + CurrentPlayerID + "Occupied"]);
+            undoObj.Sim.Attributes.Remove(TileAttributes.Get<TileAttributes.TileAttributeSolid>());
 
             Alter(new Tile(undoObj.Sim.TiledPosition, undoObj.Sim.TileType, undoObj.Sim.Attributes));
         }
