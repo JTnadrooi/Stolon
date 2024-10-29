@@ -16,6 +16,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using DiscordRPC;
 using DiscordRPC.Events;
+using Microsoft.Xna.Framework.Media;
 
 #nullable enable
 
@@ -155,8 +156,10 @@ namespace Stolon
             _bloomFilter.Dispose();
         }
         public void SLExit()
-		{
-			Exit();
+        {
+            MediaPlayer.Stop();
+            AudioPlaybackEngine.Instance.Dispose();
+            Exit();
 		}
 		protected override void Update(GameTime gameTime)
 		{

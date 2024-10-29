@@ -21,6 +21,8 @@ using AsitLib;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Microsoft.Xna.Framework.Media;
+using System.Reflection.Metadata;
 
 #nullable enable
 
@@ -132,7 +134,7 @@ namespace Stolon
         /// </summary>
         public float Line2X => lineX2;
 
-
+        public Song CurrentTrack { get; set; }
 
         /// <summary>
         /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> containing all the <see cref="UIElementDrawData"/> objects from all the <see cref="UIElement"/> objects refreched AFTER the UI update.
@@ -275,13 +277,10 @@ namespace Stolon
             };
 
             tipId = new Random().Next(0, tips.Length);
-
-
-            
         }
         public void Initialize()
         {
-            StolonGame.Instance.DebugStream.WriteLine("\t[s]initializing ui..");
+            StolonGame.Instance.DebugStream.WriteLine("[s]initializing ui..");
             // top
             AddElement(new UIElement(boardLeftParentId, UIElement.topId, string.Empty, UIElementType.Listen));
             AddElement(new UIElement(boardRightParentId, UIElement.topId, string.Empty, UIElementType.Listen));
@@ -321,6 +320,8 @@ namespace Stolon
             AddElement(new UIElement("volDown", "sound", "Volume DOWN", UIElementType.Listen));
 
             MenuPath = GetSelfPath(titleParentId);
+
+            StolonGame.Instance.DebugStream.WriteLine("autogenerating _back_ buttons..");
             HashSet<string> parentIds = GetParentIDs();
             foreach (string id in parentIds)
             {
@@ -465,6 +466,7 @@ namespace Stolon
                 Console.WriteLine(UIElement.GetSelfPath("options"));
                 Console.WriteLine(UIElement.GetParentPath("options"));
                 MenuPath = UIElement.GetSelfPath("options");
+                AudioPlaybackEngine.Instance.PlaySound("C:\\Users\\Gebruiker\\source\\repos\\Stolon\\Stolon\\content\\tracks\\cityLights.mp3");
                 //Console.WriteLine(GetParentIDs().ToJoinedString(", "));
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
@@ -640,8 +642,8 @@ namespace Stolon
         {
             AllUIElements.Add(element.Id, element);
             Instance.DebugStream.WriteLine("\tui-element with id " + element.Id + " added.");
-            updateData.Add(element.Id, default);
-            Instance.DebugStream.WriteLine("\tghost-ui-element with id " + element.Id + " added.");
+            //updateData.Add(element.Id, default);
+            //Instance.DebugStream.WriteLine("\t\tstale-ui-element with id " + element.Id + " added.");
         }
         /// <summary>
         /// Remove an <see cref="UIElement"/> from the <see cref="SLUserInterface"/>.
