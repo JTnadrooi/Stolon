@@ -465,8 +465,7 @@ namespace Stolon
             {
                 Console.WriteLine(UIElement.GetSelfPath("options"));
                 Console.WriteLine(UIElement.GetParentPath("options"));
-                MenuPath = UIElement.GetSelfPath("options");
-                AudioPlaybackEngine.Instance.PlaySound("C:\\Users\\Gebruiker\\source\\repos\\Stolon\\Stolon\\content\\tracks\\cityLights.mp3");
+                MenuPath = UIElement.GetSelfPath("options"); AudioPlaybackEngine.Instance.PlaySound("content/tracks/cityLights.mp3");
                 //Console.WriteLine(GetParentIDs().ToJoinedString(", "));
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
