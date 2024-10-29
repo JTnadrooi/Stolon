@@ -133,6 +133,7 @@ namespace Stolon
 			Fonts.Add("fiont", textures.HardLoad<SpriteFont>("fonts\\fiont"));
 
 			environment = new SLEnvironment();
+			environment.Initialize();
 
 			replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
 			palette = new Color[]

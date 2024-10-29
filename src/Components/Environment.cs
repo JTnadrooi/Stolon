@@ -108,12 +108,17 @@ namespace Stolon
         {
             scene = new SLScene();
             entities = new Dictionary<string, SLEntity>();
+        }
+        internal void Initialize()
+        {
             FontDimensions = (Font.MeasureString("A") * SLEnvironment.FontScale).ToPoint();
 
             RegisterEntity(new GoldsilkEntity());
             // RegisterCharacter(new DeadlineEntity());
 
             userInterface = new SLUserInterface();
+            userInterface.Initialize();
+
             overlayer = new SLOverlayer();
 
             gameState = SLGameState.InMenu;

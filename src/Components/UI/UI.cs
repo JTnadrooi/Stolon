@@ -17,6 +17,10 @@ using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using RectangleF = MonoGame.Extended.RectangleF;
 using static Stolon.SLUserInterface;
+using AsitLib;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 #nullable enable
 
@@ -27,6 +31,12 @@ namespace Stolon
     /// </summary>
     public class SLUserInterface : AxComponent
     {
+
+        public enum BoardSide
+        {
+            Left,
+            Right,
+        }
         private SLEnvironment environment;
 
         private List<UIElementDrawData> drawData;
@@ -122,6 +132,8 @@ namespace Stolon
         /// </summary>
         public float Line2X => lineX2;
 
+
+
         /// <summary>
         /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> containing all the <see cref="UIElementDrawData"/> objects from all the <see cref="UIElement"/> objects refreched AFTER the UI update.
         /// </summary>
@@ -148,6 +160,7 @@ namespace Stolon
         /// </summary>
         public int LineWidth => lineWidth;
 
+        public UIPath MenuPath { get; set; }
         /// <summary>
         /// Main UIInterface contructor.
         /// </summary>
@@ -159,7 +172,6 @@ namespace Stolon
             lineWidth = 2;
 
             uifont = Instance.Fonts["fiont"];
-
 
             menuLogoLines = Instance.Textures.GetReference("textures\\menuLogo\\lines");
             menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogo\\dummyTiles");
@@ -178,6 +190,7 @@ namespace Stolon
             ((Texture2D)mouseClickFillElementTexture).SetData(new Color[] { Color.White });
 
             textframe = new SLTextframe(this);
+
 
             drawMenuLogoLines = true;
             drawMenuLogoDummyTiles = true;
@@ -257,35 +270,62 @@ namespace Stolon
                 "27 Compile errors.",
                 "Simply Rendering,",
                 "Behold, The \"Sky Train\"!",
-                "dot hat :drool:"
+                "dot hat :drool:",
+                "Cherry-pilled!"
             };
 
             tipId = new Random().Next(0, tips.Length);
 
 
+            
+        }
+        public void Initialize()
+        {
             StolonGame.Instance.DebugStream.WriteLine("\t[s]initializing ui..");
-            AddElement(new UIElement("exitGame", boardLeftParentId, "Exit Game", UIElementType.Clickable));
+            // top
+            AddElement(new UIElement(boardLeftParentId, UIElement.topId, string.Empty, UIElementType.Listen));
+            AddElement(new UIElement(boardRightParentId, UIElement.topId, string.Empty, UIElementType.Listen));
+            AddElement(new UIElement(titleParentId, UIElement.topId, string.Empty, UIElementType.Listen));
 
-            AddElement(new UIElement("screenRegion2", boardLeftParentId, string.Empty, UIElementType.Text));
-            AddElement(new UIElement("screenRegion", boardLeftParentId, "Screen & Camera", UIElementType.Text));
-            AddElement(new UIElement("toggleFullscreen", boardLeftParentId, "Go Fullscreen", UIElementType.Clickable));
-            AddElement(new UIElement("centerCamera", boardLeftParentId, "Center Camera", UIElementType.Clickable));
+            // board l
+            AddElement(new UIElement("exitGame", boardLeftParentId, "Exit Game", UIElementType.Listen));
 
-            AddElement(new UIElement("boardRegion2", boardLeftParentId, string.Empty, UIElementType.Text));
-            AddElement(new UIElement("boardRegion", boardLeftParentId, "Board", UIElementType.Text));
-            AddElement(new UIElement("undoMove", boardLeftParentId, "Undo", UIElementType.Clickable));
-            AddElement(new UIElement("restartBoard", boardLeftParentId, "Restart", UIElementType.Clickable));
-            AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Clickable));
-            AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Clickable));
+            AddElement(new UIElement("screenRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
+            AddElement(new UIElement("screenRegion", boardLeftParentId, "Screen & Camera", UIElementType.Ignore));
+            AddElement(new UIElement("toggleFullscreen", boardLeftParentId, "Go Fullscreen", UIElementType.Listen));
+            AddElement(new UIElement("centerCamera", boardLeftParentId, "Center Camera", UIElementType.Listen));
 
-            AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Text));
+            AddElement(new UIElement("boardRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
+            AddElement(new UIElement("boardRegion", boardLeftParentId, "Board", UIElementType.Ignore));
+            AddElement(new UIElement("undoMove", boardLeftParentId, "Undo", UIElementType.Listen));
+            AddElement(new UIElement("restartBoard", boardLeftParentId, "Restart", UIElementType.Listen));
+            AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Listen));
+            AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Listen));
 
-            AddElement(new UIElement("startStory", titleParentId, "Story", UIElementType.Clickable));
-            AddElement(new UIElement("startCom", titleParentId, "COM", UIElementType.Clickable));
-            AddElement(new UIElement("startXp", titleParentId, "2P", UIElementType.Clickable));
-            AddElement(new UIElement("options", titleParentId, "Options", UIElementType.Clickable));
-            AddElement(new UIElement("specialThanks", titleParentId, "Special Thanks :D", UIElementType.Clickable));
-            AddElement(new UIElement("quit", titleParentId, "Quit", UIElementType.Clickable));
+            // board r
+            AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Ignore));
+
+            // main menu
+            AddElement(new UIElement("startStory", titleParentId, "Story", UIElementType.Listen));
+            AddElement(new UIElement("startCom", titleParentId, "COM", UIElementType.Listen));
+            AddElement(new UIElement("startXp", titleParentId, "2P", UIElementType.Listen));
+            AddElement(new UIElement("options", titleParentId, "Options", UIElementType.Listen));
+            AddElement(new UIElement("specialThanks", titleParentId, "Special Thanks :D", UIElementType.Listen));
+            AddElement(new UIElement("quit", titleParentId, "Quit", UIElementType.Listen));
+
+            // options
+            AddElement(new UIElement("sound", "options", "Sound", UIElementType.Listen));
+            AddElement(new UIElement("graphics", "options", "Graphics", UIElementType.Listen));
+
+            AddElement(new UIElement("volUp", "sound", "Volume UP", UIElementType.Listen));
+            AddElement(new UIElement("volDown", "sound", "Volume DOWN", UIElementType.Listen));
+
+            MenuPath = GetSelfPath(titleParentId);
+            HashSet<string> parentIds = GetParentIDs();
+            foreach (string id in parentIds)
+            {
+                AddElement(new UIElement("_back_" + id, id, "Back", UIElementType.Listen));
+            }
         }
         /// <summary>
         /// Clears both the updatedata and drawdata collections, making them ready to be repopulated by the methods in the <see cref="UIOrdering"/> class.<br/>
@@ -297,6 +337,17 @@ namespace Stolon
             foreach (UIElement uiElement in AllUIElements.Values)
                 updateData.Add(uiElement.Id, new UIElementUpdateData(false, uiElement.Id));
             drawData.Clear();
+        }
+        public HashSet<string> GetTopIDs() => UIElements.Values.Where(e => e.IsTop).Select(e => e.Id).ToHashSet();
+        //public HashSet<string> GetDockIDs()
+        //{
+        //    var topIds = GetTopIDs();
+        //    return UIElements.Values.Where(e => topIds.Contains(e.ChildOf)).Select(e => e.Id).ToHashSet();
+        //}
+        public HashSet<string> GetParentIDs()
+        {
+            var topIds = GetTopIDs();
+            return UIElements.Values.WhereSelect(e => (e.ChildOf, !e.IsTop && !topIds.Contains(e.ChildOf))).ToHashSet();
         }
         public override void Update(int elapsedMiliseconds)
         {
@@ -397,7 +448,7 @@ namespace Stolon
                         (i >= menuDitherTexturePositions.Length / 2f) ? menuLine2X : menuLine1X - dither8x8.Width,
                         (i % (int)(menuDitherTexturePositions.Length / 2f)) * dither8x8.Height);
 
-            UIOrdering.Order(AllUIElements.Values.ToArray(), titleParentId, drawData, updateData, new Vector2(0, uiElementOffsetY), OrderProviders.Menu);
+            UIOrdering.Order(AllUIElements.Values.ToArray(), MenuPath, drawData, updateData, new Vector2(0, uiElementOffsetY), OrderProviders.Menu);
 
             if (updateData["startXp"].IsClicked)
             {
@@ -411,7 +462,15 @@ namespace Stolon
             }
             if (updateData["options"].IsClicked)
             {
-                textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+                Console.WriteLine(UIElement.GetSelfPath("options"));
+                Console.WriteLine(UIElement.GetParentPath("options"));
+                MenuPath = UIElement.GetSelfPath("options");
+                //Console.WriteLine(GetParentIDs().ToJoinedString(", "));
+                //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+            }
+            if (updateData["sound"].IsClicked)
+            {
+                MenuPath = UIElement.GetSelfPath("sound");
             }
             if (updateData["startStory"].IsClicked)
             {
@@ -433,6 +492,17 @@ namespace Stolon
             if (updateData["quit"].IsClicked)
             {
                 Instance.SLExit();
+            }
+            foreach (string item in UIElements.Keys)
+            {
+                if (updateData.TryGetValue("_back_" + item, out UIElementUpdateData updateData2))
+                {
+                    if (updateData2.IsClicked)
+                    {
+                        MenuPath = UIElement.GetParentPath(item);
+                        Console.WriteLine(GetSelfPath(item));
+                    }
+                }
             }
 
             if (!menuDone) return;
@@ -642,7 +712,7 @@ namespace Stolon
             Rectangle elementRectangle = element.GetBounds(elementPos.ToPoint(), Instance.Environment.FontDimensions);
             string elementText = element.Text;
             bool elementIsHovered = elementRectangle.Contains(SLMouse.VirualPosition);
-            bool drawRectangle = element.Type == UIElementType.Clickable;
+            bool drawRectangle = element.Type == UIElementType.Listen;
             return (new UIElementDrawData(element.Id, elementText + ((elementIsHovered && drawRectangle) ? " <" : string.Empty), element.Type, elementPos + Vector2.Zero, elementRectangle, drawRectangle), elementIsHovered);
         }
     }
@@ -672,6 +742,22 @@ namespace Stolon
     /// </summary>
     public static class UIOrdering
     {
+        public static void Order(UIElement[] uIElements, UIPath path, ICollection<UIElementDrawData> drawDump, IDictionary<string, UIElementUpdateData> updateDump,
+            Vector2 uiOrgin, IOrderProvider orderProvider, bool isMouseRelevant = true)
+        {
+            //if (!path.HasValue)
+            //{
+            //    Order(uIElements, topParentID, drawDump, updateDump, uiOrgin, orderProvider, isMouseRelevant);
+            //    return;
+            //}
+
+            //UIPath path;
+            //var temp = openPaths.Where(p => p.TopID == topParentID);
+            //if (temp.Count() > 1) throw new Exception();
+            //else path = temp.First();
+
+            Order(uIElements, path.UIElementID, drawDump, updateDump, uiOrgin, orderProvider, isMouseRelevant);
+        }
         public static void Order(UIElement[] uIElements, string parentID, ICollection<UIElementDrawData> drawDump, IDictionary<string, UIElementUpdateData> updateDump,
             Vector2 uiOrgin, IOrderProvider orderProvider, bool isMouseRelevant = true)
         {
@@ -685,25 +771,46 @@ namespace Stolon
             }
         }
     }
+    public struct UIPath : IEnumerable<string>
+    {
+        public string TopID => segments[0];
+        public string ParentID => segments[^1];
+        public string UIElementID => segments.Last();
+        public int Lenght => segments.Count;
+        public ReadOnlyCollection<string> Segments => segments.AsReadOnly();
+        private readonly List<string> segments;
+        public UIPath(IEnumerable<string> segments)
+        {
+            this.segments = new List<string>(segments);
+        }
+        public string this[int index] => segments[index];
+        public IEnumerator<string> GetEnumerator() => segments.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public override string ToString() => "{" + segments.ToJoinedString(">") + "}";
+        public override int GetHashCode() => segments.ToJoinedString(string.Empty).GetHashCode();
+        public override bool Equals([NotNullWhen(true)] object? obj) => obj.GetHashCode() == GetHashCode();
+    }
     /// <summary>
     /// Reprecents a button or textplane in the UI. Add new elements to the <see cref="SLUserInterface"/> using the <see cref="SLUserInterface.AddElement(UIElement)"/> method.
     /// </summary>
     public class UIElement
     {
         /// <summary>
-        /// What type the <see cref="UIElement"/> is. When <see cref="Clickable"/>, "collisions" with the mouse will be calculated for its hitbox.
+        /// What type the <see cref="UIElement"/> is. When <see cref="Listen"/>, "collisions" with the mouse will be calculated for its hitbox.
         /// </summary>
         public enum UIElementType
         {
             /// <summary>
             /// Its relevant when this <see cref="UIElement"/> gets clicked.
             /// </summary>
-            Clickable,
+            Listen,
             /// <summary>
             /// Its not relevant when this <see cref="UIElement"/> gets clicked.
             /// </summary>
-            Text,
+            Ignore,
         }
+        public bool IsTop => ChildOf == topId;
+        public const string topId = "_";
         /// <summary>
         /// The type of the <see cref="UIElement"/>.
         /// </summary>
@@ -725,13 +832,16 @@ namespace Stolon
         /// </summary>
         public string ChildOf { get; }
 
-        public UIElement(string id, string childOf, string? text = null, UIElementType type = UIElementType.Text, string? order = null)
+        public object?[] DrawArguments { get; }
+
+        public UIElement(string id, string childOf, string? text = null, UIElementType type = UIElementType.Listen, string? order = null, params object?[] drawArgs)
         {
             Text = text ?? id;
             Type = type;
             Id = id;
             Order = order;
             ChildOf = childOf;
+            DrawArguments = drawArgs;
         }
         /// <summary>
         /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
@@ -747,12 +857,19 @@ namespace Stolon
         public Rectangle GetBounds(Point elementPos, Point fontDimensions, int clearance = DefaultRectangleClearance, bool supportMultiline = false, string fontId = "", int posOffsetX = 0, int posOffsetY = 0)
             => GetBounds(elementPos, Text, fontDimensions, clearance, supportMultiline, fontId, posOffsetX, posOffsetY);
 
+        public static UIPath GetSelfPath(string id)
+        {
+            IEnumerable<string> GetListPath(string idForSearch)
+                => idForSearch == topId ? idForSearch.ToSingleArray() : GetListPath(Instance.Environment.UI.UIElements[idForSearch].ChildOf).Concat(idForSearch.ToSingleArray());
+            return new UIPath(GetListPath(id).ToArray()[1..]);
+        }
+        public static UIPath GetParentPath(string id) => new UIPath(GetSelfPath(id).Segments.ToArray()[..^1]);
         /// <summary>
         /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
         /// </summary>
         /// <param name="elementPos">The position of the <see cref="UIElement"/>.</param>
         /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="SLEnvironment.FontDimensions"/>.</i></param>
-        /// <param name="clearance">The clearance between the text and the bounds. <i>(Or margin for the CSS enjoyers)</i></param>
+        /// <param name="clearance">The clearance between the text and the bounds. <i>(Or padding for the CSS enjoyers)</i></param>
         /// <param name="supportMultiline"></param>
         /// <param name="fontId"></param>
         /// <param name="posOffsetX"></param>
@@ -772,6 +889,7 @@ namespace Stolon
 
             return new Rectangle(boundsPos, new Point(rectangeSizeX, rectangeSizeY));
         }
+
 
         public override string ToString()
         {
