@@ -38,7 +38,7 @@ namespace Stolon
 		private Effect replaceColorEffect;
 		private AxTextureCollection textures;
 		public DiscordRichPresence DRP { get; set; }
-		private BloomFilter _bloomFilter;
+		private BloomFilter bloomFilter;
 
 		public StolonEnvironment Environment => environment;
 		public Scene Scene
@@ -46,7 +46,8 @@ namespace Stolon
 			get => environment.Scene;
 			set => environment.Scene = value;
 		}
-		public UserInterface UserInterface => environment.UI;
+		public AudioEngine AudioEngine { get; }
+        public UserInterface UserInterface => environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); // (480, 270) (if vM = 30)
 		public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
@@ -74,8 +75,9 @@ namespace Stolon
 			Content.RootDirectory = "Content";
 			IsMouseVisible = true;
 			Fonts = new Dictionary<string, SpriteFont>();
+            AudioEngine = new AudioEngine();
 
-			DebugStream = new AsitDebugStream();
+            DebugStream = new AsitDebugStream();
 		}
 
 		protected override void Initialize()
@@ -143,17 +145,16 @@ namespace Stolon
 				System.Drawing.ColorTranslator.FromHtml("#171219").ToColor(),
 			};
 
-			_bloomFilter = new BloomFilter();
-			_bloomFilter.Load(GraphicsDevice, Content, aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
-
-			_bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
+			bloomFilter = new BloomFilter();
+			bloomFilter.Load(GraphicsDevice, Content, aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
+			bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
 
 			DebugStream.Succes();
 			base.LoadContent();
 		}
 		protected override void UnloadContent()
 		{
-			_bloomFilter.Dispose();
+			bloomFilter.Dispose();
 		}
 		public void SLExit()
 		{
@@ -199,7 +200,7 @@ namespace Stolon
 				graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
 				graphics.ApplyChanges();
 			}
-			_bloomFilter.UpdateResolution(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+			bloomFilter.UpdateResolution(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 			graphics.ToggleFullScreen();
 			graphics.ApplyChanges();
 		}

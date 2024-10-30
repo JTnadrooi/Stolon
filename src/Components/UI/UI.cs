@@ -150,6 +150,7 @@ namespace Stolon
         public const string titleParentId = "titleParent";
         public const string boardLeftParentId = "boardLeftParent";
         public const string boardRightParentId = "boardRightParent";
+        private Dictionary<string, CachedAudio> audioLibrary;
         private Textframe textframe;
 
         /// <summary>
@@ -172,6 +173,10 @@ namespace Stolon
 
             lineOffset = 96f;
             lineWidth = 2;
+            audioLibrary = new Dictionary<string, CachedAudio>();
+
+            audioLibrary.Add("click", new CachedAudio("audio\\button1.wav", "click"));
+            //audioLibrary.Add("click", new CachedAudio("audio\\tracks\\cityLights.flac", "click"));
 
             uifont = Instance.Fonts["fiont"];
 
@@ -353,6 +358,7 @@ namespace Stolon
         public override void Update(int elapsedMiliseconds)
         {
             ResetElementData();
+            
 
             textframe.Update(elapsedMiliseconds);
             switch (Instance.Environment.GameState)
@@ -365,6 +371,22 @@ namespace Stolon
                     break;
                 case StolonEnvironment.SLGameState.Loading:
                     break;
+            }
+            foreach (string item in UIElements.Keys)
+            {
+                if (updateData[item].IsClicked)
+                {
+                    AudioEngine.Instance.Play(audioLibrary["click"]);
+                    //AudioEngine.Instance.Play("audio\\tracks\\cityLights.flac", "button");
+                }
+                if (updateData.TryGetValue("_back_" + item, out UIElementUpdateData updateData2))
+                {
+                    if (updateData2.IsClicked)
+                    {
+                        MenuPath = UIElement.GetParentPath(item);
+                        Console.WriteLine(GetSelfPath(item));
+                    }
+                }
             }
             base.Update(elapsedMiliseconds);
         }
@@ -466,13 +488,22 @@ namespace Stolon
                 Console.WriteLine(UIElement.GetSelfPath("options"));
                 Console.WriteLine(UIElement.GetParentPath("options"));
                 MenuPath = UIElement.GetSelfPath("options"); 
-                AudioEngine.Instance.PlayAudio("tracks\\cityLights.mp3");
                 //Console.WriteLine(GetParentIDs().ToJoinedString(", "));
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
             if (updateData["sound"].IsClicked)
             {
                 MenuPath = UIElement.GetSelfPath("sound");
+            }
+            if (updateData["volUp"].IsClicked)
+            {
+                AudioEngine.Instance.Volume += 0.1001f;
+                Console.WriteLine(AudioEngine.Instance.Volume);
+            }
+            if (updateData["volDown"].IsClicked)
+            {
+                AudioEngine.Instance.Volume -= 0.1001f;
+                Console.WriteLine(AudioEngine.Instance.Volume);
             }
             if (updateData["startStory"].IsClicked)
             {
@@ -494,17 +525,6 @@ namespace Stolon
             if (updateData["quit"].IsClicked)
             {
                 Instance.SLExit();
-            }
-            foreach (string item in UIElements.Keys)
-            {
-                if (updateData.TryGetValue("_back_" + item, out UIElementUpdateData updateData2))
-                {
-                    if (updateData2.IsClicked)
-                    {
-                        MenuPath = UIElement.GetParentPath(item);
-                        Console.WriteLine(GetSelfPath(item));
-                    }
-                }
             }
 
             if (!menuDone) return;
