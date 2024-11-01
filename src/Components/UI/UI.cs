@@ -23,6 +23,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Xna.Framework.Media;
 using System.Reflection.Metadata;
+using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 #nullable enable
 
@@ -150,8 +152,8 @@ namespace Stolon
         public const string titleParentId = "titleParent";
         public const string boardLeftParentId = "boardLeftParent";
         public const string boardRightParentId = "boardRightParent";
-        private Dictionary<string, CachedAudio> audioLibrary;
         private Textframe textframe;
+        public Action? onLeave;
 
         /// <summary>
         /// The <see cref="Stolon.Textframe"/> managed by the <see cref="UserInterface"/>.
@@ -164,6 +166,15 @@ namespace Stolon
         public int LineWidth => lineWidth;
 
         public UIPath MenuPath { get; set; }
+
+        static string CamelCase(string s)
+        {
+            var x = s.Replace("_", "");
+            if (x.Length == 0) return "null";
+            x = Regex.Replace(x, "([A-Z])([A-Z]+)($|[A-Z])",
+                m => m.Groups[1].Value + m.Groups[2].Value.ToLower() + m.Groups[3].Value);
+            return char.ToLower(x[0]) + x.Substring(1);
+        }
         /// <summary>
         /// Main UIInterface contructor.
         /// </summary>
@@ -173,9 +184,24 @@ namespace Stolon
 
             lineOffset = 96f;
             lineWidth = 2;
-            audioLibrary = new Dictionary<string, CachedAudio>();
 
-            audioLibrary.Add("click", new CachedAudio("audio\\button1.wav", "click"));
+            //audioLibrary.Add("button3", new CachedAudio("audio\\button3.wav", "button3"));
+            //AudioEngine.AudioLibrary.Add("menuTheme", new CachedAudio("audio\\tracks\\menuTheme.wav", "menuTheme"));
+
+            foreach (string filePath in Directory.GetFiles("audio", "*.wav", SearchOption.AllDirectories))
+            {
+                //string fileName = Path.GetFileNameWithoutExtension(filePath).ToLower().Replace(" ", string.Empty);
+                string fileName = CamelCase(Path.GetFileNameWithoutExtension(filePath).Replace(" ", string.Empty));
+                AudioEngine.AudioLibrary.Add(fileName, new CachedAudio(filePath, fileName));
+                Console.WriteLine(fileName);
+            }
+
+            foreach (var item in AudioEngine.AudioLibrary)
+            {
+                Console.WriteLine($"key: {item.Key}, name: {item.Value.ID}");
+            }
+
+
             //audioLibrary.Add("click", new CachedAudio("audio\\tracks\\cityLights.flac", "click"));
 
             uifont = Instance.Fonts["fiont"];
@@ -310,16 +336,16 @@ namespace Stolon
             AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Ignore));
 
             // main menu
-            AddElement(new UIElement("startStory", titleParentId, "Story", UIElementType.Listen));
-            AddElement(new UIElement("startCom", titleParentId, "COM", UIElementType.Listen));
-            AddElement(new UIElement("startXp", titleParentId, "2P", UIElementType.Listen));
+            AddElement(new UIElement("startStory", titleParentId, "Story", UIElementType.Listen, clickSoundId: "exit3"));
+            AddElement(new UIElement("startCom", titleParentId, "COM", UIElementType.Listen, clickSoundId: "coin4"));
+            AddElement(new UIElement("startXp", titleParentId, "2P", UIElementType.Listen, clickSoundId: "coin4"));
             AddElement(new UIElement("options", titleParentId, "Options", UIElementType.Listen));
             AddElement(new UIElement("specialThanks", titleParentId, "Special Thanks :D", UIElementType.Listen));
             AddElement(new UIElement("quit", titleParentId, "Quit", UIElementType.Listen));
 
             // options
             AddElement(new UIElement("sound", "options", "Sound", UIElementType.Listen));
-            AddElement(new UIElement("graphics", "options", "Graphics", UIElementType.Listen));
+            AddElement(new UIElement("graphics", "options", "Graphics", UIElementType.Listen, clickSoundId: "exit3"));
 
             AddElement(new UIElement("volUp", "sound", "Volume UP", UIElementType.Listen));
             AddElement(new UIElement("volDown", "sound", "Volume DOWN", UIElementType.Listen));
@@ -358,7 +384,6 @@ namespace Stolon
         public override void Update(int elapsedMiliseconds)
         {
             ResetElementData();
-            
 
             textframe.Update(elapsedMiliseconds);
             switch (Instance.Environment.GameState)
@@ -372,12 +397,12 @@ namespace Stolon
                 case StolonEnvironment.SLGameState.Loading:
                     break;
             }
+
             foreach (string item in UIElements.Keys)
             {
                 if (updateData[item].IsClicked)
                 {
-                    AudioEngine.Instance.Play(audioLibrary["click"]);
-                    //AudioEngine.Instance.Play("audio\\tracks\\cityLights.flac", "button");
+                    AudioEngine.Instance.Play(updateData[item].ClickSound);
                 }
                 if (updateData.TryGetValue("_back_" + item, out UIElementUpdateData updateData2))
                 {
@@ -387,6 +412,11 @@ namespace Stolon
                         Console.WriteLine(GetSelfPath(item));
                     }
                 }
+            }
+
+            if (!AudioEngine.Mixer.Sources.ContainsKey("menuTheme"))
+            {
+                AudioEngine.Instance.Play(AudioEngine.AudioLibrary["menuTheme"]);
             }
             base.Update(elapsedMiliseconds);
         }
@@ -485,11 +515,9 @@ namespace Stolon
             }
             if (updateData["options"].IsClicked)
             {
-                Console.WriteLine(UIElement.GetSelfPath("options"));
-                Console.WriteLine(UIElement.GetParentPath("options"));
+                //Console.WriteLine(UIElement.GetSelfPath("options"));
+                //Console.WriteLine(UIElement.GetParentPath("options"));
                 MenuPath = UIElement.GetSelfPath("options"); 
-                //Console.WriteLine(GetParentIDs().ToJoinedString(", "));
-                //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
             if (updateData["sound"].IsClicked)
             {
@@ -498,16 +526,17 @@ namespace Stolon
             if (updateData["volUp"].IsClicked)
             {
                 AudioEngine.Instance.Volume += 0.1001f;
-                Console.WriteLine(AudioEngine.Instance.Volume);
+                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Instance.Volume);
             }
             if (updateData["volDown"].IsClicked)
             {
                 AudioEngine.Instance.Volume -= 0.1001f;
-                Console.WriteLine(AudioEngine.Instance.Volume);
+                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Instance.Volume);
             }
             if (updateData["startStory"].IsClicked)
             {
-                textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+                Leave(() => Instance.Environment.Overlayer.Activate("transitionDither"));
+                //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
             if (updateData["startCom"].IsClicked)
             {
@@ -542,12 +571,16 @@ namespace Stolon
             if (menuLogoDisapearFlashHandler.HasEnded && !menuRemoveTweener.Running && !loadingFinished)
             {
                 //SLEnvironment.Instance.ForceGameState(SLEnvironment.SLGameState.OpenBoard);
-                if (Board.MainInstance == null) throw new Exception();
+                //if (Board.MainInstance == null) throw new Exception();
 
 
                 loadingFinished = true;
-                //Instance.Scene = new SLScene();
-                Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
+                onLeave?.Invoke();
+                onLeave = null;
+                if (Scene.MainInstance.HasBoard)
+                    Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
+                else Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenScene;
+                //AudioEngine.Instance.Play(AudioEngine.AudioLibrary["explosion4"]);
             }
 
             Centering.OnPixel(ref menuLogoDrawPos);
@@ -587,9 +620,10 @@ namespace Stolon
         /// <summary>
         /// Leave the main menu.
         /// </summary>
-        public void Leave()
+        public void Leave(Action? onLeave = null)
         {
             menuDone = true;
+            this.onLeave = onLeave;
         }
         //public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
@@ -832,6 +866,8 @@ namespace Stolon
             Ignore,
         }
         public bool IsTop => ChildOf == topId;
+        public string ClickSoundID { get; }
+        public CachedAudio ClickSound => AudioEngine.AudioLibrary[ClickSoundID];
         public const string topId = "_";
         /// <summary>
         /// The type of the <see cref="UIElement"/>.
@@ -856,7 +892,7 @@ namespace Stolon
 
         public object?[] DrawArguments { get; }
 
-        public UIElement(string id, string childOf, string? text = null, UIElementType type = UIElementType.Listen, string? order = null, params object?[] drawArgs)
+        public UIElement(string id, string childOf, string? text = null, UIElementType type = UIElementType.Listen, string? order = null, string? clickSoundId = null, params object?[] drawArgs)
         {
             Text = text ?? id;
             Type = type;
@@ -864,6 +900,7 @@ namespace Stolon
             Order = order;
             ChildOf = childOf;
             DrawArguments = drawArgs;
+            ClickSoundID = clickSoundId ?? "select3";
         }
         /// <summary>
         /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
@@ -994,6 +1031,9 @@ namespace Stolon
         /// The <see cref="UIElement.Id"/> of the source <see cref="UIElement"/>.
         /// </summary>
         public string SourcID { get; }
+        public string ClickSoundID => Instance.UserInterface.UIElements[SourcID].ClickSoundID;
+        public CachedAudio ClickSound => AudioEngine.AudioLibrary[ClickSoundID];
+
         /// <summary>
         /// Create a new <see cref="UIElementUpdateData"/> with the propeties <see cref="IsHovered"/> and <see cref="SourcID"/> set.
         /// </summary>

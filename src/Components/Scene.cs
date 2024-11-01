@@ -29,13 +29,13 @@ namespace Stolon
 
         public override void Update(int elapsedMiliseconds)
         {
-            Board.Update(elapsedMiliseconds);
+            if (HasBoard) Board.Update(elapsedMiliseconds);
             base.Update(elapsedMiliseconds);
         }
 
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            Board.Draw(spriteBatch, elapsedMiliseconds);
+            if (HasBoard) Board.Draw(spriteBatch, elapsedMiliseconds);
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
 

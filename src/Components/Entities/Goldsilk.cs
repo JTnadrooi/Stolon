@@ -57,7 +57,7 @@ namespace Stolon
         public override void DoMove(Board board)
         {
             int current = board.State.CurrentPlayerID;
-            board.State.Alter(Search(board.State, board.UniqueMoveBoardMap).Move, true);
+            board.State.Alter(Search(board.State, board.UniqueMoveBoardMap, 3).Move, true);
 
             int ret = board.State.SearchAny();
             if (ret == current) // this makes it so when goldsilk finds a connect four right after the player does, she wins. This is a bug but I'm calling it a feature.
@@ -70,7 +70,7 @@ namespace Stolon
         }
 
         private static int negaCount = 0;
-        public static NegamaxEndResult Search(BoardState state, UniqueMoveBoardMap map, int depth = 3)
+        public static NegamaxEndResult Search(BoardState state, UniqueMoveBoardMap map, int depth)
         {
             Instance.DebugStream.WriteLine("\t[s]initializing parallel alpha-beta algorithm..");
 

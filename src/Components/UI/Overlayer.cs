@@ -21,7 +21,6 @@ namespace Stolon
         private Dictionary<string, IOverlay> overlays;
         private List<string> initialized;
 
-
         public OverlayEngine() : base(StolonEnvironment.Instance)
         {
             overlays = new Dictionary<string, IOverlay>();
@@ -147,6 +146,83 @@ namespace Stolon
         {
             spriteBatch.Draw(lineTexture, pos, null, Color.White, rotation / 360f, new Vector2(lineTexture.Width / 2f, lineTexture.Height / 2f), scale, SpriteEffects.None, 0);
             //spriteBatch.DrawCircle(pos, scale * lineTexture.Width * 0.8f, 15, Color.White, 2);
+        }
+    }
+    public class TransitionDitherOverlay : IOverlay
+    {
+        public string ID => "transitionDither";
+
+        public bool Ended => ended;
+
+        private Texture2D ditherTexture;
+        private int pixelsToRemovePerFrame; // Number of pixels to turn transparent each frame
+        private Color[] pixelData; // Holds the pixel data for the dither texture
+        private Random random;
+        private GraphicsDevice graphicsDevice;
+        private bool ended;
+        private int resolution;
+        private int width;
+        private int height;
+
+        public TransitionDitherOverlay(GraphicsDevice graphicsDevice, int pixelsToRemovePerFrame = 450, int resolution = 1)
+        {
+            this.pixelsToRemovePerFrame = pixelsToRemovePerFrame / (resolution);
+            this.graphicsDevice = graphicsDevice;
+            this.resolution = resolution;
+            random = new Random();
+
+            height = Instance.VirtualDimensions.Y / resolution;
+            width = Instance.VirtualDimensions.X / resolution;
+
+            ditherTexture = null!;
+            pixelData = null!;
+            ResetTexture();
+        }
+
+
+        public void Initialize(OverlayEngine overlayer, params object?[] args)
+        {
+            
+        }
+
+        public void ResetTexture()
+        {
+            ditherTexture = new Texture2D(graphicsDevice, width, height);
+            pixelData = new Color[width * height];
+            for (int i = 0; i < pixelData.Length; i++) pixelData[i] = Color.White;
+            ditherTexture.SetData(pixelData);
+        }
+
+        public void Reset()
+        {
+            ResetTexture();
+        }
+
+        public void Update(int elapsedMiliseconds)
+        {
+            int removedPixels = 0;
+            int dullPixels = 0;
+            while (removedPixels < pixelsToRemovePerFrame)
+            {
+                int index = random.Next(pixelData.Length);
+                if (pixelData[index] == Color.White)
+                {
+                    pixelData[index] = Color.Transparent;
+                    removedPixels++;
+                }
+                else dullPixels++;
+                if (dullPixels > 100000)
+                {
+                    ended = true;
+                    return;
+                }
+            }
+            ditherTexture.SetData(pixelData);
+        }
+
+        public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
+        {
+            spriteBatch.Draw(ditherTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, resolution, SpriteEffects.None, 1f);
         }
     }
     public class TransitionOverlay : IOverlay

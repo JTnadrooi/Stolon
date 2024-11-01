@@ -21,6 +21,16 @@ using DiscordRPC.Events;
 
 namespace Stolon
 {
+    public struct GamestateInfo
+    {
+        public string? TrackId { get; }
+        public string InfoId { get; }
+        public GamestateInfo(string? trackId, string infoId) 
+        { 
+            TrackId = trackId;
+            InfoId = infoId;
+        }
+    }
     /// <summary>
     /// The enviroment of the <see cref="Stolon"/> game.
     /// </summary>
@@ -35,6 +45,7 @@ namespace Stolon
             /// The board is open.
             /// </summary>
             OpenBoard,
+            OpenScene,
             /// <summary>
             /// The game is loading.
             /// </summary>
@@ -125,8 +136,17 @@ namespace Stolon
 
             overlayer.AddOverlay(new TransitionOverlay());
             overlayer.AddOverlay(new LoadOverlay());
+            overlayer.AddOverlay(new TransitionDitherOverlay(StolonGame.Instance.GraphicsDevice));
         }
-
+        public GamestateInfo GetGamestateInfo()
+        {
+            return gameState switch
+            {
+                SLGameState.OpenBoard => new GamestateInfo("cityLights", "openBoard"),
+                SLGameState.InMenu => new GamestateInfo("menuTheme", "inMenu"),
+                _ => new GamestateInfo(null, "unknown"),
+            };
+        }
         public override void Update(int elapsedMiliseconds)
         {
             userInterface.Update(elapsedMiliseconds);
@@ -147,13 +167,12 @@ namespace Stolon
                 SLGameState.OpenBoard => "Placing some markers..",
                 SLGameState.InMenu => "Admiring the main menu..",
                 SLGameState.Loading => "Loading STOLON..",
-                _ => throw new Exception()
+                _ => "Unset."
             });
 
             overlayer.Update(elapsedMiliseconds);
             base.Update(elapsedMiliseconds);
         }
-
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
             switch (gameState)

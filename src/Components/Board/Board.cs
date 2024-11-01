@@ -174,6 +174,10 @@ namespace Stolon
             Instance.DebugStream.WriteLine("Attempting move undo..");
             state.Undo();
         }
+        public void AfterMove()
+        {
+            AudioEngine.Instance.Play(AudioEngine.AudioLibrary["select4"]);
+        }
         public bool Listen()
         {
             if (locked)
@@ -189,7 +193,11 @@ namespace Stolon
             }
             if (State.CurrentPlayer.IsComputer)
             {
-                computerMoveTask ??= new Task(() => State.CurrentPlayer.Computer!.DoMove(this));
+                computerMoveTask ??= new Task(() =>
+                {
+                    State.CurrentPlayer.Computer!.DoMove(this);
+                    AfterMove();
+                });
 
                 if (computerMoveTask.Status == TaskStatus.Created)
                 {
@@ -212,6 +220,7 @@ namespace Stolon
                 {
                     History.Push(State.DeepCopy());
                     State.Alter(move!.Value, true);
+                    AfterMove();
                     Instance.DebugStream.Succes(1);
                     return true;
                 }

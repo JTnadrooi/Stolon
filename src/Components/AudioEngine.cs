@@ -16,15 +16,7 @@ namespace Stolon
         private readonly IWavePlayer outputDevice;
         private readonly DictionaryMixingSampleProvider mixer;
         private readonly VolumeSampleProvider volumeSampleProvider;
-
-        //public float Volume
-        //{
-        //    get => outputDevice.Volume;
-        //    set
-        //    {
-        //        outputDevice.Volume = Math.Clamp(value, 0f, 1f);
-        //    }
-        //}
+        private readonly FadeInOutSampleProvider fadeInOutSampleProvider;
         public float Volume
         {
             get => volumeSampleProvider.Volume;
@@ -35,16 +27,20 @@ namespace Stolon
         }
         public AudioEngine()
         {
-            outputDevice = new DirectSoundOut();
+            outputDevice = new DirectSoundOut(40);
             mixer = new DictionaryMixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
             mixer.ReadFully = true;
 
             volumeSampleProvider = new VolumeSampleProvider(mixer);
-
-            //Volume = 1f;
+            fadeInOutSampleProvider = new FadeInOutSampleProvider(volumeSampleProvider, true);
+            Volume = .1f;
             //outputDevice.Init(mixer);
             outputDevice.Init(volumeSampleProvider);
             outputDevice.Play();
+        }
+        static AudioEngine()
+        {
+            AudioLibrary = new Dictionary<string, CachedAudio>();
         }
         public AudioFileReader Play(string fileName, string id) // should never be used
         {
@@ -76,6 +72,8 @@ namespace Stolon
             outputDevice.Dispose();
         }
         public static AudioEngine Instance => StolonGame.Instance.AudioEngine;
+        public static DictionaryMixingSampleProvider Mixer => Instance.mixer;
+        public static Dictionary<string, CachedAudio> AudioLibrary { get; }
     }
     public class CachedAudio
     {
@@ -190,11 +188,6 @@ namespace Stolon
             foreach (var source in sources) AddMixerInput(source.Key, source.Value);
             if (this.sources.Count == 0) throw new ArgumentException("Must provide at least one input in this constructor");
         }
-
-        /// <summary>
-        /// Returns the mixer inputs (read-only - use AddMixerInput to add an input
-        /// </summary>
-        public IEnumerable<KeyValuePair<string, ISampleProvider>> MixerInputs => sources;
 
         /// <summary>
         /// Adds a WaveProvider as a Mixer input.
