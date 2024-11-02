@@ -11,6 +11,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
+using MonoGame.Extended.Tweening;
 
 #nullable enable
 
@@ -163,14 +164,17 @@ namespace Stolon
         private int resolution;
         private int width;
         private int height;
+        private Tweener<float> tweener;
 
-        public TransitionDitherOverlay(GraphicsDevice graphicsDevice, int pixelsToRemovePerFrame = 450, int resolution = 1)
+        public TransitionDitherOverlay(GraphicsDevice graphicsDevice, int pixelsToRemovePerFrame = 11150, int time = 2, int resolution = 2)
         {
             this.pixelsToRemovePerFrame = pixelsToRemovePerFrame / (resolution);
             this.graphicsDevice = graphicsDevice;
             this.resolution = resolution;
             random = new Random();
 
+
+            tweener = new Tweener<float>(1, this.pixelsToRemovePerFrame, 5f, Ease.Expo.In);
             height = Instance.VirtualDimensions.Y / resolution;
             width = Instance.VirtualDimensions.X / resolution;
 
@@ -182,7 +186,7 @@ namespace Stolon
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
-            
+            AudioEngine.Instance.Play(AudioEngine.AudioLibrary["randomize4"]);
         }
 
         public void ResetTexture()
@@ -195,6 +199,7 @@ namespace Stolon
 
         public void Reset()
         {
+            tweener .Reset();
             ResetTexture();
         }
 
@@ -202,7 +207,10 @@ namespace Stolon
         {
             int removedPixels = 0;
             int dullPixels = 0;
-            while (removedPixels < pixelsToRemovePerFrame)
+
+            tweener.Update(elapsedMiliseconds / 1000f);
+
+            while (removedPixels < tweener.Value)
             {
                 int index = random.Next(pixelData.Length);
                 if (pixelData[index] == Color.White)

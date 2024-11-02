@@ -51,6 +51,7 @@ namespace Stolon
         }
         public CachedAudio Play(CachedAudio audio)
         {
+            Console.WriteLine(audio.ID);
             AddMixerInput(new CachedAudioSampleProvider(audio), audio.ID);
             return audio;
         }

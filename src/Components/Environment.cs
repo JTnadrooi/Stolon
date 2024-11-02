@@ -125,6 +125,7 @@ namespace Stolon
             FontDimensions = (Font.MeasureString("A") * StolonEnvironment.FontScale).ToPoint();
 
             RegisterEntity(new GoldsilkEntity());
+            RegisterEntity(new StoEntity());
             // RegisterCharacter(new DeadlineEntity());
 
             userInterface = new UserInterface();
