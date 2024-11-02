@@ -1,16 +1,15 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using AsitLib.XNA;
 using Betwixt;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using System;
+using System.Collections.Generic;
 using static Stolon.StolonGame;
-
 using Color = Microsoft.Xna.Framework.Color;
+using Math = System.Math;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-using Math = System.Math;
 
 #nullable enable
 
@@ -22,8 +21,6 @@ namespace Stolon
         private Rectangle dialoguebounds;
         private DialogueInfo? currentDialogue;
         private Point dialogueTextPos;
-        private int initialDialogueMiliseconds;
-        private int dialogueMilisecondsRemaining;
         private string toDrawDialogueText;
 
         private Point providerTextPos;
@@ -33,6 +30,7 @@ namespace Stolon
         private float dialogueShowCoefficient;
         private bool awaitingMouseDialogueHover;
         private bool dialogueIsHidden;
+        private bool dialogueHasFinished;
         public bool DialogueIsHidden
         {
             get => dialogueIsHidden;
@@ -40,8 +38,11 @@ namespace Stolon
         }
 
         public Rectangle DialogueBounds => dialoguebounds;
-        private const int charReadMiliseconds = 75; // per char
-        private const int postReadMiliseconds = charReadMiliseconds * 10; // how long the dialogue stagnates after its finished.
+        public const int CharReadMiliseconds = 75; // per char
+        private const int postReadMiliseconds = CharReadMiliseconds * 10; // how long the dialogue stagnates after its finished.
+
+        private int msSinceLastChar;
+        private int charsRead;
 
         private UserInterface userInterface;
 
@@ -49,9 +50,10 @@ namespace Stolon
         {
             dialogueQueue = new Queue<DialogueInfo>();
             dialogueTextPos = Point.Zero;
-            dialogueMilisecondsRemaining = 0;
             currentDialogue = null;
             dialogueShowCoefficient = 0f;
+            msSinceLastChar = 0;
+            charsRead = 0;
             toDrawDialogueText = string.Empty;
             this.userInterface = userInterface;
         }
@@ -68,7 +70,7 @@ namespace Stolon
             dialogueQueue.Enqueue(dialogue);
         }
 
-        public void Next(bool awaitingMouseDialogueHover = true)
+        public void Next()
         {
             Instance.DebugStream.WriteLine("Next dialogue has been requested.");
             if (dialogueQueue.Count == 0) throw new Exception();
@@ -79,16 +81,19 @@ namespace Stolon
 
             currentDialogue = dialogueQueue.Dequeue();
 
-            initialDialogueMiliseconds = GetMilisecondsFromText(currentDialogue.Value.Text);
-            dialogueMilisecondsRemaining = initialDialogueMiliseconds;
+            toDrawDialogueText = string.Empty;
+            msSinceLastChar = 0;
+            charsRead = 0;
 
+            //initialDialogueMiliseconds = GetMilisecondsFromText(currentDialogue.Value.Text) + currentDialogue.Value.ExtraMS;
+            //dialogueMilisecondsRemaining = initialDialogueMiliseconds;
+
+            awaitingMouseDialogueHover = true;
             if (providerDiffers || providerTextSizeTweener == null) // initialize or refresh.
             {
                 providerTextSizeTweener = new Tweener<float>(0.0001f, 1f, 1, Ease.Sine.Out); // 0 does not work with size calculations..
                 providerTextSizeTweener.Start();
             }
-
-            this.awaitingMouseDialogueHover = awaitingMouseDialogueHover;
 
             Instance.DebugStream.Succes(1);
         }
@@ -96,7 +101,7 @@ namespace Stolon
         public void Queue(int count, Func<string, int, string>? selector = null)
         {
             Instance.DebugStream.WriteLine("Mass queueing a stream of size: " + count);
-            selector = selector ?? new Func<string, int, string>((s, i) => s);
+            selector ??= new Func<string, int, string>((s, i) => s);
             for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke(Instance.UserInterface.GetRandomSplashText(), i)));
             Instance.DebugStream.Succes(1);
         }
@@ -112,30 +117,30 @@ namespace Stolon
                 dialogueBoxDimensions.X,
                 dialogueBoxDimensions.Y);
 
-            dialogueMilisecondsRemaining -= elapsedMiliseconds;
+            msSinceLastChar += elapsedMiliseconds;
 
-            if (dialogueMilisecondsRemaining < -postReadMiliseconds) // this runs 
-            {
-                if (dialogueQueue.Count > 0)
-                {
-                    Next();
-                }
-                else
-                {
-                    // Instance.DebugStream.WriteLine("No further dialogue found, awaiting further dialogue.");
-                    dialogueMilisecondsRemaining = -postReadMiliseconds * 2; // this is done to prevent this variable going to far into the negatives (not like I need to worry about that but still).
-                }
-            }
+            if (dialogueQueue.Count > 0 && !currentDialogue.HasValue) Next();
 
             if (currentDialogue.HasValue) // dialogue is here!
             {
                 if (currentDialogue.Value.Text.Length == 0) throw new Exception("Text size zero.");
 
+                if (toDrawDialogueText == currentDialogue.Value.Text)
+                {
+                    if (dialogueQueue.Count > 0) Next();
+                }
+                else if (msSinceLastChar > CharReadMiliseconds)
+                {
+                    toDrawDialogueText += currentDialogue.Value.Text[charsRead];
+                    charsRead++;
+                    msSinceLastChar = 0;
+                }
+
                 providerTextSizeTweener!.Update(elapsedMiliseconds / 1000f);
                 providerTextScaleCoefficient = MathF.Min(providerTextSizeTweener.Value, dialogueShowCoefficient > 0.9f ? 1f : dialogueShowCoefficient);
 
-                toDrawDialogueText = dialogueMilisecondsRemaining < 0 ? currentDialogue.Value.Text :
-                    currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
+                //toDrawDialogueText = dialogueMilisecondsRemaining < 0 ? currentDialogue.Value.Text :
+                //    currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
 
                 dialogueTextPos = dialoguebounds.Location
                     + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(toDrawDialogueText).X * StolonEnvironment.FontScale / 2f),
@@ -144,24 +149,15 @@ namespace Stolon
                 providerTextPos = dialoguebounds.Location
                     + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient * StolonEnvironment.FontScale / 2f), 2);
             }
-
-            if (awaitingMouseDialogueHover)
-            {
-                textFrameGoUp = true;
-            }
-
+            if (awaitingMouseDialogueHover) textFrameGoUp = true;
             if (SLMouse.Domain == SLMouse.MouseDomain.Dialogue)
             {
                 awaitingMouseDialogueHover = false;
-
                 textFrameGoUp = true;
             }
-            else
+            else if (!awaitingMouseDialogueHover)
             {
-                if (!awaitingMouseDialogueHover)
-                {
-                    textFrameGoUp = false;
-                }
+                textFrameGoUp = false;
             }
 
             DynamicTweening.PushSubunitary(ref dialogueShowCoefficient, textFrameGoUp, elapsedMiliseconds, smoothness: 2);
@@ -169,7 +165,7 @@ namespace Stolon
         }
         public int GetMilisecondsFromText(string text)
         {
-            return text.Length * charReadMiliseconds;
+            return text.Length * CharReadMiliseconds;
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {

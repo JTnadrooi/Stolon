@@ -9,6 +9,9 @@ using MonoGame.Extended.Collisions.Layers;
 
 namespace Stolon
 {
+    /// <summary>
+    /// Represent a single game scene. 
+    /// </summary>
     public class Scene : AxComponent
     {
         public enum SLScenePreset

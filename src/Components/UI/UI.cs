@@ -342,10 +342,7 @@ namespace Stolon
 
             StolonGame.Instance.DebugStream.WriteLine("autogenerating _back_ buttons..");
             HashSet<string> parentIds = GetParentIDs();
-            foreach (string id in parentIds)
-            {
-                AddElement(new UIElement("_back_" + id, id, "Back", UIElementType.Listen));
-            }
+            foreach (string id in parentIds) AddElement(new UIElement("_back_" + id, id, "Back", UIElementType.Listen));
         }
         /// <summary>
         /// Clears both the updatedata and drawdata collections, making them ready to be repopulated by the methods in the <see cref="UIOrdering"/> class.<br/>
@@ -437,13 +434,26 @@ namespace Stolon
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
-            // if (milisecondsSinceStartup < 10000) // to skip start button click and animation
-            //{
-            //    milisecondsSinceStartup = 10001;
-            //    menuDone = true;
-            //    menuRemoveTweener.Update(10);
-            //    startFrame = true;
-            //}
+             if (milisecondsSinceStartup < 10000) // to skip start button click and animation
+            {
+                milisecondsSinceStartup = 10001;
+                menuDone = true;
+                menuRemoveTweener.Update(10);
+
+                Scene.MainInstance.SetBoard(new Player[]
+                        {
+                            new Player("player0"),
+                            new Player("player1"),
+                        });
+                Leave(() =>
+                {
+                    //Instance.Environment.Overlayer.Activate("transitionDither");
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 1000));
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on.", 1000));
+                });
+                //startFrame = true;
+            }
 
             #region inFlash
             menuLogoTileHider = new Rectangle(menuLogoDrawPos.ToPoint(), new Point((int)(menuLogoLines.Width * menuLogoScaling), (int)(rowHeight * menuLogoRowsHidden)));
@@ -545,9 +555,9 @@ namespace Stolon
                 Leave(() =>
                 {
                     Instance.Environment.Overlayer.Activate("transitionDither");
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome."));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?"));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on."));
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 1000));
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on.", 1000));
                 });
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
