@@ -25,6 +25,8 @@ namespace Stolon
 
         private Board? board;
 
+        private Texture2D? bg;
+
         public Scene(SLScenePreset preset = SLScenePreset.Empty) : base(Instance.Environment)
         {
             
@@ -38,7 +40,12 @@ namespace Stolon
 
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            if (HasBoard) Board.Draw(spriteBatch, elapsedMiliseconds);
+            if (HasBoard && Instance.Environment.GameState == StolonEnvironment.SLGameState.OpenBoard) Board.Draw(spriteBatch, elapsedMiliseconds);
+            if (bg != null)
+            {
+                spriteBatch.Draw(bg, new Rectangle(Point.Zero, Instance.VirtualDimensions), Color.White);
+            }
+
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
 
@@ -49,5 +56,10 @@ namespace Stolon
             if (BoardState.Validate(state)) board = new Board(this, state);
             else throw new Exception();
         }
+        public void SetImage(Texture2D texture)
+        {
+            bg = texture;
+        }
+        public Scene Current => Instance.Environment.Scene;
     }
 }

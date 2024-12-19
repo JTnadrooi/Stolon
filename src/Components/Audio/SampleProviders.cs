@@ -7,137 +7,40 @@ using System.Text;
 using System.Threading.Tasks;
 using NAudio.Utils;
 using System.Collections.ObjectModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using AsitLib;
+using static Stolon.StolonGame;
+
 #nullable enable
 
 namespace Stolon
 {
-    public class AudioEngine : IDisposable
-    {
-        private readonly IWavePlayer outputDevice;
-        private readonly DictionaryMixingSampleProvider mixer;
-        private readonly VolumeSampleProvider volumeSampleProvider;
-        private readonly FadeInOutSampleProvider fadeInOutSampleProvider;
-        public float Volume
-        {
-            get => volumeSampleProvider.Volume;
-            set
-            {
-                volumeSampleProvider.Volume = Math.Clamp(value, 0f, 1f);
-            }
-        }
-        public AudioEngine()
-        {
-            outputDevice = new DirectSoundOut(40);
-            mixer = new DictionaryMixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
-            mixer.ReadFully = true;
-
-            volumeSampleProvider = new VolumeSampleProvider(mixer);
-            fadeInOutSampleProvider = new FadeInOutSampleProvider(volumeSampleProvider, true);
-            Volume = .1f;
-            //outputDevice.Init(mixer);
-            outputDevice.Init(volumeSampleProvider);
-            outputDevice.Play();
-        }
-        static AudioEngine()
-        {
-            AudioLibrary = new Dictionary<string, CachedAudio>();
-        }
-        public AudioFileReader Play(string fileName, string id) // should never be used
-        {
-            AudioFileReader input = new AudioFileReader(fileName);
-            Console.WriteLine(input.WaveFormat);
-            AddMixerInput(new AutoDisposeFileReader(input), id);
-            return input;
-        }
-        public CachedAudio Play(CachedAudio audio)
-        {
-            Console.WriteLine(audio.ID);
-            AddMixerInput(new CachedAudioSampleProvider(audio), audio.ID);
-            return audio;
-        }
-        public CachedAudio CancelCashed(string audioId)
-        {
-            CachedAudio audio = (CachedAudio)mixer.Sources[audioId];
-            mixer.RemoveMixerInput(audioId);
-            return audio;
-        }
-        private void AddMixerInput(ISampleProvider input, string id)
-        {
-            if (input.WaveFormat.Channels == mixer.WaveFormat.Channels) mixer.AddMixerInput(id, input);
-            else if (input.WaveFormat.Channels == 1 && mixer.WaveFormat.Channels == 2) mixer.AddMixerInput(id, new MonoToStereoSampleProvider(input));
-            else throw new NotImplementedException("Not yet implemented this channel count conversion.");
-        }
-        public void Dispose()
-        {
-            StolonGame.Instance.DebugStream.WriteLine("Disposing audio engine..");
-            outputDevice.Dispose();
-        }
-        public static AudioEngine Instance => StolonGame.Instance.AudioEngine;
-        public static DictionaryMixingSampleProvider Mixer => Instance.mixer;
-        public static Dictionary<string, CachedAudio> AudioLibrary { get; }
-    }
-    public class CachedAudio
-    {
-        public float[] AudioData { get; private set; }
-        public string ID { get; }
-        public WaveFormat WaveFormat { get; private set; }
-        public CachedAudio(string audioFileName, string ID)
-        {
-            this.ID = ID;
-            using (var audioFileReader = new AudioFileReader(audioFileName))
-            {
-                WaveFormat = audioFileReader.WaveFormat;
-                var wholeFile = new List<float>((int)(audioFileReader.Length / 4));
-                var readBuffer = new float[audioFileReader.WaveFormat.SampleRate * audioFileReader.WaveFormat.Channels];
-                int samplesRead;
-                while ((samplesRead = audioFileReader.Read(readBuffer, 0, readBuffer.Length)) > 0)
-                {
-                    wholeFile.AddRange(readBuffer.Take(samplesRead));
-                }
-                AudioData = wholeFile.ToArray();
-            }
-        }
-    }
-    public class CachedAudioSampleProvider : ISampleProvider
-    {
-        private readonly CachedAudio cachedAudio;
-        private long position;
-
-        public CachedAudio CachedAudio => cachedAudio;
-        public CachedAudioSampleProvider(CachedAudio audio) => cachedAudio = audio;
-
-        public int Read(float[] buffer, int offset, int count)
-        {
-            long availableSamples = cachedAudio.AudioData.Length - position;
-            long samplesToCopy = Math.Min(availableSamples, count);
-            Array.Copy(cachedAudio.AudioData, position, buffer, offset, samplesToCopy);
-            position += samplesToCopy;
-            return (int)samplesToCopy;
-        }
-
-        public WaveFormat WaveFormat => cachedAudio.WaveFormat;
-    }
+    /// <summary>
+    /// Implements a way to automatically dispose <see cref="AudioFileReader"/> objects.
+    /// </summary>
     public class AutoDisposeFileReader : ISampleProvider
     {
         private readonly AudioFileReader reader;
         private bool isDisposed;
+        /// <summary>
+        /// Create a new <see cref="AutoDisposeFileReader"/> from a <see cref="AudioFileReader"/>.
+        /// </summary>
+        /// <param name="reader">The reader to create the wrapper around.</param>
         public AutoDisposeFileReader(AudioFileReader reader)
         {
             this.reader = reader;
             this.WaveFormat = reader.WaveFormat;
         }
-
         public int Read(float[] buffer, int offset, int count)
         {
             if (isDisposed) return 0;
-            if (reader.Read(buffer, offset, count) is int read && read == 0) // woaaaaah
+            if (reader.Read(buffer, offset, count) is int read && read == 0) // woaaaaah!
             {
                 reader.Dispose();
                 isDisposed = true;
             }
             return read;
         }
-
         public WaveFormat WaveFormat { get; private set; }
     }
     /// <summary>
@@ -147,12 +50,9 @@ namespace Stolon
     {
         private readonly Dictionary<string, ISampleProvider> sources;
         private float[] sourceBuffer;
-        private const int maxInputs = 1024; // protect ourselves against doing something rather goofy
+        private const int maxInputs = 256; // to protect ourselves against doing something rather goofy.
 
         public ReadOnlyDictionary<string, ISampleProvider> Sources { get; }
-        /// <summary>
-        /// The output WaveFormat of this sample provider
-        /// </summary>
         public WaveFormat? WaveFormat { get; private set; }
         /// <summary>
         /// When set to true, the Read method always returns the number
@@ -163,17 +63,21 @@ namespace Stolon
         /// </summary>
         public bool ReadFully { get; set; }
         /// <summary>
+        /// If the output should be pauzed when the Stolon game window loses focus.
+        /// </summary>
+        public bool PauzeWhenInactive { get; set; }
+        /// <summary>
         /// Creates a new <see cref="DictionaryMixingSampleProvider"/>, with no inputs, but a specified <see cref="NAudio.Wave.WaveFormat"/>.
         /// </summary>
         /// <param name="waveFormat">The WaveFormat of this mixer. All inputs must be in this format</param>
         public DictionaryMixingSampleProvider(WaveFormat waveFormat)
         {
             sourceBuffer = Array.Empty<float>();
-            if (waveFormat.Encoding != WaveFormatEncoding.IeeeFloat) throw new ArgumentException("Mixer wave format must be IEEE float");
+            if (waveFormat.Encoding != WaveFormatEncoding.IeeeFloat) throw new ArgumentException("mixer wave format must be IEEE float.");
             sources = new Dictionary<string, ISampleProvider>();
             Sources = sources.AsReadOnly();
             WaveFormat = waveFormat;
-            Console.WriteLine(WaveFormat);
+            Instance.DebugStream.WriteLine("created new DictionaryMixingSampleProvider with waveformat:" + WaveFormat);
         }
 
         /// <summary>
@@ -187,7 +91,7 @@ namespace Stolon
             this.sources = new Dictionary<string, ISampleProvider>();
             Sources = sources.AsReadOnly();
             foreach (var source in sources) AddMixerInput(source.Key, source.Value);
-            if (this.sources.Count == 0) throw new ArgumentException("Must provide at least one input in this constructor");
+            if (this.sources.Count == 0) throw new ArgumentException("must provide at least one input in this constructor.");
         }
 
         /// <summary>
@@ -206,11 +110,11 @@ namespace Stolon
                     16 => new Pcm16BitToSampleProvider(mixerInput),
                     24 => new Pcm24BitToSampleProvider(mixerInput),
                     32 => new Pcm32BitToSampleProvider(mixerInput),
-                    _ => throw new InvalidOperationException("Unsupported bit depth")
+                    _ => throw new InvalidOperationException("unsupported bit depth.")
                 };
             else if (mixerInput.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
                 sampleProvider = mixerInput.WaveFormat.BitsPerSample == 64 ? new WaveToSampleProvider64(mixerInput) : new WaveToSampleProvider(mixerInput);
-            else throw new ArgumentException("Unsupported source encoding");
+            else throw new ArgumentException("unsupported source encoding.");
             AddMixerInput(key, sampleProvider);
         }
 
@@ -222,7 +126,7 @@ namespace Stolon
         public void AddMixerInput(string key, ISampleProvider mixerInput)
         {
             lock (sources)
-                if (sources.Count >= maxInputs) throw new InvalidOperationException("Too many mixer inputs");
+                if (sources.Count >= maxInputs) throw new InvalidOperationException("too many mixer inputs.");
                 else sources[key] = mixerInput;
             if (WaveFormat == null) WaveFormat = mixerInput.WaveFormat;
             //else if(WaveFormat.SampleRate != mixerInput.WaveFormat.SampleRate || WaveFormat.Channels != mixerInput.WaveFormat.Channels)
@@ -236,7 +140,12 @@ namespace Stolon
         /// <param name="key">Key of the mixer input to remove</param>
         public void RemoveMixerInput(string key)
         {
-            lock (sources) sources.Remove(key);
+            lock (sources)
+            {
+                if (sources.ContainsKey(key))
+                    sources.Remove(key);
+                else throw new InvalidOperationException();
+            }
         }
 
         /// <summary>
@@ -246,21 +155,19 @@ namespace Stolon
         {
             lock (sources) sources.Clear();
         }
-
-
-        /// <summary>
-        /// Reads samples from this sample provider
-        /// </summary>
-        /// <param name="buffer">Sample buffer</param>
-        /// <param name="offset">Offset into sample buffer</param>
-        /// <param name="count">Number of samples required</param>
-        /// <returns>Number of samples read</returns>
         public int Read(float[] buffer, int offset, int count)
         {
             int outputSamples = 0;
             sourceBuffer = BufferHelpers.Ensure(sourceBuffer, count);
             lock (sources)
             {
+                if (PauzeWhenInactive && !Instance.IsActive)
+                {
+                    for (var n = 0; n < count; n++)
+                        buffer[offset + n] = 0;
+                    return count;
+                }
+
                 foreach (var sourceEntry in sources.ToArray())
                 {
                     var source = sourceEntry.Value;

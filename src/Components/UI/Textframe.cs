@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static Stolon.StolonGame;
 using Color = Microsoft.Xna.Framework.Color;
 using Math = System.Math;
@@ -15,11 +16,37 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Stolon
 {
+    public struct DialogueDrawArgs
+    {
+        public DialogueInfo Source { get; }
+        public int[] TimeMap { get; }
+        public int PostTime { get; }
+        public DialogueDrawArgs(DialogueInfo source, int[] timeMap, int postTime)
+        {
+            Source = source;
+            TimeMap = timeMap;
+            PostTime = postTime;
+        }
+        public static DialogueDrawArgs FromInfo(DialogueInfo info)
+        {
+            return new DialogueDrawArgs(info, new int[info.Text.Length].Select((item, i) =>
+            {
+                char c = info.Text[i];
+                return c switch
+                {
+                    '.' => Textframe.CharReadMiliseconds * 3,
+                    '?' => Textframe.CharReadMiliseconds * 3,
+                    _ => Textframe.CharReadMiliseconds,
+                };
+            }).ToArray(), info.PostMiliseconds);
+        }
+    }
     public class Textframe : AxComponent
     {
         private Queue<DialogueInfo> dialogueQueue;
         private Rectangle dialoguebounds;
         private DialogueInfo? currentDialogue;
+        private DialogueDrawArgs? currentDialogueDrawArgs;
         private Point dialogueTextPos;
         private string toDrawDialogueText;
 
@@ -39,10 +66,11 @@ namespace Stolon
 
         public Rectangle DialogueBounds => dialoguebounds;
         public const int CharReadMiliseconds = 75; // per char
-        private const int postReadMiliseconds = CharReadMiliseconds * 10; // how long the dialogue stagnates after its finished.
+        public const int PostReadMiliseconds = CharReadMiliseconds * 10; // how long the dialogue stagnates after its finished.
 
         private int msSinceLastChar;
         private int charsRead;
+        private int postTimeRead;
 
         private UserInterface userInterface;
 
@@ -51,6 +79,7 @@ namespace Stolon
             dialogueQueue = new Queue<DialogueInfo>();
             dialogueTextPos = Point.Zero;
             currentDialogue = null;
+            currentDialogueDrawArgs = null;
             dialogueShowCoefficient = 0f;
             msSinceLastChar = 0;
             charsRead = 0;
@@ -60,16 +89,13 @@ namespace Stolon
         public void Queue(DialogueInfo[] dialogue)
         {
             for (int i = 0; i < dialogue.Length; i++)
-            {
                 Queue(dialogue[i]);
-            }
         }
         public void Queue(DialogueInfo dialogue)
         {
             Instance.DebugStream.WriteLine("Dialogue queued with text: " + dialogue.Text);
             dialogueQueue.Enqueue(dialogue);
         }
-
         public void Next()
         {
             Instance.DebugStream.WriteLine("Next dialogue has been requested.");
@@ -80,10 +106,12 @@ namespace Stolon
             if (providerDiffers) Instance.DebugStream.WriteLine("\tDialogue has new provider of name: " + dialogueQueue.Peek().Provider.Name);
 
             currentDialogue = dialogueQueue.Dequeue();
+            currentDialogueDrawArgs = DialogueDrawArgs.FromInfo(currentDialogue.Value);
 
             toDrawDialogueText = string.Empty;
             msSinceLastChar = 0;
             charsRead = 0;
+            postTimeRead = 0;
 
             //initialDialogueMiliseconds = GetMilisecondsFromText(currentDialogue.Value.Text) + currentDialogue.Value.ExtraMS;
             //dialogueMilisecondsRemaining = initialDialogueMiliseconds;
@@ -125,14 +153,16 @@ namespace Stolon
             {
                 if (currentDialogue.Value.Text.Length == 0) throw new Exception("Text size zero.");
 
-                if (toDrawDialogueText == currentDialogue.Value.Text)
+                if (toDrawDialogueText == currentDialogue.Value.Text) // if no text is left to add..
                 {
-                    if (dialogueQueue.Count > 0) Next();
+                    postTimeRead += elapsedMiliseconds; // only add postread if text is full.
+                    if (dialogueQueue.Count > 0 && postTimeRead > currentDialogueDrawArgs!.Value.PostTime) Next(); // ..and queue is full, go next.
                 }
-                else if (msSinceLastChar > CharReadMiliseconds)
+                else if (msSinceLastChar > currentDialogueDrawArgs!.Value.TimeMap[charsRead]) // else if its time for a new char..
                 {
-                    toDrawDialogueText += currentDialogue.Value.Text[charsRead];
-                    charsRead++;
+                    Console.WriteLine(currentDialogueDrawArgs!.Value.TimeMap[charsRead]);
+                    toDrawDialogueText += currentDialogue.Value.Text[charsRead]; // ..add said char.
+                    charsRead++; 
                     msSinceLastChar = 0;
                 }
 
@@ -145,7 +175,7 @@ namespace Stolon
                 dialogueTextPos = dialoguebounds.Location
                     + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(toDrawDialogueText).X * StolonEnvironment.FontScale / 2f),
                     (int)(dialoguebounds.Height / 2f - Instance.Environment.FontDimensions.Y / 2f));
-
+                 
                 providerTextPos = dialoguebounds.Location
                     + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient * StolonEnvironment.FontScale / 2f), 2);
             }

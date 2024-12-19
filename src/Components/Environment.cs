@@ -88,15 +88,6 @@ namespace Stolon
         /// The scaling applied to the <see cref="Font"/>.
         /// </summary>
         public const float FontScale = 0.5f;
-        /// <summary>
-        /// The main font used for most text.
-        /// </summary>
-        public static SpriteFont Font { get; }
-
-        /// <summary>
-        /// The main instance of the game.
-        /// </summary>
-        public static StolonEnvironment Instance => StolonGame.Instance.Environment;
         public string SymbolNotation => "Ev";
         public string Name => "Environment";
         /// <summary>
@@ -104,21 +95,21 @@ namespace Stolon
         /// </summary>
         public Point FontDimensions { get; private set; }
 
+        public TaskHeap TaskHeap { get; }
+
         private Scene scene;
         private UserInterface userInterface;
         private OverlayEngine overlayer;
         private SLGameState gameState;
         private Dictionary<string, EntityBase> entities;
 
-        static StolonEnvironment()
-        {
-            Font = StolonGame.Instance.Fonts["fiont"];
-        }
-
         internal StolonEnvironment() : base(null)
         {
             scene = new Scene();
             entities = new Dictionary<string, EntityBase>();
+            userInterface = null!;
+            overlayer = null!;
+            TaskHeap = new TaskHeap();
         }
         internal void Initialize()
         {
@@ -138,6 +129,11 @@ namespace Stolon
             overlayer.AddOverlay(new TransitionOverlay());
             overlayer.AddOverlay(new LoadOverlay());
             overlayer.AddOverlay(new TransitionDitherOverlay(StolonGame.Instance.GraphicsDevice));
+
+            StolonGame.Instance.AudioEngine.SetPlayList(new Playlist(
+                "debug1",
+                "debug2"
+            ));
         }
         public GamestateInfo GetGamestateInfo()
         {
@@ -150,7 +146,9 @@ namespace Stolon
         }
         public override void Update(int elapsedMiliseconds)
         {
+            TaskHeap.Update(elapsedMiliseconds);
             userInterface.Update(elapsedMiliseconds);
+            AudioEngine.Audio.Update(elapsedMiliseconds);
 
             switch (gameState)
             {
@@ -179,13 +177,13 @@ namespace Stolon
             switch (gameState)
             {
                 case SLGameState.OpenBoard:
-                    scene.Draw(spriteBatch, elapsedMiliseconds);
                     break;
                 case SLGameState.InMenu:
                     break;
                 case SLGameState.Loading:
                     break;
             }
+            scene.Draw(spriteBatch, elapsedMiliseconds);
             userInterface.Draw(spriteBatch, elapsedMiliseconds);
 
             overlayer.Draw(spriteBatch, elapsedMiliseconds);
@@ -208,5 +206,19 @@ namespace Stolon
         {
             entities.Remove(characterId);
         }
+
+        static StolonEnvironment()
+        {
+            Font = StolonGame.Instance.Fonts["fiont"];
+        }
+        /// <summary>
+        /// The main font used for most text.
+        /// </summary>
+        public static SpriteFont Font { get; }
+
+        /// <summary>
+        /// The main instance of the game.
+        /// </summary>
+        public static StolonEnvironment Instance => StolonGame.Instance.Environment;
     }
 }

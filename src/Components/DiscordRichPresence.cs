@@ -50,13 +50,13 @@ namespace DiscordRPC
 			client.SetPresence(presence);
 		}
 
-		public void UpdateState(string newState = "")
+		public void UpdateState(string newState)
 		{
 			presence.State = newState;
 			client.SetPresence(presence);
 		}
 
-		public void UpdateDetails(string newDetails = "")
+		public void UpdateDetails(string newDetails)
 		{
 			presence.Details = newDetails;
 			client.SetPresence(presence);

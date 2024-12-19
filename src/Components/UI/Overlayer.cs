@@ -93,6 +93,8 @@ namespace Stolon
             }
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
+
+        public static OverlayEngine Engine => Instance.Environment.Overlayer;
     }
 
     public interface IOverlay
@@ -186,7 +188,7 @@ namespace Stolon
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
-            AudioEngine.Instance.Play(AudioEngine.AudioLibrary["randomize4"]);
+            AudioEngine.Audio.Play(AudioEngine.AudioLibrary["randomize4"]);
         }
 
         public void ResetTexture()

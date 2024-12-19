@@ -56,7 +56,6 @@ namespace Stolon
         private Task? computerMoveTask;
         private bool locked;
 
-        private RectangleF[] rowHitBoxes;
         private BoardState.SearchTargetCollection searchTargets;
         private const float confZoomCoefficient = 0.98f; // 0.98f
 
@@ -70,23 +69,21 @@ namespace Stolon
             state = conf;
             boardSpriteBatch = new SpriteBatch(Instance.GraphicsDevice);
             desiredZoom = MathF.Max(0.45f, confZoomCoefficient * (4f / conf.Dimensions.X)); // does not change.
-            rowHitBoxes = new RectangleF[conf.Dimensions.X];
             desiredCameraPos = BoardCenter;
             Camera.Position = desiredCameraPos;
             searchTargets = conf.WinSearchTargets;
             computerMoveTask = null!;
             firstFrame = false;
+
             Zoom = 1f;
             InitialState = conf.DeepCopy();
             History = new Stack<BoardState>();
-            History.Push(conf.DeepCopy());
-
+            History.Push(InitialState);
             UniqueMoveBoardMap = new UniqueMoveBoardMap();
 
             for (int x = 0; x < conf.Dimensions.X; x++)
             {
                 Vector2 topleft = new Vector2(x * 64, 0);
-                rowHitBoxes[x] = new RectangleF(topleft.X, topleft.Y, 64, 64 * conf.Dimensions.Y);
             }
         }
 
@@ -176,7 +173,7 @@ namespace Stolon
         }
         public void AfterMove()
         {
-            AudioEngine.Instance.Play(AudioEngine.AudioLibrary["select4"]);
+            AudioEngine.Audio.Play(AudioEngine.AudioLibrary["select4"]);
         }
         public bool Listen()
         {

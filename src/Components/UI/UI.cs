@@ -25,6 +25,7 @@ using Microsoft.Xna.Framework.Media;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 #nullable enable
 
@@ -130,8 +131,6 @@ namespace Stolon
         /// </summary>
         public float Line2X => lineX2;
 
-        public Song CurrentTrack { get; set; }
-
         /// <summary>
         /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> containing all the <see cref="UIElementDrawData"/> objects from all the <see cref="UIElement"/> objects refreched AFTER the UI update.
         /// </summary>
@@ -168,11 +167,11 @@ namespace Stolon
         /// <summary>
         /// Main UIInterface contructor.
         /// </summary>
-        internal UserInterface() : base(Instance.Environment)
+        public UserInterface() : base(Instance.Environment)
         {
             string camelCase(string s) // ill start camelcasing private-private functions
             {
-                var x = s.Replace("_", "");
+                string x = s.Replace("_", "");
                 if (x.Length == 0) return "null";
                 x = Regex.Replace(x, "([A-Z])([A-Z]+)($|[A-Z])",
                     m => m.Groups[1].Value + m.Groups[2].Value.ToLower() + m.Groups[3].Value);
@@ -243,7 +242,7 @@ namespace Stolon
                 "Listed twice.",
                 "KEES NOOOOOOOO",
                 "That definitely something Vox would say.",
-                "Inity-Alizing..",
+                "Inity waits patiently..",
                 "Super colliding..",
                 "Learning garden chairs how to fly..",
                 "\"Is that an ability or a program?\"",
@@ -281,18 +280,36 @@ namespace Stolon
                 "Time's Up! Fate sealed.",
                 "Seems vacant..",
                 "You are week, I am month.",
-                "Lanu X4",
+                "Lanu Lanu Lanu La-",
                 "Welcome.",
                 "Welcome!",
                 "Galore.",
                 "NOT solved.",
                 "NOT CLUELESS!",
                 "Tiory?",
-                "27 Compile errors.",
+                "27 Compile errors..?",
                 "Simply Rendering,",
                 "Behold, The \"Sky Train\"!",
                 "dot hat :drool:",
-                "Cherry-pilled!"
+                "Cherry-pilled!",
+                "The stolons brace themselfs..",
+                "Potatofruit?",
+                "A reality loved by many, hated by more.",
+                "VWS cares not.",
+                "Eeeeh maji? Easy modo???",
+                "Sto owes someone 5 dollars.",
+                "\"Souls are overrated but quite underused.\"",
+                "\"I-I don't quite understand..\"",
+                "1bit!",
+                "haha",
+                "elevenhundredthousand.",
+                "The comfort of finity.",
+                "Pressure discrepancy detected - reversing airflow.",
+                "*Delicieuxmiel!*",
+                "REV UP THE CLOUDS!",
+                "Headpatted with ease.",
+                ":LOVINGSTARE:",
+                ":STARE:",
             };
 
             tipId = new Random().Next(0, tips.Length);
@@ -320,7 +337,7 @@ namespace Stolon
             AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Listen));
             AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Listen));
 
-            // board r
+            // board
             AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Ignore));
 
             // main menu
@@ -401,7 +418,7 @@ namespace Stolon
                     }
                     if (updateData[item].IsClicked)
                     {
-                        AudioEngine.Instance.Play(updateData[item].ClickSound);
+                        AudioEngine.Audio.Play(updateData[item].ClickSound);
                     }
                     if (updateData.TryGetValue("_back_" + item, out UIElementUpdateData updateData2))
                     {
@@ -415,17 +432,15 @@ namespace Stolon
             }
             if (isCurrentlyHovered && !hoveringAny)
             {
-                AudioEngine.Instance.Play(AudioEngine.AudioLibrary["wrong2"]);
+                //AudioEngine.Instance.Play(AudioEngine.AudioLibrary["wrong2"]);
             }
             hoveringAny = isCurrentlyHovered;
-            if (!AudioEngine.Mixer.Sources.ContainsKey("menuTheme"))
-            {
-                AudioEngine.Instance.Play(AudioEngine.AudioLibrary["menuTheme"]);
-            }
+            
             base.Update(elapsedMiliseconds);
         }
         private void UpdateMenuUI(int elapsedMiliseconds)
         {
+
             int rowHeight = (int)(menuLogoLines.Height / (float)menuLogoRowCount);
             float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
             int lineFromMid = (int)(110f + menuRemoveTweenerOffset);
@@ -434,26 +449,26 @@ namespace Stolon
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
-             if (milisecondsSinceStartup < 10000) // to skip start button click and animation
-            {
-                milisecondsSinceStartup = 10001;
-                menuDone = true;
-                menuRemoveTweener.Update(10);
+            // if (milisecondsSinceStartup < 10000) // to skip start button click and animation
+            //{
+            //    milisecondsSinceStartup = 10001;
+            //    menuDone = true;
+            //    menuRemoveTweener.Update(10);
 
-                Scene.MainInstance.SetBoard(new Player[]
-                        {
-                            new Player("player0"),
-                            new Player("player1"),
-                        });
-                Leave(() =>
-                {
-                    //Instance.Environment.Overlayer.Activate("transitionDither");
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 1000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on.", 1000));
-                });
-                //startFrame = true;
-            }
+            //    Scene.MainInstance.SetBoard(new Player[]
+            //            {
+            //                new Player("player0"),
+            //                new Player("player1"),
+            //            });
+            //    Leave(() =>
+            //    {
+            //        //Instance.Environment.Overlayer.Activate("transitionDither");
+            //        textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
+            //        textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
+            //        textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
+            //    });
+            //    //startFrame = true;
+            //}
 
             #region inFlash
             menuLogoTileHider = new Rectangle(menuLogoDrawPos.ToPoint(), new Point((int)(menuLogoLines.Width * menuLogoScaling), (int)(rowHeight * menuLogoRowsHidden)));
@@ -534,7 +549,16 @@ namespace Stolon
             {
                 //Console.WriteLine(UIElement.GetSelfPath("options"));
                 //Console.WriteLine(UIElement.GetParentPath("options"));
-                MenuPath = UIElement.GetSelfPath("options"); 
+                //AudioEngine.Audio.SetTrack("tiny");
+                MenuPath = UIElement.GetSelfPath("options");
+                //Instance.Environment.TaskHeap.Push("test", new System.Threading.Tasks.Task(() => Console.WriteLine("yoooo")), 1000);
+                //Instance.Environment.TaskHeap.SafePush("hi", new DynamicTask(() =>
+                //{
+                //    Console.WriteLine("yoooo");
+                //    return "amogus";
+                //}), 1000);
+
+
             }
             if (updateData["sound"].IsClicked)
             {
@@ -542,13 +566,13 @@ namespace Stolon
             }
             if (updateData["volUp"].IsClicked)
             {
-                AudioEngine.Instance.Volume += 0.1001f;
-                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Instance.Volume);
+                AudioEngine.Audio.MasterVolume += 0.1001f;
+                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Audio.MasterVolume);
             }
             if (updateData["volDown"].IsClicked)
             {
-                AudioEngine.Instance.Volume -= 0.1001f;
-                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Instance.Volume);
+                AudioEngine.Audio.MasterVolume -= 0.1001f;
+                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Audio.MasterVolume);
             }
             if (updateData["startStory"].IsClicked)
             {
@@ -556,8 +580,10 @@ namespace Stolon
                 {
                     Instance.Environment.Overlayer.Activate("transitionDither");
                     textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 1000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on.", 1000));
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
+                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
+
+                    Scene.MainInstance.SetImage(Instance.Textures.GetReference("textures\\landscape"));
                 });
                 //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
@@ -572,7 +598,7 @@ namespace Stolon
             }
             if (updateData["specialThanks"].IsClicked)
             {
-                textframe.Queue(new DialogueInfo(Instance.Environment, "Please read the README :D"));
+                textframe.Queue(new DialogueInfo(Instance.Environment, "Please read the github README :D"));
             }
             if (updateData["quit"].IsClicked)
             {
@@ -595,8 +621,6 @@ namespace Stolon
             {
                 //SLEnvironment.Instance.ForceGameState(SLEnvironment.SLGameState.OpenBoard);
                 //if (Board.MainInstance == null) throw new Exception();
-
-
                 loadingFinished = true;
                 onLeave?.Invoke();
                 onLeave = null;
@@ -634,12 +658,7 @@ namespace Stolon
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public string GetRandomSplashText(out int i)
-        {
-            int tipId = new Random().Next(0, tips.Length);
-            i = tipId;
-            return tips[tipId];
-        }
+        public string GetRandomSplashText(out int i) => tips[i = new Random().Next(0, tips.Length)];
         /// <summary>
         /// Leave the main menu.
         /// </summary>
@@ -732,7 +751,7 @@ namespace Stolon
             Instance.DebugStream.WriteLine("\tui-element with id " + elementID + " removed.");
         }
 
-        
+        public static UserInterface UI => Instance.Environment.UI;
     }
 
     public struct UIPath : IEnumerable<string>

@@ -46,12 +46,13 @@ namespace Stolon
 			get => environment.Scene;
 			set => environment.Scene = value;
 		}
-		public AudioEngine AudioEngine { get; }
+		public AudioEngine AudioEngine { get; private set; }
         public UserInterface UserInterface => environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); // (480, 270) (if vM = 30)
 		public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
+
 		Point oldWindowSize;
 
 		public AxTextureCollection Textures => textures;
@@ -63,7 +64,7 @@ namespace Stolon
 		public Color Color1 => palette[0];
 		public Color Color2 => palette[1];
 
-		public string VersionID => "0.050 (Open Alpha)";
+		public string VersionID => "0.051 (Open Alpha)";
 		internal float screenScale;
 
 #pragma warning disable CS8618
@@ -72,13 +73,13 @@ namespace Stolon
 		{
 			Instance = this;
 			graphics = new GraphicsDeviceManager(this);
-			Content.RootDirectory = "Content";
+			Content.RootDirectory = "content";
 			IsMouseVisible = true;
 			Fonts = new Dictionary<string, SpriteFont>();
-            AudioEngine = new AudioEngine();
 
             DebugStream = new AsitDebugStream();
-		}
+            AudioEngine = new AudioEngine();
+        }
 
 		protected override void Initialize()
 		{
@@ -138,7 +139,7 @@ namespace Stolon
 			environment = new StolonEnvironment();
 			environment.Initialize();
 
-			replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
+            replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
 			palette = new Color[]
 			{
 				System.Drawing.ColorTranslator.FromHtml("#f2fbeb").ToColor(),
@@ -159,7 +160,7 @@ namespace Stolon
 		public void SLExit()
 		{
 			MediaPlayer.Stop();
-			AudioEngine.Instance.Dispose();
+			AudioEngine.Audio.Dispose();
 			Exit();
 		}
 		protected override void Update(GameTime gameTime)
@@ -242,9 +243,6 @@ namespace Stolon
 			//spriteBatch.Draw(bloomRenderTarget, Vector2.Zero, Color.White);
 			//spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
 			//spriteBatch.End();
-
-
-
 
 			replaceColorEffect.CurrentTechnique.Passes[0].Apply();
 
