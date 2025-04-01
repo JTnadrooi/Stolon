@@ -244,7 +244,7 @@ namespace Stolon
                 "That definitely something Vox would say.",
                 "Inity waits patiently..",
                 "Super colliding..",
-                "Learning garden chairs how to fly..",
+                "Teaching garden chairs how to fly..",
                 "\"Is that an ability or a program?\"",
                 "Oh dear..",
                 "Goldsilk hates the player.",
