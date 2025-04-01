@@ -310,6 +310,7 @@ namespace Stolon
                 "Headpatted with ease.",
                 ":LOVINGSTARE:",
                 ":STARE:",
+                "Collida past 3 AM!",
             };
 
             tipId = new Random().Next(0, tips.Length);
