@@ -130,10 +130,10 @@ namespace Stolon
             overlayer.AddOverlay(new LoadOverlay());
             overlayer.AddOverlay(new TransitionDitherOverlay(StolonGame.Instance.GraphicsDevice));
 
-            StolonGame.Instance.AudioEngine.SetPlayList(new Playlist(
-                "debug1",
-                "debug2"
-            ));
+            //StolonGame.Instance.AudioEngine.SetPlayList(new Playlist(
+            //    "debug1",
+            //    "debug2"
+            //));
         }
         public GamestateInfo GetGamestateInfo()
         {
