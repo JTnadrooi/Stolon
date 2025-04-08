@@ -16,7 +16,6 @@ For future _Stolon_ commits.
     -   And then add a way to individually load `IGameComponent` classes.
 -   Make some classes `abstract`.
 -   Release _Asitlib_ or at least the `AsitLib.Debug` namespace.
--   Purge the `FlashHandler`.
 -   Clean the `AsitLib.XNA` namespace.
 -   Make this a checklist instead of an enumeration.
 -   Document **everything**. (+ externally.)
