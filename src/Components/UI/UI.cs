@@ -159,11 +159,6 @@ namespace Stolon
         public int LineWidth => lineWidth;
 
         public UIPath MenuPath { get; set; }
-
-        public string? lastHover;
-        public string? hover;
-        public string? prevHover;
-        public bool hoveringAny;
         /// <summary>
         /// Main UIInterface contructor.
         /// </summary>
@@ -402,22 +397,10 @@ namespace Stolon
                     break;
             }
 
-            hover = null;
-            bool isCurrentlyHovered = false;
-
             foreach (string item in UIElements.Keys)
             {
                 if (UIElements[item].Type == UIElementType.Listen)
                 {
-                    if (updateData[item].IsHovered)
-                    {
-                        isCurrentlyHovered = true;
-                        //lastHover = item;
-
-
-
-                        //hover = item;
-                    }
                     if (updateData[item].IsClicked)
                     {
                         AudioEngine.Audio.Play(updateData[item].ClickSound);
@@ -432,11 +415,6 @@ namespace Stolon
                     }
                 }
             }
-            if (isCurrentlyHovered && !hoveringAny)
-            {
-                //AudioEngine.Instance.Play(AudioEngine.AudioLibrary["wrong2"]);
-            }
-            hoveringAny = isCurrentlyHovered;
             
             base.Update(elapsedMiliseconds);
         }
