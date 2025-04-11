@@ -589,7 +589,7 @@ namespace Stolon
             }
             if (updateData["specialThanks"].IsClicked)
             {
-                textframe.Queue(new DialogueInfo(Instance.Environment, "Please read the github README :D"));
+                textframe.Queue(new DialogueInfo(Instance.Environment, "Please read the github README"));
             }
             if (updateData["quit"].IsClicked)
             {
