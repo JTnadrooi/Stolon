@@ -549,18 +549,7 @@ namespace Stolon
             }
             if (updateData["options"].IsClicked)
             {
-                //Console.WriteLine(UIElement.GetSelfPath("options"));
-                //Console.WriteLine(UIElement.GetParentPath("options"));
-                //AudioEngine.Audio.SetTrack("tiny");
                 MenuPath = UIElement.GetSelfPath("options");
-                //Instance.Environment.TaskHeap.Push("test", new System.Threading.Tasks.Task(() => Console.WriteLine("yoooo")), 1000);
-                //Instance.Environment.TaskHeap.SafePush("hi", new DynamicTask(() =>
-                //{
-                //    Console.WriteLine("yoooo");
-                //    return "amogus";
-                //}), 1000);
-
-
             }
             if (updateData["sound"].IsClicked)
             {
@@ -619,7 +608,7 @@ namespace Stolon
                 if (Scene.MainInstance.HasBoard)
                     Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
                 else Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenScene;
-            }), 3000, false);
+            }), 2000, false);
             milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
 
             tipPos = Centering.MiddleX((int)(tips[tipId].Length * Instance.Environment.FontDimensions.X),
