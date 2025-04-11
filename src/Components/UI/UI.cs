@@ -26,6 +26,7 @@ using System.Reflection.Metadata;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using NAudio.Wave.SampleProviders;
 
 #nullable enable
 
@@ -85,7 +86,6 @@ namespace Stolon
         private Tweener<float> menuLogoEaseTweener;
         private Tweener<float> menuRemoveTweener;
 
-        private FlashHandler menuLogoDisapearFlashHandler;
 
         private string[] tips;
         private Vector2 tipPos;
@@ -222,7 +222,8 @@ namespace Stolon
             menuDitherTexturePositions = Array.Empty<Point>();
 
             depthPath = new List<UIElement>();
-            menuLogoDisapearFlashHandler = new FlashHandler(1000, 1500);
+
+
             menuLogoScaling = 1f;
 
             menuLogoEaseTweener = new Tweener<float>(0f, 1f, 2f, Ease.Quad.InOut);
@@ -244,7 +245,7 @@ namespace Stolon
                 "That definitely something Vox would say.",
                 "Inity waits patiently..",
                 "Super colliding..",
-                "Learning garden chairs how to fly..",
+                "Teaching garden chairs how to fly..",
                 "\"Is that an ability or a program?\"",
                 "Oh dear..",
                 "Goldsilk hates the player.",
@@ -310,6 +311,7 @@ namespace Stolon
                 "Headpatted with ease.",
                 ":LOVINGSTARE:",
                 ":STARE:",
+                "Collida past 3 AM!",
             };
 
             tipId = new Random().Next(0, tips.Length);
@@ -547,18 +549,7 @@ namespace Stolon
             }
             if (updateData["options"].IsClicked)
             {
-                //Console.WriteLine(UIElement.GetSelfPath("options"));
-                //Console.WriteLine(UIElement.GetParentPath("options"));
-                //AudioEngine.Audio.SetTrack("tiny");
                 MenuPath = UIElement.GetSelfPath("options");
-                //Instance.Environment.TaskHeap.Push("test", new System.Threading.Tasks.Task(() => Console.WriteLine("yoooo")), 1000);
-                //Instance.Environment.TaskHeap.SafePush("hi", new DynamicTask(() =>
-                //{
-                //    Console.WriteLine("yoooo");
-                //    return "amogus";
-                //}), 1000);
-
-
             }
             if (updateData["sound"].IsClicked)
             {
@@ -576,16 +567,16 @@ namespace Stolon
             }
             if (updateData["startStory"].IsClicked)
             {
-                Leave(() =>
-                {
-                    Instance.Environment.Overlayer.Activate("transitionDither");
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
+                //Leave(() =>
+                //{
+                //    Instance.Environment.Overlayer.Activate("transitionDither");
+                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
+                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
+                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
 
-                    Scene.MainInstance.SetImage(Instance.Textures.GetReference("textures\\landscape"));
-                });
-                //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+                //    Scene.MainInstance.SetImage(Instance.Textures.GetReference("textures\\landscape"));
+                //});
+                textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
             if (updateData["startCom"].IsClicked)
             {
@@ -609,26 +600,21 @@ namespace Stolon
             #endregion
 
             menuRemoveTweener.Update(elapsedMiliseconds / 1000f);
-            menuLogoDisapearFlashHandler.Update(elapsedMiliseconds);
-            milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
-
-            tipPos = Centering.MiddleX((int)(tips[tipId].Length * Instance.Environment.FontDimensions.X),
-             menuLogoDrawPos.Y + menuLogoLines.Height + (menuLogoBoundingBoxClearing * Math.Clamp(menuRemoveTweener.Value * 2f, 0f, 1f)), Instance.VirtualDimensions.X, Vector2.One);
-
-            menuRemoveLineY = (int)(menuRemoveTweener.Value * Instance.VirtualDimensions.Y);
-
-            if (menuLogoDisapearFlashHandler.HasEnded && !menuRemoveTweener.Running && !loadingFinished)
+            TaskHeap.Heap.SafePush("menuLogoDisapear", new DynamicTask(() => // fire and forget game logic ftw
             {
-                //SLEnvironment.Instance.ForceGameState(SLEnvironment.SLGameState.OpenBoard);
-                //if (Board.MainInstance == null) throw new Exception();
                 loadingFinished = true;
                 onLeave?.Invoke();
                 onLeave = null;
                 if (Scene.MainInstance.HasBoard)
                     Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
                 else Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenScene;
-                //AudioEngine.Instance.Play(AudioEngine.AudioLibrary["explosion4"]);
-            }
+            }), 2000, false);
+            milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
+
+            tipPos = Centering.MiddleX((int)(tips[tipId].Length * Instance.Environment.FontDimensions.X),
+             menuLogoDrawPos.Y + menuLogoLines.Height + (menuLogoBoundingBoxClearing * Math.Clamp(menuRemoveTweener.Value * 2f, 0f, 1f)), Instance.VirtualDimensions.X, Vector2.One);
+
+            menuRemoveLineY = (int)(menuRemoveTweener.Value * Instance.VirtualDimensions.Y);
 
             Centering.OnPixel(ref menuLogoDrawPos);
         }
@@ -704,15 +690,6 @@ namespace Stolon
                     if (drawMenuLogoLines) spriteBatch.Draw(menuLogoLines, menuLogoDrawPos, Color.White);
 
                     int width = (int)(menuLogoDrawPos.X - 8);
-                    if (menuLogoDisapearFlashHandler.Flash)
-                    {
-                        //spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(Point.Zero, new Point(width, Instance.VirtualDimensions.Y)), Color.White);
-                        //spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(new Point(Instance.VirtualDimensions.X - width, 0), new Point(width, Instance.VirtualDimensions.Y)), Color.White);
-                        //spriteBatch.DrawLine(width, -10f, width, menuRemoveLineY, Color.White, 8);
-                        //spriteBatch.DrawLine(Instance.VirtualDimensions.X - width, -10f, Instance.VirtualDimensions.X - width, menuRemoveLineY, Color.White, 8);
-                        //spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(Point.Zero, new Point(width, menuRemoveLineY)), Color.White);
-                        //spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(new Point(Instance.VirtualDimensions.X - width, 0), new Point(width, menuRemoveLineY)), Color.White);
-                    }
                     spriteBatch.DrawLine(width, -10f, width, menuRemoveLineY, Color.White, lineWidth);
                     spriteBatch.DrawLine(Instance.VirtualDimensions.X - width, -10f, Instance.VirtualDimensions.X - width, menuRemoveLineY, Color.White, lineWidth);
                     break;

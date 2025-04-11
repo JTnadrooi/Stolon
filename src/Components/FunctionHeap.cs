@@ -118,7 +118,7 @@ namespace Stolon
                 if (overwrite) Instance.DebugStream.WriteLine("\t\tkey already known, overwriting task.");
                 else
                 {
-                    Instance.DebugStream.WriteLine("\t\tkey already known, overwrite is dissabled, skipping push.");
+                    //Instance.DebugStream.WriteLine("\t\tkey already known, overwrite is dissabled, skipping push.");
                     return;
                 }
             taskWaitDataCollection[id] = waitTime;
