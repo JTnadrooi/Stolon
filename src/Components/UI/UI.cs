@@ -206,7 +206,6 @@ namespace Stolon
 
             textframe = new Textframe(this);
 
-
             drawMenuLogoLines = true;
             drawMenuLogoDummyTiles = true;
             drawMenuLogoFilledTiles = false;
@@ -217,7 +216,6 @@ namespace Stolon
             menuDitherTexturePositions = Array.Empty<Point>();
 
             depthPath = new List<UIElement>();
-
 
             menuLogoScaling = 1f;
 
@@ -370,11 +368,6 @@ namespace Stolon
             drawData.Clear();
         }
         public HashSet<string> GetTopIDs() => UIElements.Values.Where(e => e.IsTop).Select(e => e.Id).ToHashSet();
-        //public HashSet<string> GetDockIDs()
-        //{
-        //    var topIds = GetTopIDs();
-        //    return UIElements.Values.Where(e => topIds.Contains(e.ChildOf)).Select(e => e.Id).ToHashSet();
-        //}
         public HashSet<string> GetParentIDs()
         {
             var topIds = GetTopIDs();
