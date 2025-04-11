@@ -578,16 +578,16 @@ namespace Stolon
             }
             if (updateData["startStory"].IsClicked)
             {
-                Leave(() =>
-                {
-                    Instance.Environment.Overlayer.Activate("transitionDither");
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
-                    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
+                //Leave(() =>
+                //{
+                //    Instance.Environment.Overlayer.Activate("transitionDither");
+                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
+                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
+                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
 
-                    Scene.MainInstance.SetImage(Instance.Textures.GetReference("textures\\landscape"));
-                });
-                //textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+                //    Scene.MainInstance.SetImage(Instance.Textures.GetReference("textures\\landscape"));
+                //});
+                textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
             if (updateData["startCom"].IsClicked)
             {
