@@ -128,41 +128,41 @@ namespace Stolon
 
             Listen();
 
-            if (Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked)
-            {
-                Instance.Environment.Overlayer.Activate("transition", null, () =>
-                        {
-                            Reset();
-                        }, "Resetting the Board..");
-            }
-            if (Instance.UserInterface.UIElementUpdateData["skipMove"].IsClicked) EndMove();
-            if (Instance.UserInterface.UIElementUpdateData["boardSearch"].IsClicked)
-            {
-                int ret = State.SearchAny();
-                if (ret != -1)
-                    Instance.Environment.Overlayer.Activate("transition", null, () =>
-                        {
-                            Reset();
-                        }, "4 Connected found for player " + GetPlayerTile(ret) + "!");
+            //if (Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked)
+            //{
+            //    Instance.Environment.Overlayer.Activate("transition", null, () =>
+            //            {
+            //                Reset();
+            //            }, "Resetting the Board..");
+            //}
+            //if (Instance.UserInterface.UIElementUpdateData["skipMove"].IsClicked) EndMove();
+            //if (Instance.UserInterface.UIElementUpdateData["boardSearch"].IsClicked)
+            //{
+            //    int ret = State.SearchAny();
+            //    if (ret != -1)
+            //        Instance.Environment.Overlayer.Activate("transition", null, () =>
+            //            {
+            //                Reset();
+            //            }, "4 Connected found for player " + GetPlayerTile(ret) + "!");
 
-            }
-            if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
-            if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked)
-            {
-                if (state.Players.Any(p => p.IsComputer))
-                {
-                    Instance.Environment.UI.Textframe.Queue(new DialogueInfo(Instance.Environment, "Not valid when against AI but coming soon!"));
-                }
-                Undo();
-            }
+            //}
+            //if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
+            //if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked)
+            //{
+            //    if (state.Players.Any(p => p.IsComputer))
+            //    {
+            //        Instance.Environment.UI.Textframe.Queue(new DialogueInfo(Instance.Environment, "Not valid when against AI but coming soon!"));
+            //    }
+            //    Undo();
+            //}
             if (SLKeyboard.IsClicked(Keys.Z)) // debug keys
             {
             }
             if (SLKeyboard.IsClicked(Keys.X)) { }
             if (SLKeyboard.IsClicked(Keys.C)) { }
-            if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) Instance.SLExit();
+            //if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) Instance.SLExit();
 
-            Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);
+            //Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);
 
             base.Update(elapsedMiliseconds);
         }

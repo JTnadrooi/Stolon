@@ -182,7 +182,7 @@ namespace Stolon
 
 				environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
-				if (SLKeyboard.IsClicked(Keys.F) || UserInterface.UIElementUpdateData["toggleFullscreen"].IsClicked) GoFullscreen();
+				if (SLKeyboard.IsClicked(Keys.F)) GoFullscreen();
 			}
 			base.Update(gameTime);
 		}
@@ -190,13 +190,11 @@ namespace Stolon
 		{
 			if (graphics.IsFullScreen)
 			{
-				UserInterface.UIElements["toggleFullscreen"].Text = "Go Fullscreen";
 				graphics.PreferredBackBufferWidth = DesiredDimensions.X;
 				graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
 			}
 			else
 			{
-				UserInterface.UIElements["toggleFullscreen"].Text = "Go Windowed";
 				graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
 				graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
 				graphics.ApplyChanges();

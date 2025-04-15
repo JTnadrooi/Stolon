@@ -74,23 +74,6 @@ namespace Stolon
             return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, element.Type, elementPos + (elementIsHovered ? new Point(-Instance.Environment.FontDimensions.X * 2, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
         }
     }
-    /// <summary>
-    /// The <see cref="IOrderProvider"/> that orders both sides of the board ui.
-    /// </summary>
-    public class BoardSideProvider : IOrderProvider
-    {
-        public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
-        {
-            Vector2 elementPos = UIOrgin + new Vector2(0, index * (Instance.Environment.FontDimensions.Y + UIElement.LongDefaultRectangleClearance));
-            Centering.OnPixel(ref elementPos);
-
-            Rectangle elementRectangle = element.GetBounds(elementPos.ToPoint(), Instance.Environment.FontDimensions);
-            string elementText = element.Text;
-            bool elementIsHovered = elementRectangle.Contains(SLMouse.VirualPosition);
-            bool drawRectangle = element.Type == UIElementType.Listen;
-            return (new UIElementDrawData(element.Id, elementText + ((elementIsHovered && drawRectangle) ? " <" : string.Empty), element.Type, elementPos + Vector2.Zero, elementRectangle, drawRectangle), elementIsHovered);
-        }
-    }
 
     /// <summary>
     /// A static list of the most common <see cref="IOrderProvider"/> objects.
@@ -100,16 +83,11 @@ namespace Stolon
         static OrderProviders()
         {
             Menu = new MenuOrderProvider();
-            BoardSide = new BoardSideProvider();
         }
         /// <summary>
         /// The <see cref="IOrderProvider"/> that orders the main menu.
         /// </summary>
         public static IOrderProvider Menu { get; }
-        /// <summary>
-        /// The <see cref="IOrderProvider"/> that orders both sides of the board ui.
-        /// </summary>
-        public static IOrderProvider BoardSide { get; }
     }
 
     /// <summary>

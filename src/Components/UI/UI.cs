@@ -143,8 +143,6 @@ namespace Stolon
         #endregion
 
         public const string titleParentId = "titleParent";
-        public const string boardLeftParentId = "boardLeftParent";
-        public const string boardRightParentId = "boardRightParent";
         private Textframe textframe;
         public Action? onLeave;
 
@@ -314,27 +312,25 @@ namespace Stolon
         {
             StolonGame.Instance.DebugStream.WriteLine("[s]initializing ui..");
             // top
-            AddElement(new UIElement(boardLeftParentId, UIElement.topId, string.Empty, UIElementType.Listen));
-            AddElement(new UIElement(boardRightParentId, UIElement.topId, string.Empty, UIElementType.Listen));
             AddElement(new UIElement(titleParentId, UIElement.topId, string.Empty, UIElementType.Listen));
 
             // board l
-            AddElement(new UIElement("exitGame", boardLeftParentId, "Exit Game", UIElementType.Listen));
+            //AddElement(new UIElement("exitGame", boardLeftParentId, "Exit Game", UIElementType.Listen));
 
-            AddElement(new UIElement("screenRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
-            AddElement(new UIElement("screenRegion", boardLeftParentId, "Screen & Camera", UIElementType.Ignore));
-            AddElement(new UIElement("toggleFullscreen", boardLeftParentId, "Go Fullscreen", UIElementType.Listen));
-            AddElement(new UIElement("centerCamera", boardLeftParentId, "Center Camera", UIElementType.Listen));
+            //AddElement(new UIElement("screenRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
+            //AddElement(new UIElement("screenRegion", boardLeftParentId, "Screen & Camera", UIElementType.Ignore));
+            //AddElement(new UIElement("toggleFullscreen", boardLeftParentId, "Go Fullscreen", UIElementType.Listen));
+            //AddElement(new UIElement("centerCamera", boardLeftParentId, "Center Camera", UIElementType.Listen));
 
-            AddElement(new UIElement("boardRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
-            AddElement(new UIElement("boardRegion", boardLeftParentId, "Board", UIElementType.Ignore));
-            AddElement(new UIElement("undoMove", boardLeftParentId, "Undo", UIElementType.Listen));
-            AddElement(new UIElement("restartBoard", boardLeftParentId, "Restart", UIElementType.Listen));
-            AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Listen));
-            AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Listen));
+            //AddElement(new UIElement("boardRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
+            //AddElement(new UIElement("boardRegion", boardLeftParentId, "Board", UIElementType.Ignore));
+            //AddElement(new UIElement("undoMove", boardLeftParentId, "Undo", UIElementType.Listen));
+            //AddElement(new UIElement("restartBoard", boardLeftParentId, "Restart", UIElementType.Listen));
+            //AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Listen));
+            //AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Listen));
 
             // board
-            AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Ignore));
+            //AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Ignore));
 
             // main menu
             AddElement(new UIElement("startStory", titleParentId, "Story", UIElementType.Listen, clickSoundId: "exit3"));
@@ -598,9 +594,6 @@ namespace Stolon
 
             lineX1 = (int)(lineOffset + uiLeftOffset);
             lineX2 = (int)(Instance.VirtualDimensions.X - lineOffset + uiRightOffset);
-
-            UIOrdering.Order(AllUIElements.Values.ToArray(), boardLeftParentId, drawData, updateData, new Vector2(uiLeftOffset, 0) + new Vector2(5), OrderProviders.BoardSide);
-            UIOrdering.Order(AllUIElements.Values.ToArray(), boardRightParentId, drawData, updateData, new Vector2(lineX2, 0) + new Vector2(5), OrderProviders.BoardSide);
         }
         /// <summary>
         /// Get random splash text.
