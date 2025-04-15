@@ -305,6 +305,7 @@ namespace Stolon
                 ":LOVINGSTARE:",
                 ":STARE:",
                 "Collida past 3.",
+                "That translates to \"flour\".",
             };
 
             tipId = new Random().Next(0, tips.Length);
