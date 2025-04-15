@@ -589,6 +589,8 @@ namespace Stolon
             float zoomIntensity = Instance.Environment.Scene.Board.ZoomIntensity;
             float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
 
+            lineZoomOffset = Math.Max(0, lineZoomOffset);
+
             bool mouseIsOnUI = SLMouse.Domain == SLMouse.MouseDomain.UserInterfaceLow;
 
             uiLeftOffset = -lineZoomOffset;
