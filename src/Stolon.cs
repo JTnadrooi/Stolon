@@ -90,8 +90,8 @@ namespace Stolon
 
 			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
 
-			desiredModifier = 67; // 67
-			virtualModifier = 30; // 30
+			desiredModifier = 67; 
+			virtualModifier = 57; 
 
 			graphics.PreferredBackBufferWidth = DesiredDimensions.X;
 			graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
