@@ -447,7 +447,7 @@ namespace Stolon
             menuLine1X = (int)(Instance.VirtualDimensions.X / 2f) - lineFromMid;
             menuLine2X = (int)(Instance.VirtualDimensions.X / 2f) + lineFromMid;
 
-            menuLineLenght = drawMenuLogoFilledTiles ? 400 : 0;
+            menuLineLenght = drawMenuLogoFilledTiles ? StolonGame.Instance.VirtualDimensions.Y : 0;
             menuLineWidth = 1 + (menuFlashEnded ? 1 : 0);
 
             if (milisecondsSinceStartup > 300) menuLogoRowsHidden = 4;
