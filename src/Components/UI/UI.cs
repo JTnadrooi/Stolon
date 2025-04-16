@@ -170,6 +170,7 @@ namespace Stolon
                     m => m.Groups[1].Value + m.Groups[2].Value.ToLower() + m.Groups[3].Value);
                 return char.ToLower(x[0]) + x.Substring(1);
             }
+            string menuDataFolder = "menuLogoMid";
 
             environment = Instance.Environment;
 
@@ -186,10 +187,10 @@ namespace Stolon
 
             uifont = Instance.Fonts["fiont"];
 
-            menuLogoLines = Instance.Textures.GetReference("textures\\menuLogoLarge\\lines");
-            menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogoLarge\\dummyTiles");
-            menuLogoFilledTiles = Instance.Textures.GetReference("textures\\menuLogoLarge\\filledTiles");
-            menuLogoLowResFonted = Instance.Textures.GetReference("textures\\menuLogoLarge\\lowResFonted");
+            menuLogoLines = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lines");
+            menuLogoDummyTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\dummyTiles");
+            menuLogoFilledTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\filledTiles");
+            menuLogoLowResFonted = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lowResFonted");
             dither8x8 = Instance.Textures.GetReference("textures\\dither8x8");
 
             AllUIElements = new Dictionary<string, UIElement>();
@@ -415,7 +416,7 @@ namespace Stolon
             float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
             int lineFromMid = (int)(110f + menuRemoveTweenerOffset);
             bool menuFlashEnded = milisecondsSinceStartup > menuFlashEnd;
-            int uiElementOffsetY = (int)(130f + menuRemoveTweenerOffset);
+            int uiElementOffsetY = (int)(330f + menuRemoveTweenerOffset);
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
