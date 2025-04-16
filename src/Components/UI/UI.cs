@@ -414,7 +414,7 @@ namespace Stolon
 
             int rowHeight = (int)(menuLogoLines.Height / (float)menuLogoRowCount);
             float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
-            int lineFromMid = (int)(110f + menuRemoveTweenerOffset);
+            int lineFromMid = (int)(170f + menuRemoveTweenerOffset);
             bool menuFlashEnded = milisecondsSinceStartup > menuFlashEnd;
             int uiElementOffsetY = (int)(330f + menuRemoveTweenerOffset);
             int logoYoffset = 30;
