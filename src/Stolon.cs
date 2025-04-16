@@ -17,6 +17,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using DiscordRPC;
 using DiscordRPC.Events;
 using Microsoft.Xna.Framework.Media;
+using System.Drawing;
 
 #nullable enable
 
@@ -218,7 +219,10 @@ namespace Stolon
 			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
 			environment.Draw(spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
-			spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * StolonEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+
+            spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
+
+            spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * StolonEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
 			spriteBatch.End();

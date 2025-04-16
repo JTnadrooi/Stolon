@@ -181,3 +181,15 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:../content/textures/landscape.png;textures/landscape.png
+
+#begin ../content/textures/characters/silo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/characters/silo.png;textures/characters/silo.png
