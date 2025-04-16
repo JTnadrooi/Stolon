@@ -193,3 +193,51 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:../content/textures/characters/silo.png;textures/characters/silo.png
+
+#begin ../content/textures/menuLogoLarge/dummyTiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogoLarge/dummyTiles.png;textures/menuLogoLarge/dummyTiles.png
+
+#begin ../content/textures/menuLogoLarge/filledTiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogoLarge/filledTiles.png;textures/menuLogoLarge/filledTiles.png
+
+#begin ../content/textures/menuLogoLarge/lines.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogoLarge/lines.png;textures/menuLogoLarge/lines.png
+
+#begin ../content/textures/menuLogoLarge/lowResFonted.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:../content/textures/menuLogoLarge/lowResFonted.png;textures/menuLogoLarge/lowResFonted.png

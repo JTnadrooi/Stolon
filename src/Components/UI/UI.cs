@@ -186,10 +186,10 @@ namespace Stolon
 
             uifont = Instance.Fonts["fiont"];
 
-            menuLogoLines = Instance.Textures.GetReference("textures\\menuLogo\\lines");
-            menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogo\\dummyTiles");
-            menuLogoFilledTiles = Instance.Textures.GetReference("textures\\menuLogo\\filledTiles");
-            menuLogoLowResFonted = Instance.Textures.GetReference("textures\\menuLogo\\lowResFonted");
+            menuLogoLines = Instance.Textures.GetReference("textures\\menuLogoLarge\\lines");
+            menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogoLarge\\dummyTiles");
+            menuLogoFilledTiles = Instance.Textures.GetReference("textures\\menuLogoLarge\\filledTiles");
+            menuLogoLowResFonted = Instance.Textures.GetReference("textures\\menuLogoLarge\\lowResFonted");
             dither8x8 = Instance.Textures.GetReference("textures\\dither8x8");
 
             AllUIElements = new Dictionary<string, UIElement>();
