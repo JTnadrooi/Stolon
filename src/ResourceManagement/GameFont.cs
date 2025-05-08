@@ -20,6 +20,7 @@ namespace Stolon
             Name = name;
             SpriteFont = spriteFont;
             Dimensions = spriteFont.MeasureString("A");
+            Scale = scale;
         }
         public Vector2 FastMeasureString(string s) => Dimensions * Scale * s.Length;
         public override string ToString() => Name + " (Scale: " + Scale + ", Dimensions: " + Dimensions + ")";
