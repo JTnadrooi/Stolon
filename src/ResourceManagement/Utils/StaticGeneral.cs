@@ -17,36 +17,6 @@ using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Stolon
 {
-	public interface IDrawable
-	{
-		public Vector2 Position { get; set; }
-		public Vector2 Scale { get; set; }
-		public GameTexture Texture { get; }
-
-		public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds, SpriteEffects effects = SpriteEffects.None);
-	}
-	public static class Drawable
-	{
-		public static TDrawable SetPosition<TDrawable>(this TDrawable drawable, Vector2 newPos, Orgin orgin = Orgin.TopLeft) where TDrawable : IDrawable
-		{
-			drawable.Position = orgin switch
-			{
-				Orgin.TopLeft => Centering.TopLeft(drawable.Texture, newPos, drawable.Scale),
-				Orgin.TopRight => Centering.TopRight(drawable.Texture, newPos, drawable.Scale),
-				Orgin.BottomLeft => Centering.BottomLeft(drawable.Texture, newPos, drawable.Scale),
-				Orgin.BottomRight => Centering.BottomRight(drawable.Texture, newPos, drawable.Scale),
-				_ => throw new Exception(),
-			};
-			return drawable;
-		}
-		public static TDrawable SetScale<TDrawable>(this TDrawable drawable, float newScaling) where TDrawable : IDrawable => drawable.SetScale(new Vector2(newScaling));
-		public static TDrawable SetScale<TDrawable>(this TDrawable drawable, float newScalingX, float newScalingY) where TDrawable : IDrawable => drawable.SetScale(new Vector2(newScalingX, newScalingY));
-		public static TDrawable SetScale<TDrawable>(this TDrawable drawable, Vector2 newScaling) where TDrawable : IDrawable
-		{
-			drawable.Scale = newScaling;
-			return drawable;
-		}
-	}
 	public static class StolonStatic
 	{
 		/// <summary>
