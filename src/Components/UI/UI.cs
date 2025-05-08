@@ -416,7 +416,7 @@ namespace Stolon
             float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
             int lineFromMid = (int)(170f + menuRemoveTweenerOffset);
             bool menuFlashEnded = milisecondsSinceStartup > menuFlashEnd;
-            int uiElementOffsetY = (int)(330f + menuRemoveTweenerOffset);
+            int uiElementOffsetY = (int)(230f + menuRemoveTweenerOffset);
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
@@ -660,7 +660,7 @@ namespace Stolon
             }
             foreach (UIElementDrawData elementDrawData in drawData)
             {
-                spriteBatch.DrawString(uifont, elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 1f);
+                spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 1f);
                 if (elementDrawData.DrawRectangle)
                 {
                     spriteBatch.DrawRectangle(elementDrawData.Rectangle, Color.White, 1f);

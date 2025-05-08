@@ -71,7 +71,7 @@ namespace Stolon
             };
             bool elementIsHovered = elementBounds.Contains(SLMouse.VirualPosition);
 
-            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, element.Type, elementPos + (elementIsHovered ? new Point(-Instance.Environment.FontDimensions.X * 2, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
+            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, "fiont", element.Type, elementPos + (elementIsHovered ? new Point(-Instance.Environment.FontDimensions.X * 2, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
         }
     }
 

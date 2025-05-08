@@ -171,6 +171,7 @@ namespace Stolon
         /// The <see cref="UIElement.Id"/> of the source <see cref="UIElement"/>.
         /// </summary>
         public string Id { get; }
+        public string FontName { get; }
         /// <summary>
         /// Create a new <see cref="UIElementDrawData"/> object.
         /// </summary>
@@ -180,7 +181,7 @@ namespace Stolon
         /// <param name="position"></param>
         /// <param name="rectangle"></param>
         /// <param name="drawRectangle"></param>
-        public UIElementDrawData(string sourceId, string text, UIElementType type, Vector2 position, RectangleF rectangle, bool drawRectangle)
+        public UIElementDrawData(string sourceId, string text, string fontName, UIElementType type, Vector2 position, RectangleF rectangle, bool drawRectangle)
         {
             Position = position;
             Type = type;
@@ -188,6 +189,7 @@ namespace Stolon
             Rectangle = rectangle;
             DrawRectangle = drawRectangle;
             Id = sourceId;
+            FontName = fontName;
         }
         public override string ToString()
         {
