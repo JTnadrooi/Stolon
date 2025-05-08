@@ -41,10 +41,6 @@ namespace Stolon
     {
         public enum BloomAlgorithm
         {
-            /// <summary>
-            /// Find out the bloom config using the given <paramref name="palette"/> as a base. <br/><br/>
-            /// <i>Powered by NADROOI.</i>
-            /// </summary>
             Nadrooi,
         }
         public static (float strenght, float threshold) GetBloomConfig(this TexturePalette4 palette, BloomAlgorithm algorithm, bool cheap = true, float bloomMult = 0.85f)
