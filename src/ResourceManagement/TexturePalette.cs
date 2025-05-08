@@ -43,9 +43,8 @@ namespace Stolon
         {
             /// <summary>
             /// Find out the bloom config using the given <paramref name="palette"/> as a base. <br/><br/>
-            /// <i>Powered by KEES.</i>
+            /// <i>Powered by NADROOI.</i>
             /// </summary>
-            Kees,
             Nadrooi,
         }
         public static (float strenght, float threshold) GetBloomConfig(this TexturePalette4 palette, BloomAlgorithm algorithm, bool cheap = true, float bloomMult = 0.85f)
@@ -57,10 +56,6 @@ namespace Stolon
 
             switch (algorithm)
             {
-                case BloomAlgorithm.Kees:
-                    //threshold = 0.2473f;
-                    //strenght = avgBright / MathF.Pow(threshold, 2);
-                    break;
                 case BloomAlgorithm.Nadrooi:
                     float delta12 = c1Bright - c2Bright;
                     float deltaPow = delta12 * delta12;
