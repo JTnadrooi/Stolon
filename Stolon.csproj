@@ -20,10 +20,6 @@
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Include=".ignore\oldUI.txt" />
-  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
     <EmbeddedResource Include="Icon.bmp" />
