@@ -57,23 +57,23 @@ namespace Stolon
 		private Color[] palette;
 		private Effect replaceColorEffect;
 		private AxTextureCollection textures;
-        public DiscordRichPresence DRP { get; set; }
 		private BloomFilter bloomFilter;
+        private Point oldWindowSize;
 
-		public StolonEnvironment Environment => environment;
+        public StolonEnvironment Environment => environment;
 		public Scene Scene
 		{
 			get => environment.Scene;
 			set => environment.Scene = value;
 		}
 		public AudioEngine AudioEngine { get; private set; }
+        public DiscordRichPresence DRP { get; set; }
         public UserInterface UserInterface => environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); //  (912, 513) (if vM = 57) - (480, 270) (if vM = 30)
         public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
 
-		Point oldWindowSize;
 
 		public AxTextureCollection Textures => textures;
 		public Dictionary<string, SpriteFont> Fonts { get; }
