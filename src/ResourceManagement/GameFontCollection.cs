@@ -44,13 +44,12 @@ namespace Stolon
                     "fonts\\fiont" => 0.5f,
                     _ => 1f,
                 };
-                GameFont font = new GameFont(toLoad, contentManager.Load<SpriteFont>(toLoad));
+                GameFont font = new GameFont(toLoad, contentManager.Load<SpriteFont>(toLoad), scale);
                 return font;
             }
             catch { return null; }
         })
         {
-            Console.WriteLine(dictionary["fonts\\fiont"].ToString());
         }
     }
 }
