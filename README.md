@@ -39,33 +39,33 @@ Download the newest release from ["Releases"](https://github.com/JTnadrooi/Stolo
 
 ## Controls
 
-| Key              | Action                   |
-| ---------------- | ------------------------ |
-| F                | Go full-screen           |
-| Left Mouse       | Place marker / Zoom in   |
-| Right Mouse      | Zoom out / Drag camera   |
-| Shift            | Zoom in                  |
-| Shift + W/A/S/D  | Move camera              |
+| Key             | Action                 |
+| --------------- | ---------------------- |
+| F               | Go full-screen         |
+| Left Mouse      | Place marker / Zoom in |
+| Right Mouse     | Zoom out / Drag camera |
+| Shift           | Zoom in                |
+| Shift + W/A/S/D | Move camera            |
 
 ## Buttons (In Board)
 
-| Button         | Action                                       |
-| -------------- | -------------------------------------------- |
-| Exit game      | Exit game                                    |
-| Go full-screen | Go full-screen                               |
-| Restart        | Clear board / Restart                        |
-| Search         | Search the board for four connected markers  |
-| Undo move      | Undo's a move                                |
-| End move       | Skips a move                                 |
+| Button         | Action                                      |
+| -------------- | ------------------------------------------- |
+| Exit game      | Exit game                                   |
+| Go full-screen | Go full-screen                              |
+| Restart        | Clear board / Restart                       |
+| Search         | Search the board for four connected markers |
+| Undo move      | Undo's a move                               |
+| End move       | Skips a move                                |
 
 # Special thanks
 
-| Entity      | For                                                                                       |
-| ----------- | ----------------------------------------------------------------------------------------- |
-| Keescasual  | Coming up with a lot of the future ideas. Without him, this game probably wouldn't exist. |
-| LandronSC   | Providing constructive feedback.                                                          |
-| yukiyo      | Providing constructive feedback, especially with the entity/character designs!            |
-| Voxuuu      | Utmost critical feedback.                                                                 |
+| Entity     | For                                                                                       |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| Keescasual | Coming up with a lot of the future ideas. Without him, this game probably wouldn't exist. |
+| LandronSC  | Providing constructive feedback.                                                          |
+| yukiyo     | Providing constructive feedback, especially with the entity/character designs!            |
+| Voxuuu     | Utmost critical feedback.                                                                 |
 
 _And thank you for playing :D_
 
