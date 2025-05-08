@@ -46,14 +46,7 @@ namespace Stolon
     /// </summary>
     public class GoldsilkCom : SLComputer
     {
-        private Player player;
-        private int playerId;
-
-        public GoldsilkCom(GoldsilkEntity source) : base(source)
-        {
-            player = null!;
-        }
-
+        public GoldsilkCom(GoldsilkEntity source) : base(source) { }
         public override void DoMove(Board board)
         {
             int current = board.State.CurrentPlayerID;
@@ -65,10 +58,7 @@ namespace Stolon
                 {
                     board.Reset();
                 }, "4 Connected found for player " + board.GetPlayerTile(ret) + "!");
-
-
         }
-
         private static int negaCount = 0;
         public static NegamaxEndResult Search(BoardState state, UniqueMoveBoardMap map, int depth)
         {
@@ -82,49 +72,28 @@ namespace Stolon
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             negaCount = 0;
-            //color = -1;
-            //try
+            object lockObj = new object();
+            object copyLockObj = new object();
+
+            Parallel.For(0, moves.Count, i =>
             {
-                object lockObj = new object();
-                object copyLockObj = new object();
+                BoardState child = state.DeepCopy();
+                Point sim = child.Alter(moves[i], true);
 
-                Parallel.For(0, moves.Count, i =>
+                int score = -Negamax(child, sim, map, tt, depth, -evalNum, evalNum, color);
+
+                lock (lockObj)
                 {
-                    BoardState child = state.DeepCopy();
-                    Point sim = child.Alter(moves[i], true);
-
-                    int score = -Negamax(child, sim, map, tt, depth, -evalNum, evalNum, color);
-
-                    lock (lockObj)
-                    {
-                        Instance.DebugStream.WriteLine("\t\tEvaluated move " + moves[i] + ", winstate score: " + score + ".");
-                        negaMaxedMoves.Add((score, moves[i]));
-                    }
-                });
-
-                //for (int i = 0; i < moves.Count; i++)
-                //{
-                //    BoardState child = state.DeepCopy();
-                //    Point sim = child.Alter(moves[i], true);
-
-                //    int score = -Negamax(child, sim, map, tt, depth, -100, 100, color);
-                //    Instance.DebugStream.WriteLine("\t\tEvaluated move " + moves[i] + ", winstate score: " + score + ".");
-                //    negaMaxedMoves.Add((score, moves[i]));
-
-                //    //Point sim = state.Alter(moves[i], true);
-                //    //Console.WriteLine(-Negamax(state, sim, map, tt, 4, -100, 100, -1) + " move: " + moves[i]);
-                //    //state.Undo();
-                //}
-            }
-            
+                    Instance.DebugStream.WriteLine("\t\tEvaluated move " + moves[i] + ", winstate score: " + score + ".");
+                    negaMaxedMoves.Add((score, moves[i]));
+                }
+            });
 
             Instance.DebugStream.WriteLine("\t\tattemting further move ordering..");
 
             negaMaxedMoves = negaMaxedMoves.Select((x, i) => new { Index = i, Value = x })
                 .Where(x => x.Value.score == negaMaxedMoves.Select(t => t.score).Max())
                 .Select(x => x.Value).ToList();
-
-
             foreach ((int score, Move move) moveTuple in negaMaxedMoves)
             {
                 int score = MoveEvaluate(state, moveTuple.move, moveTuple.score);
