@@ -24,6 +24,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using Microsoft.Xna.Framework;
 using System.Diagnostics.CodeAnalysis;
 using System.Collections;
+#nullable enable
 
 namespace Stolon
 {

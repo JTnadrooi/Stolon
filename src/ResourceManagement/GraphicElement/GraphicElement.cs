@@ -22,6 +22,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using System.Diagnostics;
+#nullable enable
 
 namespace Stolon
 {

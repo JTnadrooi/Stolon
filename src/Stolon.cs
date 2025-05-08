@@ -6,10 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using AsitLib;
 using AsitLib.Debug;
-
 using MonoGame.Extended;
-using static Stolon.StolonGame;
-
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -19,7 +16,7 @@ using DiscordRPC.Events;
 using Microsoft.Xna.Framework.Media;
 using System.Drawing;
 using Microsoft.Xna.Framework.Content;
-
+using static Stolon.StolonGame;
 #nullable enable
 
 namespace Stolon

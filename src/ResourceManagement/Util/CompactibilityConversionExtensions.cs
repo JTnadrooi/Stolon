@@ -14,6 +14,7 @@ using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using SizeF = MonoGame.Extended.SizeF;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
+#nullable enable
 
 namespace Stolon
 {
