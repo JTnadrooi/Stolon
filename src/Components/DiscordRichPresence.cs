@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using AsitLib;
-using AsitLib.XNA;
+
 using MonoGame.Extended;
 using static Stolon.StolonGame;
 

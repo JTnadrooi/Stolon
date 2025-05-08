@@ -1,4 +1,4 @@
-using AsitLib.XNA;
+
 using Betwixt;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -41,7 +41,7 @@ namespace Stolon
             }).ToArray(), info.PostMiliseconds);
         }
     }
-    public class Textframe : AxComponent
+    public class Textframe : GameComponent
     {
         private Queue<DialogueInfo> dialogueQueue;
         private Rectangle dialoguebounds;

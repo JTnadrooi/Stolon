@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using AsitLib.XNA;
+
 using static Stolon.StolonGame;
 using System;
 using MonoGame.Extended.Collisions.Layers;
@@ -12,7 +12,7 @@ namespace Stolon
     /// <summary>
     /// Represent a single game scene. 
     /// </summary>
-    public class Scene : AxComponent
+    public class Scene : GameComponent
     {
         public enum SLScenePreset
         {

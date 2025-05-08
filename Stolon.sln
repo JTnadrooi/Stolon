@@ -22,7 +22,4 @@ Global
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9E8DA1A4-A38A-48DA-ACE4-675E121B777F}
 	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\SharpMath2-master\SharpMath2.projitems*{e4bb0340-21d1-4ca3-8f9a-397736e7df96}*SharedItemsImports = 5
-	EndGlobalSection
 EndGlobal

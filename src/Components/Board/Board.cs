@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using AsitLib;
-using AsitLib.XNA;
+
 using MonoGame.Extended;
 using static Stolon.StolonGame;
 
@@ -27,7 +27,7 @@ namespace Stolon
     /// <summary>
     /// The representor of the board in the STOLON environment.
     /// </summary>
-    public partial class Board : AxComponent
+    public partial class Board : GameComponent
     {
         public Camera2D Camera { get; }
         public float Zoom { get; private set; }
@@ -202,7 +202,7 @@ namespace Stolon
                     Instance.Environment.Overlayer.Activate("loading");
                 }
             }
-            else if (AsitGame.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && MouseIsOnBoard)
+            else if (StolonStatic.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && MouseIsOnBoard)
             {
                 Instance.DebugStream.WriteLine("Attempting board alter after mouseclick..");
                 Move? move = null;
@@ -475,8 +475,8 @@ namespace Stolon
     public class TileType
     {
         public string Name { get; }
-        public AxTexture Texture { get; }
-        public TileType(string name, AxTexture texture)
+        public GameTexture Texture { get; }
+        public TileType(string name, GameTexture texture)
         {
             Name = name;
             Texture = texture;

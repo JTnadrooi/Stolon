@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using AsitLib;
 using AsitLib.Debug;
-using AsitLib.XNA;
+
 using MonoGame.Extended;
 
 using Color = Microsoft.Xna.Framework.Color;

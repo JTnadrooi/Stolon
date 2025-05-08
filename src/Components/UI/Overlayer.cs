@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using AsitLib.XNA;
+
 using Betwixt;
 using MonoGame.Extended;
 using static Stolon.StolonGame;
@@ -17,7 +17,7 @@ using MonoGame.Extended.Tweening;
 
 namespace Stolon
 {
-    public class OverlayEngine : AxComponent
+    public class OverlayEngine : GameComponent
     {
         private Dictionary<string, IOverlay> overlays;
         private List<string> initialized;

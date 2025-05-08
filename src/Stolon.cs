@@ -6,10 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using AsitLib;
 using AsitLib.Debug;
-using AsitLib.XNA;
 using MonoGame.Extended;
-using static Stolon.StolonGame;
-
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -18,12 +15,21 @@ using DiscordRPC;
 using DiscordRPC.Events;
 using Microsoft.Xna.Framework.Media;
 using System.Drawing;
-
+using Microsoft.Xna.Framework.Content;
+using static Stolon.StolonGame;
 #nullable enable
 
 namespace Stolon
 {
-	public partial class StolonGame : Game
+	//public class FontCollection : IContentCollection<GameFont>
+ //   {
+ //       public FontCollection(ContentManager contentManager)
+	//	{
+
+	//	}
+
+ //   }
+    public partial class StolonGame : Game
 	{
 		private GraphicsDeviceManager graphics;
 		private SpriteBatch spriteBatch;
@@ -37,26 +43,27 @@ namespace Stolon
 		private int desiredModifier;
 		private Color[] palette;
 		private Effect replaceColorEffect;
-		private AxTextureCollection textures;
-		public DiscordRichPresence DRP { get; set; }
+		private GameTextureCollection textures;
 		private BloomFilter bloomFilter;
+        private Point oldWindowSize;
 
-		public StolonEnvironment Environment => environment;
+        public StolonEnvironment Environment => environment;
 		public Scene Scene
 		{
 			get => environment.Scene;
 			set => environment.Scene = value;
 		}
 		public AudioEngine AudioEngine { get; private set; }
+        public DiscordRichPresence DRP { get; set; }
         public UserInterface UserInterface => environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); //  (912, 513) (if vM = 57) - (480, 270) (if vM = 30)
         public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
+        public float ScreenScale { get; private set; }
 
-		Point oldWindowSize;
 
-		public AxTextureCollection Textures => textures;
+        public GameTextureCollection Textures => textures;
 		public Dictionary<string, SpriteFont> Fonts { get; }
 
 		public SpriteBatch SpriteBatch => spriteBatch;
@@ -66,7 +73,6 @@ namespace Stolon
 		public Color Color2 => palette[1];
 
 		public string VersionID => "0.051 (Open Alpha)";
-		internal float screenScale;
 
 		#pragma warning disable CS8618
 		public StolonGame()
@@ -134,7 +140,7 @@ namespace Stolon
 			DebugStream.WriteLine("[s]loading content..");
 
 			spriteBatch = new SpriteBatch(GraphicsDevice);
-			textures = new AxTextureCollection(Content);
+			textures = new GameTextureCollection(Content);
 			Fonts.Add("fiont", textures.HardLoad<SpriteFont>("fonts\\fiont"));
 
 			environment = new StolonEnvironment();
@@ -179,7 +185,7 @@ namespace Stolon
 				else if (SLMouse.VirualPosition.X > (int)UserInterface.Line1X && SLMouse.VirualPosition.X < (int)UserInterface.Line2X) SLMouse.Domain = SLMouse.MouseDomain.Board;
 				else SLMouse.Domain = SLMouse.MouseDomain.UserInterfaceLow;
 
-				screenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
+				ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
 
 				environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
@@ -220,7 +226,7 @@ namespace Stolon
 
 			environment.Draw(spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
 
-            //spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
+            spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
 
             spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * StolonEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
@@ -231,7 +237,7 @@ namespace Stolon
 			GraphicsDevice.Clear(Instance.Color2);
 
 			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(screenScale), effect: replaceColorEffect);
+				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(ScreenScale), effect: replaceColorEffect);
 			spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
 			spriteBatch.End();
 
@@ -277,7 +283,7 @@ namespace Stolon
 		public static MouseDomain Domain { get; internal set; }
 		public static MouseState PreviousState { get; internal set; }
 		public static MouseState CurrentState { get; internal set; }
-		public static Vector2 VirualPosition => CurrentState.Position.ToVector2() / Instance.screenScale;
+		public static Vector2 VirualPosition => CurrentState.Position.ToVector2() / Instance.ScreenScale;
 		public static bool IsPressed(MouseButton button) => IsPressed(CurrentState, button);
 		private static bool IsPressed(MouseState state, MouseButton button) => button switch
 		{

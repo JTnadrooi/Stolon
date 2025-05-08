@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using AsitLib.XNA;
+
 using Betwixt;
 using MonoGame.Extended;
 using static Stolon.StolonGame;
@@ -35,7 +35,7 @@ namespace Stolon
     /// <summary>
     /// The user interface for the <see cref="StolonEnvironment"/>.
     /// </summary>
-    public class UserInterface : AxComponent
+    public class UserInterface : GameComponent
     {
         private StolonEnvironment environment;
 
@@ -200,7 +200,7 @@ namespace Stolon
             updateData = new Dictionary<string, UIElementUpdateData>();
             mouseClickFillElementBounds = new Rectangle();
 
-            mouseClickFillElementTexture = new AxTexture(AxPalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
+            mouseClickFillElementTexture = new GameTexture(TexturePalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
             ((Texture2D)mouseClickFillElementTexture).SetData(new Color[] { Color.White });
 
             textframe = new Textframe(this);
@@ -414,9 +414,9 @@ namespace Stolon
 
             int rowHeight = (int)(menuLogoLines.Height / (float)menuLogoRowCount);
             float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
-            int lineFromMid = (int)(110f + menuRemoveTweenerOffset);
+            int lineFromMid = (int)(170f + menuRemoveTweenerOffset);
             bool menuFlashEnded = milisecondsSinceStartup > menuFlashEnd;
-            int uiElementOffsetY = (int)(330f + menuRemoveTweenerOffset);
+            int uiElementOffsetY = (int)(230f + menuRemoveTweenerOffset);
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
@@ -660,7 +660,7 @@ namespace Stolon
             }
             foreach (UIElementDrawData elementDrawData in drawData)
             {
-                spriteBatch.DrawString(uifont, elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 1f);
+                spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 1f);
                 if (elementDrawData.DrawRectangle)
                 {
                     spriteBatch.DrawRectangle(elementDrawData.Rectangle, Color.White, 1f);

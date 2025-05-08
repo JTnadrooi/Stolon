@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using AsitLib;
-using AsitLib.XNA;
+
 using MonoGame.Extended;
 using static Stolon.StolonGame;
 
@@ -27,7 +27,7 @@ namespace Stolon
     /// <summary>
     /// The representor of the board in the STOLON environment.
     /// </summary>
-    public partial class Board : AxComponent
+    public partial class Board : GameComponent
     { 
            public static Board MainInstance => StolonGame.Instance.Scene.Board;
     }
