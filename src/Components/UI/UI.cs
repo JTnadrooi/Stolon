@@ -143,8 +143,6 @@ namespace Stolon
         #endregion
 
         public const string titleParentId = "titleParent";
-        public const string boardLeftParentId = "boardLeftParent";
-        public const string boardRightParentId = "boardRightParent";
         private Textframe textframe;
         public Action? onLeave;
 
@@ -159,11 +157,6 @@ namespace Stolon
         public int LineWidth => lineWidth;
 
         public UIPath MenuPath { get; set; }
-
-        public string? lastHover;
-        public string? hover;
-        public string? prevHover;
-        public bool hoveringAny;
         /// <summary>
         /// Main UIInterface contructor.
         /// </summary>
@@ -177,6 +170,7 @@ namespace Stolon
                     m => m.Groups[1].Value + m.Groups[2].Value.ToLower() + m.Groups[3].Value);
                 return char.ToLower(x[0]) + x.Substring(1);
             }
+            string menuDataFolder = "menuLogoMid";
 
             environment = Instance.Environment;
 
@@ -193,10 +187,10 @@ namespace Stolon
 
             uifont = Instance.Fonts["fiont"];
 
-            menuLogoLines = Instance.Textures.GetReference("textures\\menuLogo\\lines");
-            menuLogoDummyTiles = Instance.Textures.GetReference("textures\\menuLogo\\dummyTiles");
-            menuLogoFilledTiles = Instance.Textures.GetReference("textures\\menuLogo\\filledTiles");
-            menuLogoLowResFonted = Instance.Textures.GetReference("textures\\menuLogo\\lowResFonted");
+            menuLogoLines = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lines");
+            menuLogoDummyTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\dummyTiles");
+            menuLogoFilledTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\filledTiles");
+            menuLogoLowResFonted = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lowResFonted");
             dither8x8 = Instance.Textures.GetReference("textures\\dither8x8");
 
             AllUIElements = new Dictionary<string, UIElement>();
@@ -211,7 +205,6 @@ namespace Stolon
 
             textframe = new Textframe(this);
 
-
             drawMenuLogoLines = true;
             drawMenuLogoDummyTiles = true;
             drawMenuLogoFilledTiles = false;
@@ -222,7 +215,6 @@ namespace Stolon
             menuDitherTexturePositions = Array.Empty<Point>();
 
             depthPath = new List<UIElement>();
-
 
             menuLogoScaling = 1f;
 
@@ -311,7 +303,8 @@ namespace Stolon
                 "Headpatted with ease.",
                 ":LOVINGSTARE:",
                 ":STARE:",
-                "Collida past 3 AM!",
+                "Collida past 3.",
+                "That translates to \"flour\".",
             };
 
             tipId = new Random().Next(0, tips.Length);
@@ -320,27 +313,25 @@ namespace Stolon
         {
             StolonGame.Instance.DebugStream.WriteLine("[s]initializing ui..");
             // top
-            AddElement(new UIElement(boardLeftParentId, UIElement.topId, string.Empty, UIElementType.Listen));
-            AddElement(new UIElement(boardRightParentId, UIElement.topId, string.Empty, UIElementType.Listen));
             AddElement(new UIElement(titleParentId, UIElement.topId, string.Empty, UIElementType.Listen));
 
             // board l
-            AddElement(new UIElement("exitGame", boardLeftParentId, "Exit Game", UIElementType.Listen));
+            //AddElement(new UIElement("exitGame", boardLeftParentId, "Exit Game", UIElementType.Listen));
 
-            AddElement(new UIElement("screenRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
-            AddElement(new UIElement("screenRegion", boardLeftParentId, "Screen & Camera", UIElementType.Ignore));
-            AddElement(new UIElement("toggleFullscreen", boardLeftParentId, "Go Fullscreen", UIElementType.Listen));
-            AddElement(new UIElement("centerCamera", boardLeftParentId, "Center Camera", UIElementType.Listen));
+            //AddElement(new UIElement("screenRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
+            //AddElement(new UIElement("screenRegion", boardLeftParentId, "Screen & Camera", UIElementType.Ignore));
+            //AddElement(new UIElement("toggleFullscreen", boardLeftParentId, "Go Fullscreen", UIElementType.Listen));
+            //AddElement(new UIElement("centerCamera", boardLeftParentId, "Center Camera", UIElementType.Listen));
 
-            AddElement(new UIElement("boardRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
-            AddElement(new UIElement("boardRegion", boardLeftParentId, "Board", UIElementType.Ignore));
-            AddElement(new UIElement("undoMove", boardLeftParentId, "Undo", UIElementType.Listen));
-            AddElement(new UIElement("restartBoard", boardLeftParentId, "Restart", UIElementType.Listen));
-            AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Listen));
-            AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Listen));
+            //AddElement(new UIElement("boardRegion2", boardLeftParentId, string.Empty, UIElementType.Ignore));
+            //AddElement(new UIElement("boardRegion", boardLeftParentId, "Board", UIElementType.Ignore));
+            //AddElement(new UIElement("undoMove", boardLeftParentId, "Undo", UIElementType.Listen));
+            //AddElement(new UIElement("restartBoard", boardLeftParentId, "Restart", UIElementType.Listen));
+            //AddElement(new UIElement("boardSearch", boardLeftParentId, "Search", UIElementType.Listen));
+            //AddElement(new UIElement("skipMove", boardLeftParentId, "End Move", UIElementType.Listen));
 
             // board
-            AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Ignore));
+            //AddElement(new UIElement("currentPlayer", boardRightParentId, null, UIElementType.Ignore));
 
             // main menu
             AddElement(new UIElement("startStory", titleParentId, "Story", UIElementType.Listen, clickSoundId: "exit3"));
@@ -375,11 +366,6 @@ namespace Stolon
             drawData.Clear();
         }
         public HashSet<string> GetTopIDs() => UIElements.Values.Where(e => e.IsTop).Select(e => e.Id).ToHashSet();
-        //public HashSet<string> GetDockIDs()
-        //{
-        //    var topIds = GetTopIDs();
-        //    return UIElements.Values.Where(e => topIds.Contains(e.ChildOf)).Select(e => e.Id).ToHashSet();
-        //}
         public HashSet<string> GetParentIDs()
         {
             var topIds = GetTopIDs();
@@ -402,22 +388,10 @@ namespace Stolon
                     break;
             }
 
-            hover = null;
-            bool isCurrentlyHovered = false;
-
             foreach (string item in UIElements.Keys)
             {
                 if (UIElements[item].Type == UIElementType.Listen)
                 {
-                    if (updateData[item].IsHovered)
-                    {
-                        isCurrentlyHovered = true;
-                        //lastHover = item;
-
-
-
-                        //hover = item;
-                    }
                     if (updateData[item].IsClicked)
                     {
                         AudioEngine.Audio.Play(updateData[item].ClickSound);
@@ -432,11 +406,6 @@ namespace Stolon
                     }
                 }
             }
-            if (isCurrentlyHovered && !hoveringAny)
-            {
-                //AudioEngine.Instance.Play(AudioEngine.AudioLibrary["wrong2"]);
-            }
-            hoveringAny = isCurrentlyHovered;
             
             base.Update(elapsedMiliseconds);
         }
@@ -447,7 +416,7 @@ namespace Stolon
             float menuRemoveTweenerOffset = 200f * menuRemoveTweener.Value;
             int lineFromMid = (int)(110f + menuRemoveTweenerOffset);
             bool menuFlashEnded = milisecondsSinceStartup > menuFlashEnd;
-            int uiElementOffsetY = (int)(130f + menuRemoveTweenerOffset);
+            int uiElementOffsetY = (int)(330f + menuRemoveTweenerOffset);
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
@@ -462,13 +431,7 @@ namespace Stolon
             //                new Player("player0"),
             //                new Player("player1"),
             //            });
-            //    Leave(() =>
-            //    {
-            //        //Instance.Environment.Overlayer.Activate("transitionDither");
-            //        textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
-            //        textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
-            //        textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
-            //    });
+            //    Leave();
             //    //startFrame = true;
             //}
 
@@ -485,7 +448,7 @@ namespace Stolon
             menuLine1X = (int)(Instance.VirtualDimensions.X / 2f) - lineFromMid;
             menuLine2X = (int)(Instance.VirtualDimensions.X / 2f) + lineFromMid;
 
-            menuLineLenght = drawMenuLogoFilledTiles ? 400 : 0;
+            menuLineLenght = drawMenuLogoFilledTiles ? StolonGame.Instance.VirtualDimensions.Y : 0;
             menuLineWidth = 1 + (menuFlashEnded ? 1 : 0);
 
             if (milisecondsSinceStartup > 300) menuLogoRowsHidden = 4;
@@ -589,7 +552,7 @@ namespace Stolon
             }
             if (updateData["specialThanks"].IsClicked)
             {
-                textframe.Queue(new DialogueInfo(Instance.Environment, "Please read the github README :D"));
+                textframe.Queue(new DialogueInfo(Instance.Environment, "Please read the github README."));
             }
             if (updateData["quit"].IsClicked)
             {
@@ -623,6 +586,8 @@ namespace Stolon
             float zoomIntensity = Instance.Environment.Scene.Board.ZoomIntensity;
             float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
 
+            lineZoomOffset = Math.Max(0, lineZoomOffset);
+
             bool mouseIsOnUI = SLMouse.Domain == SLMouse.MouseDomain.UserInterfaceLow;
 
             uiLeftOffset = -lineZoomOffset;
@@ -630,9 +595,6 @@ namespace Stolon
 
             lineX1 = (int)(lineOffset + uiLeftOffset);
             lineX2 = (int)(Instance.VirtualDimensions.X - lineOffset + uiRightOffset);
-
-            UIOrdering.Order(AllUIElements.Values.ToArray(), boardLeftParentId, drawData, updateData, new Vector2(uiLeftOffset, 0) + new Vector2(5), OrderProviders.BoardSide);
-            UIOrdering.Order(AllUIElements.Values.ToArray(), boardRightParentId, drawData, updateData, new Vector2(lineX2, 0) + new Vector2(5), OrderProviders.BoardSide);
         }
         /// <summary>
         /// Get random splash text.

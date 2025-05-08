@@ -17,6 +17,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using DiscordRPC;
 using DiscordRPC.Events;
 using Microsoft.Xna.Framework.Media;
+using System.Drawing;
 
 #nullable enable
 
@@ -49,8 +50,8 @@ namespace Stolon
 		public AudioEngine AudioEngine { get; private set; }
         public UserInterface UserInterface => environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
-		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); // (480, 270) (if vM = 30)
-		public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
+		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); //  (912, 513) (if vM = 57) - (480, 270) (if vM = 30)
+        public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
 
 		Point oldWindowSize;
@@ -67,9 +68,9 @@ namespace Stolon
 		public string VersionID => "0.051 (Open Alpha)";
 		internal float screenScale;
 
-#pragma warning disable CS8618
+		#pragma warning disable CS8618
 		public StolonGame()
-#pragma warning restore CS8618
+		#pragma warning restore CS8618
 		{
 			Instance = this;
 			graphics = new GraphicsDeviceManager(this);
@@ -90,10 +91,10 @@ namespace Stolon
 
 			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
 
-			desiredModifier = 67; // 67
-			virtualModifier = 30; // 30
+			desiredModifier = 67; 
+			virtualModifier = 57; //(prev = 30, so = x1.9)
 
-			graphics.PreferredBackBufferWidth = DesiredDimensions.X;
+            graphics.PreferredBackBufferWidth = DesiredDimensions.X;
 			graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
 			Window.AllowUserResizing = true;
 			graphics.ApplyChanges();
@@ -182,7 +183,7 @@ namespace Stolon
 
 				environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
-				if (SLKeyboard.IsClicked(Keys.F) || UserInterface.UIElementUpdateData["toggleFullscreen"].IsClicked) GoFullscreen();
+				if (SLKeyboard.IsClicked(Keys.F)) GoFullscreen();
 			}
 			base.Update(gameTime);
 		}
@@ -190,13 +191,11 @@ namespace Stolon
 		{
 			if (graphics.IsFullScreen)
 			{
-				UserInterface.UIElements["toggleFullscreen"].Text = "Go Fullscreen";
 				graphics.PreferredBackBufferWidth = DesiredDimensions.X;
 				graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
 			}
 			else
 			{
-				UserInterface.UIElements["toggleFullscreen"].Text = "Go Windowed";
 				graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
 				graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
 				graphics.ApplyChanges();
@@ -220,7 +219,10 @@ namespace Stolon
 			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
 			environment.Draw(spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
-			spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * StolonEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+
+            //spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
+
+            spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * StolonEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
 			spriteBatch.End();
@@ -251,9 +253,9 @@ namespace Stolon
 	}
 	public partial class StolonGame
 	{
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+		#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		public static StolonGame Instance { get; private set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+		#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	}
 
 	public static class SLMouse
