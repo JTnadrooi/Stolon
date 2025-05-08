@@ -73,11 +73,7 @@ namespace Stolon
 
         public virtual GraphicElement AddTexture(int index, GameTexture texture)
         {
-            if (texture == null)
-            {
-                textures[index] = null;
-                return this;
-            }
+            if (texture == null) throw new Exception();
             textures[index] = texture;
             return this;
         }
