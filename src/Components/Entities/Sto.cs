@@ -22,7 +22,7 @@ namespace Stolon
 {
     public class StoEntity : EntityBase
     {
-        public override SLComputer Computer => null;
+        public override SLComputer Computer => null!;
         public override Texture2D Splash => Instance.Textures.GetReference("textures\\splash\\goldsilk"); // unrelevant in first ver
         public override string? Description => "This also shoulden't be readable in the current verion.";
 
