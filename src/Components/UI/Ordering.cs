@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using AsitLib.XNA;
+
 using Betwixt;
 using MonoGame.Extended;
 using static Stolon.StolonGame;

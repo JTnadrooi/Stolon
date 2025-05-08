@@ -1,0 +1,165 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+
+using System.Linq;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
+using System.Drawing;
+using System;
+using System.Runtime.Versioning;
+using System.Reflection.Metadata;
+using AsitLib;
+using System.Windows;
+using System.Xml.Linq;
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Collections;
+using AsitLib.Collections;
+using System.Diagnostics.CodeAnalysis;
+
+using Color = Microsoft.Xna.Framework.Color;
+using Point = Microsoft.Xna.Framework.Point;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using Math = System.Math;
+using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
+using System.IO;
+using MonoGame.Extended.Content;
+using Microsoft.Xna.Framework.Content;
+
+#nullable enable
+namespace Stolon
+{
+    
+    public interface IContentCollection<TContent> : IDisposable, IReadOnlyDictionary<string, TContent>
+    {
+        public ContentManager ContentManager { get; }
+        public TContent GetReference(string path);
+        public void UnLoadAll();
+        public void UnLoad(string path);
+        public void Add(TContent resource, string? newName = null);
+    }
+    public class AxTextureCollection : IContentCollection<AxTexture> 
+    {
+        public Dictionary<string, AxTexture> dictionary;
+        private bool disposedValue;
+        private AxTexture pixel;
+
+        //private Dictionary<string, TContent> contentValues;
+
+        public IEnumerable<string> Keys => dictionary.Keys;
+        public IEnumerable<AxTexture> Values => dictionary.Values;
+        public int Count => dictionary.Count;
+
+        public ContentManager ContentManager { get; }
+
+        public AxTexture this[string key] => GetReference(key);
+
+
+
+        public AxTextureCollection(ContentManager contentManager)
+        {
+            this.ContentManager = contentManager;
+            dictionary = new Dictionary<string, AxTexture>();
+            string[] files = Directory.GetFiles(contentManager.RootDirectory, "*", SearchOption.AllDirectories);
+            if (files.Length == 0) throw new Exception("No initial content found.");
+            foreach (string file in files)
+            {
+                //DebugStream.WriteLine("[s]found file: " + file);
+                string toLoad = file[(contentManager.RootDirectory.Length + 1)..].Split('.')[..^1].ToJoinedString();
+                //DebugStream.WriteLine("\tloading InTexture with id/key: " + toLoad);
+                
+                try
+                {
+                    //DebugStream.WriteLine("\tloading InTexture with palette: " + DebugPalette.Name);
+                    dictionary.Add(toLoad, new AxTexture(AxPalette.Debug, contentManager.Load<Texture2D>(toLoad)));
+                    AxTexture inTexture = dictionary[toLoad];
+                    Color[] data = new Color[inTexture.Width * inTexture.Height];
+                    inTexture.GetColorData(data);
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        if (!AxPalette.Debug.Contains(data[i]) && data[i].A == 1)
+                        {
+                            Console.WriteLine("Well well well.. " + inTexture.Name);
+                            break;
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+            pixel = new AxTexture(AxPalette.Empty, new Texture2D(contentManager.GetGraphicsDevice(), 1, 1));
+            ((Texture2D)pixel).SetData(new Color[] { Color.White });
+        }
+        public AxTexture Pixel => pixel;
+        public AxTexture GetReference(string path)
+        {
+            AxTexture item = dictionary[path];
+            //DebugStream.WriteLine("\tgetting reference of: " + item.Name + " with palette; " +  item.Palette.Name + ".");
+            if (item.Palette == null) Console.WriteLine("NO GOOD");
+
+            //DebugStream.Succes(2);
+            return item;
+        }
+        
+        public void Add(AxTexture resource, string? newName = null)
+        {
+            newName ??= resource.Name;
+            dictionary.Add(newName, resource);
+        }
+        public TContent HardLoad<TContent>(string path)
+        {
+            return ContentManager.Load<TContent>(path);
+        }
+        //public Texture2D GetTexture(string path)
+        //{
+        //    return GetReference<Texture2D>("texture\\" + path);
+        //}
+        public void UnLoad(string path)
+        {
+            dictionary[path].Dispose();
+            dictionary.Remove(path);
+        }
+        public void UnLoadAll()
+        {
+            foreach (AxTexture texture in dictionary.Values) texture.Dispose();
+            dictionary.Clear();
+        }
+        public bool ContainsKey(string key) => dictionary.ContainsKey(key);
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out AxTexture value) => dictionary.TryGetValue(key, out value);
+        public IEnumerator<KeyValuePair<string, AxTexture>> GetEnumerator() => dictionary.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)dictionary).GetEnumerator();
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~TextureCollection()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+    }
+}

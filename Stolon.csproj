@@ -14,9 +14,6 @@
   <Reference Include="AsitLib">
     <HintPath>./libs/AsitLib.dll</HintPath>
   </Reference>
-  <Reference Include="AsitLibXNA">
-    <HintPath>./libs/AsitLib.XNA.dll</HintPath>
-  </Reference>
 </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +37,7 @@
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Nopipeline.Task" Version="2.2.0" />
     <PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="content\textures\characters\" />
