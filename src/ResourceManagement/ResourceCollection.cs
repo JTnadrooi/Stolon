@@ -72,13 +72,11 @@ namespace Stolon
                     Color[] data = new Color[inTexture.Width * inTexture.Height];
                     inTexture.GetColorData(data);
                     for (int i = 0; i < data.Length; i++)
-                    {
                         if (!TexturePalette.Debug.Contains(data[i]) && data[i].A == 1)
                         {
                             Instance.DebugStream.WriteLine("found DEBUG texture: " + inTexture.Name);
                             break;
                         }
-                    }
                 }
                 catch { }
             }

@@ -21,16 +21,6 @@ using static Stolon.StolonGame;
 
 namespace Stolon
 {
-    public class GameFont
-    {
-        public string Name { get; }
-        public SpriteFont SpriteFont { get; }
-        public GameFont(string name, SpriteFont spriteFont)
-        {
-            Name = name;
-            SpriteFont = spriteFont;
-        }
-    }
 	//public class FontCollection : IContentCollection<GameFont>
  //   {
  //       public FontCollection(ContentManager contentManager)
