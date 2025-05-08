@@ -8,10 +8,6 @@ using System.Numerics;
 
 namespace Stolon
 {
-	public class DynamicTweener
-	{
-
-	}
 	public static class DynamicTweening
 	{
 		/// <summary>

@@ -27,7 +27,7 @@ namespace Stolon
     /// <summary>
     /// The representor of the board in the STOLON environment.
     /// </summary>
-    public partial class Board : AxComponent
+    public partial class Board : GameComponent
     { 
            public static Board MainInstance => StolonGame.Instance.Scene.Board;
     }

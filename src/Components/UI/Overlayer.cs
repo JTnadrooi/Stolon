@@ -17,7 +17,7 @@ using MonoGame.Extended.Tweening;
 
 namespace Stolon
 {
-    public class OverlayEngine : AxComponent
+    public class OverlayEngine : GameComponent
     {
         private Dictionary<string, IOverlay> overlays;
         private List<string> initialized;

@@ -35,7 +35,7 @@ namespace Stolon
     /// <summary>
     /// The user interface for the <see cref="StolonEnvironment"/>.
     /// </summary>
-    public class UserInterface : AxComponent
+    public class UserInterface : GameComponent
     {
         private StolonEnvironment environment;
 
@@ -200,7 +200,7 @@ namespace Stolon
             updateData = new Dictionary<string, UIElementUpdateData>();
             mouseClickFillElementBounds = new Rectangle();
 
-            mouseClickFillElementTexture = new AxTexture(AxPalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
+            mouseClickFillElementTexture = new GameTexture(TexturePalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
             ((Texture2D)mouseClickFillElementTexture).SetData(new Color[] { Color.White });
 
             textframe = new Textframe(this);

@@ -34,7 +34,7 @@ namespace Stolon
     /// <summary>
     /// The enviroment of the <see cref="Stolon"/> game.
     /// </summary>
-    public class StolonEnvironment : AxComponent, IDialogueProvider
+    public class StolonEnvironment : GameComponent, IDialogueProvider
     {
         /// <summary>
         /// The current state of the game.

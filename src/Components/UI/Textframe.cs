@@ -41,7 +41,7 @@ namespace Stolon
             }).ToArray(), info.PostMiliseconds);
         }
     }
-    public class Textframe : AxComponent
+    public class Textframe : GameComponent
     {
         private Queue<DialogueInfo> dialogueQueue;
         private Rectangle dialoguebounds;

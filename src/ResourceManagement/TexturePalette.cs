@@ -30,16 +30,16 @@ using System.Xml;
 
 namespace Stolon
 {
-    public interface IAxPalette
+    public interface ITexturePalette
     {
         public ReadOnlyCollection<Color> Colors { get; }
         public string Name { get; }
         public int Size => Colors.Count;
     }
     
-    public static class AxPalette
+    public static class TexturePalette
     {
-        public enum AxBloomAlgorithm
+        public enum BloomAlgorithm
         {
             /// <summary>
             /// Find out the bloom config using the given <paramref name="palette"/> as a base. <br/><br/>
@@ -48,7 +48,7 @@ namespace Stolon
             Kees,
             Nadrooi,
         }
-        public static (float strenght, float threshold) GetBloomConfig(this Palette4 palette, AxBloomAlgorithm algorithm, bool cheap = true, float bloomMult = 0.85f)
+        public static (float strenght, float threshold) GetBloomConfig(this TexturePalette4 palette, BloomAlgorithm algorithm, bool cheap = true, float bloomMult = 0.85f)
         {
             float c1Bright = palette.GetBrightness(0, cheap);
             float c2Bright = palette.GetBrightness(1, cheap);
@@ -57,11 +57,11 @@ namespace Stolon
 
             switch (algorithm)
             {
-                case AxBloomAlgorithm.Kees:
+                case BloomAlgorithm.Kees:
                     //threshold = 0.2473f;
                     //strenght = avgBright / MathF.Pow(threshold, 2);
                     break;
-                case AxBloomAlgorithm.Nadrooi:
+                case BloomAlgorithm.Nadrooi:
                     float delta12 = c1Bright - c2Bright;
                     float deltaPow = delta12 * delta12;
                     threshold = c2Bright - deltaPow;
@@ -71,33 +71,33 @@ namespace Stolon
             }
             return (strenght, threshold);
         }
-        public static string ToColorString(this IAxPalette? palette)
+        public static string ToColorString(this ITexturePalette? palette)
         {
             if (palette == null) return "NULL";
             return palette.Colors.ToJoinedString(" || ");
         }
-        public static IAxPalette ToPalette(IEnumerable<Color> colors, string name) => new AxPaletteInf(name, colors.ToArray());
-        public static IAxPalette AsInverted(this IAxPalette palette) => new AxPaletteInf(palette.Name + "-inverted", palette.Colors.Reverse().ToArray());
+        public static ITexturePalette ToPalette(IEnumerable<Color> colors, string name) => new DynamicTexturePalette(name, colors.ToArray());
+        public static ITexturePalette AsInverted(this ITexturePalette palette) => new DynamicTexturePalette(palette.Name + "-inverted", palette.Colors.Reverse().ToArray());
         /// <summary>
-        /// Get the brightness of a color in the <see cref="IAxPalette"/>.
+        /// Get the brightness of a color in the <see cref="ITexturePalette"/>.
         /// </summary>
         /// <param name="palette">The palette.</param>
         /// <param name="colorIndex">The 0-based index of the color in the <paramref name="palette"/>.</param>
         /// <param name="cheap">If a cheap, less accurate calculation will be used.</param>
         /// <returns>The brightness of a <see cref="Color"/> on the range from 0 to 1.</returns>
-        public static float GetBrightness(this IAxPalette palette, int colorIndex, bool cheap = true) => palette.Colors[colorIndex].GetBrightness(cheap);
-        public static float GetBrightness(this IAxPalette palette, bool cheap = true)
+        public static float GetBrightness(this ITexturePalette palette, int colorIndex, bool cheap = true) => palette.Colors[colorIndex].GetBrightness(cheap);
+        public static float GetBrightness(this ITexturePalette palette, bool cheap = true)
         {
             float overall = 0f;
             for (int i = 0; i < palette.Size; i++)
                 overall += palette.GetBrightness(i, cheap);
             return overall / palette.Size;
         }
-        public static bool PaletteEquals(this IAxPalette palette1, IAxPalette palette2) => palette1.Colors.SequenceEqual(palette2.Colors);
-        public static IAxPalette Empty => new AxPaletteInf();
-        public static Palette4 Debug => new Palette4("debugPalette", new Color(0, 255, 251), new Color(255, 251, 0), new Color(255, 0, 4), new Color(0, 4, 255));
+        public static bool PaletteEquals(this ITexturePalette palette1, ITexturePalette palette2) => palette1.Colors.SequenceEqual(palette2.Colors);
+        public static ITexturePalette Empty => new DynamicTexturePalette();
+        public static TexturePalette4 Debug => new TexturePalette4("debugPalette", new Color(0, 255, 251), new Color(255, 251, 0), new Color(255, 0, 4), new Color(0, 4, 255));
     }
-    public readonly struct AxPaletteInf : IAxPalette
+    public readonly struct DynamicTexturePalette : ITexturePalette
     {
         public ReadOnlyCollection<Color> Colors => colors.ToList().AsReadOnly();
 
@@ -105,18 +105,18 @@ namespace Stolon
 
         private readonly Color[] colors;
 
-        public AxPaletteInf()
+        public DynamicTexturePalette()
         {
             colors = Array.Empty<Color>();
             Name = "emptyInPalette";
         }
-        public AxPaletteInf(string name, params Color[] colors)
+        public DynamicTexturePalette(string name, params Color[] colors)
         {
             this.colors = colors.Copy();
             Name = name;
         }
     }
-    public readonly struct Palette4 : IAxPalette
+    public readonly struct TexturePalette4 : ITexturePalette
     {
         public Color Color1 => colors[0]; //lightest
         public Color Color2 => colors[1];
@@ -129,13 +129,13 @@ namespace Stolon
 
         private readonly Color[] colors;
 
-        public Palette4(string name, Bitmap bitmap, bool unique = true)
+        public TexturePalette4(string name, Bitmap bitmap, bool unique = true)
         {
             colors = new Color[4];
             Name = name;
-            Array.Copy(AsitGame.GetColors(bitmap, unique), 0 , colors, 0, colors.Length);
+            Array.Copy(StolonStatic.GetColors(bitmap, unique), 0 , colors, 0, colors.Length);
         }
-        public Palette4(string name, params Color[] colors)
+        public TexturePalette4(string name, params Color[] colors)
         {
             Name = name;
             this.colors = new Color[4];

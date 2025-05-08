@@ -21,7 +21,7 @@ namespace Stolon
 	{
 		public Vector2 Position { get; set; }
 		public Vector2 Scale { get; set; }
-		public AxTexture Texture { get; }
+		public GameTexture Texture { get; }
 
 		public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds, SpriteEffects effects = SpriteEffects.None);
 	}
@@ -47,7 +47,7 @@ namespace Stolon
 			return drawable;
 		}
 	}
-	public static class AsitGame
+	public static class StolonStatic
 	{
 		/// <summary>
 		/// Copy a texture.
@@ -59,7 +59,7 @@ namespace Stolon
 		/// the entirety of the id/key will be changed.
 		/// </param>
 		/// <param name="collection">
-		/// The <see cref="AxTextureCollection"/> this <see cref="GraphicsResource"/> will be added to. This is only relevant
+		/// The <see cref="GameTextureCollection"/> this <see cref="GraphicsResource"/> will be added to. This is only relevant
 		/// when <paramref name="lazyCopy"/> is set to <see langword="true"/>.
 		/// </param>
 		/// <param name="graphics">The <see cref="GraphicsDevice"/> that will manage the newly created <see cref="GraphicsResource"/>.</param>
@@ -70,15 +70,15 @@ namespace Stolon
 		/// </param>
 		/// <param name="action">
 		/// The <see cref="Action{T}"/> that will be performed on the result of the 
-		/// <see cref="Copy(Texture2D, string?, bool, AxTextureCollection?, GraphicsDevice?, bool, Action{Texture2D}?)"/>.
+		/// <see cref="Copy(Texture2D, string?, bool, GameTextureCollection?, GraphicsDevice?, bool, Action{Texture2D}?)"/>.
 		/// </param>
 		/// <returns></returns>
-		public static AxTexture Copy(this AxTexture texture, GraphicsDevice graphicsDevice, AxTextureCollection collection,
+		public static GameTexture Copy(this GameTexture texture, GraphicsDevice graphicsDevice, GameTextureCollection collection,
 			string? newName = null, bool onlyPostFix = true,
-			bool lazyCopy = true, Action<AxTexture>? action = null)
+			bool lazyCopy = true, Action<GameTexture>? action = null)
 		{
 			//if (action == null) Console.WriteLine("custom action");
-			action ??= new Action<AxTexture>(t => { });
+			action ??= new Action<GameTexture>(t => { });
 			newName ??= texture.Name;
 			newName = onlyPostFix ? (texture.Name.Split("\\")[..^1].ToJoinedString("\\") + "\\" + newName) : newName;
 
@@ -90,7 +90,7 @@ namespace Stolon
 			{
 				return collection.GetReference(newName);
 			}
-			AxTexture texture2 = new AxTexture(texture.Palette, graphicsDevice, texture.Width, texture.Height);
+			GameTexture texture2 = new GameTexture(texture.Palette, graphicsDevice, texture.Width, texture.Height);
 			Color[] data = new Color[texture.Width * texture.Height];
 			texture.GetColorData(data);
 			texture2.SetColorData(data);
@@ -143,7 +143,7 @@ namespace Stolon
 			texture.SetData(data);
 			return texture;
 		}
-		public static AxTexture SetAllColor(this AxTexture texture, Color color)
+		public static GameTexture SetAllColor(this GameTexture texture, Color color)
 		{
 			Color[] data = new Color[texture.Width * texture.Height];
 			texture.GetColorData(data);

@@ -33,7 +33,7 @@ using Microsoft.Xna.Framework.Content;
 namespace Stolon
 {
     
-    public interface IContentCollection<TContent> : IDisposable, IReadOnlyDictionary<string, TContent>
+    public interface IResourceCollection<TContent> : IDisposable, IReadOnlyDictionary<string, TContent>
     {
         public ContentManager ContentManager { get; }
         public TContent GetReference(string path);
@@ -41,28 +41,28 @@ namespace Stolon
         public void UnLoad(string path);
         public void Add(TContent resource, string? newName = null);
     }
-    public class AxTextureCollection : IContentCollection<AxTexture> 
+    public class GameTextureCollection : IResourceCollection<GameTexture> 
     {
-        public Dictionary<string, AxTexture> dictionary;
+        public Dictionary<string, GameTexture> dictionary;
         private bool disposedValue;
-        private AxTexture pixel;
+        private GameTexture pixel;
 
         //private Dictionary<string, TContent> contentValues;
 
         public IEnumerable<string> Keys => dictionary.Keys;
-        public IEnumerable<AxTexture> Values => dictionary.Values;
+        public IEnumerable<GameTexture> Values => dictionary.Values;
         public int Count => dictionary.Count;
 
         public ContentManager ContentManager { get; }
 
-        public AxTexture this[string key] => GetReference(key);
+        public GameTexture this[string key] => GetReference(key);
 
 
 
-        public AxTextureCollection(ContentManager contentManager)
+        public GameTextureCollection(ContentManager contentManager)
         {
             this.ContentManager = contentManager;
-            dictionary = new Dictionary<string, AxTexture>();
+            dictionary = new Dictionary<string, GameTexture>();
             string[] files = Directory.GetFiles(contentManager.RootDirectory, "*", SearchOption.AllDirectories);
             if (files.Length == 0) throw new Exception("No initial content found.");
             foreach (string file in files)
@@ -74,13 +74,13 @@ namespace Stolon
                 try
                 {
                     //DebugStream.WriteLine("\tloading InTexture with palette: " + DebugPalette.Name);
-                    dictionary.Add(toLoad, new AxTexture(AxPalette.Debug, contentManager.Load<Texture2D>(toLoad)));
-                    AxTexture inTexture = dictionary[toLoad];
+                    dictionary.Add(toLoad, new GameTexture(TexturePalette.Debug, contentManager.Load<Texture2D>(toLoad)));
+                    GameTexture inTexture = dictionary[toLoad];
                     Color[] data = new Color[inTexture.Width * inTexture.Height];
                     inTexture.GetColorData(data);
                     for (int i = 0; i < data.Length; i++)
                     {
-                        if (!AxPalette.Debug.Contains(data[i]) && data[i].A == 1)
+                        if (!TexturePalette.Debug.Contains(data[i]) && data[i].A == 1)
                         {
                             Console.WriteLine("Well well well.. " + inTexture.Name);
                             break;
@@ -91,13 +91,13 @@ namespace Stolon
                 {
                 }
             }
-            pixel = new AxTexture(AxPalette.Empty, new Texture2D(contentManager.GetGraphicsDevice(), 1, 1));
+            pixel = new GameTexture(TexturePalette.Empty, new Texture2D(contentManager.GetGraphicsDevice(), 1, 1));
             ((Texture2D)pixel).SetData(new Color[] { Color.White });
         }
-        public AxTexture Pixel => pixel;
-        public AxTexture GetReference(string path)
+        public GameTexture Pixel => pixel;
+        public GameTexture GetReference(string path)
         {
-            AxTexture item = dictionary[path];
+            GameTexture item = dictionary[path];
             //DebugStream.WriteLine("\tgetting reference of: " + item.Name + " with palette; " +  item.Palette.Name + ".");
             if (item.Palette == null) Console.WriteLine("NO GOOD");
 
@@ -105,7 +105,7 @@ namespace Stolon
             return item;
         }
         
-        public void Add(AxTexture resource, string? newName = null)
+        public void Add(GameTexture resource, string? newName = null)
         {
             newName ??= resource.Name;
             dictionary.Add(newName, resource);
@@ -125,12 +125,12 @@ namespace Stolon
         }
         public void UnLoadAll()
         {
-            foreach (AxTexture texture in dictionary.Values) texture.Dispose();
+            foreach (GameTexture texture in dictionary.Values) texture.Dispose();
             dictionary.Clear();
         }
         public bool ContainsKey(string key) => dictionary.ContainsKey(key);
-        public bool TryGetValue(string key, [MaybeNullWhen(false)] out AxTexture value) => dictionary.TryGetValue(key, out value);
-        public IEnumerator<KeyValuePair<string, AxTexture>> GetEnumerator() => dictionary.GetEnumerator();
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out GameTexture value) => dictionary.TryGetValue(key, out value);
+        public IEnumerator<KeyValuePair<string, GameTexture>> GetEnumerator() => dictionary.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)dictionary).GetEnumerator();
 
         protected virtual void Dispose(bool disposing)

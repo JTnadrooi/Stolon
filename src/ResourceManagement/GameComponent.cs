@@ -30,7 +30,7 @@ namespace Stolon
     /// <summary>
     /// A interface that provides a basic way to interact with <see cref="Intrara"/> component classes.
     /// </summary>
-    public interface IAxComponent
+    public interface IGameComponent
     {
         public Vector2 Position { get; }
         /// <summary>
@@ -44,21 +44,21 @@ namespace Stolon
         /// <param name="elapsedMiliseconds">The miliseconds since last frame.</param>
         public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds);
         /// <summary>
-        /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> featuring all the <see cref="GraphicElement"/> objects managed by this <see cref="IAxComponent"/>.
+        /// A <see cref="ReadOnlyDictionary{TKey, TValue}"/> featuring all the <see cref="GraphicElement"/> objects managed by this <see cref="IGameComponent"/>.
         /// </summary>
         public ReadOnlyDictionary<string, GraphicElement> Elements { get; }
     }
-    public abstract class AxComponent : IAxComponent, IGraphicElementParent
+    public abstract class GameComponent : IGameComponent, IGraphicElementParent
     {
         public ReadOnlyDictionary<string, GraphicElement> Elements => new ReadOnlyDictionary<string, GraphicElement>(graphicElements);
 
         public virtual Vector2 Position { get; protected set; }
 
-        public IAxComponent? Source { get; }
+        public IGameComponent? Source { get; }
 
         protected GraphicElementCollection graphicElements;
 
-        protected AxComponent(IAxComponent? source = null)
+        protected GameComponent(IGameComponent? source = null)
         {
             Position = Vector2.Zero;
             Source = source;

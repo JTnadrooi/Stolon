@@ -48,7 +48,7 @@ namespace Stolon
             elements.Add(element.Name, element);
             return element;
         }
-        public GraphicElement AddGraphicElement(AxTextureCollection textures, string textureKey, string? newName = null)
+        public GraphicElement AddGraphicElement(GameTextureCollection textures, string textureKey, string? newName = null)
         {
             GraphicElement element = new GraphicElement(Source, textures.GetReference("textures\\" + textureKey));
             elements.Add(newName ?? textureKey.Split("\\").Last(), element);

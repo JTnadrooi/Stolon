@@ -12,7 +12,7 @@ namespace Stolon
     /// <summary>
     /// Represent a single game scene. 
     /// </summary>
-    public class Scene : AxComponent
+    public class Scene : GameComponent
     {
         public enum SLScenePreset
         {

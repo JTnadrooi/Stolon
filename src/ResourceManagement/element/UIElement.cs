@@ -33,7 +33,7 @@ namespace Stolon
     {
         private Vector2 scale;
 
-        public virtual AxTexture Texture { get; protected set; }
+        public virtual GameTexture Texture { get; protected set; }
         public Vector2 Position { get; set; } //relative to source
         public virtual Vector2 Scale { get => scale; set => scale = value; }
         public virtual Rectangle Bounds => new Rectangle((int)Position.X, (int)Position.Y, (int)Width, (int)Height);
@@ -45,8 +45,8 @@ namespace Stolon
         public virtual float Width => (Texture.Width * Scale.X);
 
 
-        public ReadOnlyCollection<AxTexture> Textures => textures.ToList().AsReadOnly();
-        protected AxTexture[] textures;
+        public ReadOnlyCollection<GameTexture> Textures => textures.ToList().AsReadOnly();
+        protected GameTexture[] textures;
 
         //public UIElement(IIntraraComponent window, InTexture[] textures, Vector2 position, Vector2 scale)
         //{
@@ -60,14 +60,14 @@ namespace Stolon
         //    }
         //    this.scale = scale;
         //}
-        public GraphicElement(IGraphicElementParent source, AxTexture texture) : this(source, texture, Vector2.Zero, Vector2.One) { }
-        public GraphicElement(IGraphicElementParent source, AxTexture texture, Vector2 position, Vector2 scale, int textureSlots = 10)
+        public GraphicElement(IGraphicElementParent source, GameTexture texture) : this(source, texture, Vector2.Zero, Vector2.One) { }
+        public GraphicElement(IGraphicElementParent source, GameTexture texture, Vector2 position, Vector2 scale, int textureSlots = 10)
         {
             Texture = texture;
             Position = position;
             Source = source;
 
-            textures = new AxTexture[textureSlots];
+            textures = new GameTexture[textureSlots];
             textures[0] = texture;
 
             this.scale = scale;
@@ -88,7 +88,7 @@ namespace Stolon
         {
             return IsHovered(mouseState) && mouseState.LeftButton == ButtonState.Pressed;
         }
-        public virtual GraphicElement AddTexture(int index, AxTexture texture)
+        public virtual GraphicElement AddTexture(int index, GameTexture texture)
         {
             if(texture == null)
             {
@@ -117,7 +117,7 @@ namespace Stolon
         //}
 
 
-        internal void _SetTextures(AxTexture[] textures)
+        internal void _SetTextures(GameTexture[] textures)
         {
             this.textures = textures;
         }

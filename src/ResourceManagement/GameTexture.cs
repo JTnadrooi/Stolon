@@ -31,9 +31,9 @@ using MonoGame.Extended.Content;
 
 namespace Stolon
 {
-    public class AxTexture
+    public class GameTexture
     {
-        public IAxPalette Palette => palette;
+        public ITexturePalette Palette => palette;
         public string Name { get => texture.Name; set => texture.Name = value; }
         public object Tag { get => texture.Tag; set => texture.Tag = value; }
         public int Width => texture.Width;
@@ -41,17 +41,17 @@ namespace Stolon
         public Rectangle Bounds => texture.Bounds;
         public bool IsDisposed => texture.IsDisposed;
 
-        private IAxPalette palette;
+        private ITexturePalette palette;
         private Texture2D texture;
         private bool disposedValue;
 
-        public AxTexture(IAxPalette palette, Texture2D texture)
+        public GameTexture(ITexturePalette palette, Texture2D texture)
         {
             if (palette == null || texture == null) throw new Exception();
             this.palette = palette;
             this.texture = texture;
         }
-        public AxTexture(IAxPalette palette, GraphicsDevice graphicsDevice, int width, int height, string name = "")
+        public GameTexture(ITexturePalette palette, GraphicsDevice graphicsDevice, int width, int height, string name = "")
         {
             texture = new Texture2D(graphicsDevice, width, height);
             texture.Name = name;
@@ -60,7 +60,7 @@ namespace Stolon
         }
         public void GetColorData(Color[] data) => texture.GetData(data);
         public void SetColorData(Color[] data) => texture.SetData(data);
-        public AxTexture ApplyPalette(IAxPalette newPalette, bool lazy = true)
+        public GameTexture ApplyPalette(ITexturePalette newPalette, bool lazy = true)
         {
             //    DebugStream.WriteLine("\t\t[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + palette.Name + "\".");
             //    if (lazy) DebugStream.WriteLine("\t\t\tlazy is enabled.");
@@ -91,13 +91,13 @@ namespace Stolon
             //DebugStream.Succes(3);
             return this;
         }
-        public AxTexture InvertColors()
+        public GameTexture InvertColors()
         {
             return ApplyPalette(palette.AsInverted(), true);
         }
-        public static AxTexture GetPixel(GraphicsDevice graphicsDevice, string name = "pixel")
+        public static GameTexture GetPixel(GraphicsDevice graphicsDevice, string name = "pixel")
         {
-            AxTexture pixel = new AxTexture(AxPalette.ToPalette(Color.White.ToSingleArray(), "solidWhite"), graphicsDevice, 1, 1);
+            GameTexture pixel = new GameTexture(TexturePalette.ToPalette(Color.White.ToSingleArray(), "solidWhite"), graphicsDevice, 1, 1);
             pixel.SetColorData(new Color[] { Color.White });
             pixel.Name = name;
             return pixel;
@@ -130,7 +130,7 @@ namespace Stolon
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-        public static implicit operator Texture2D(AxTexture t) => t.texture;
-        public static explicit operator AxTexture(Texture2D t) => new AxTexture(AxPalette.Debug, t);
+        public static implicit operator Texture2D(GameTexture t) => t.texture;
+        public static explicit operator GameTexture(Texture2D t) => new GameTexture(TexturePalette.Debug, t);
     }
 }

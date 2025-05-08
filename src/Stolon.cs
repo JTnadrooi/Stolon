@@ -56,7 +56,7 @@ namespace Stolon
 		private int desiredModifier;
 		private Color[] palette;
 		private Effect replaceColorEffect;
-		private AxTextureCollection textures;
+		private GameTextureCollection textures;
 		private BloomFilter bloomFilter;
         private Point oldWindowSize;
 
@@ -76,7 +76,7 @@ namespace Stolon
         public float ScreenScale { get; private set; }
 
 
-        public AxTextureCollection Textures => textures;
+        public GameTextureCollection Textures => textures;
 		public Dictionary<string, SpriteFont> Fonts { get; }
 
 		public SpriteBatch SpriteBatch => spriteBatch;
@@ -153,7 +153,7 @@ namespace Stolon
 			DebugStream.WriteLine("[s]loading content..");
 
 			spriteBatch = new SpriteBatch(GraphicsDevice);
-			textures = new AxTextureCollection(Content);
+			textures = new GameTextureCollection(Content);
 			Fonts.Add("fiont", textures.HardLoad<SpriteFont>("fonts\\fiont"));
 
 			environment = new StolonEnvironment();
