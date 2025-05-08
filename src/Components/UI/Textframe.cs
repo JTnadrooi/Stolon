@@ -57,7 +57,6 @@ namespace Stolon
         private float dialogueShowCoefficient;
         private bool awaitingMouseDialogueHover;
         private bool dialogueIsHidden;
-        private bool dialogueHasFinished;
         public bool DialogueIsHidden
         {
             get => dialogueIsHidden;
