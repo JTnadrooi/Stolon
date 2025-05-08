@@ -57,10 +57,6 @@ namespace Stolon
 
             switch (algorithm)
             {
-                case BloomAlgorithm.Kees:
-                    //threshold = 0.2473f;
-                    //strenght = avgBright / MathF.Pow(threshold, 2);
-                    break;
                 case BloomAlgorithm.Nadrooi:
                     float delta12 = c1Bright - c2Bright;
                     float deltaPow = delta12 * delta12;
