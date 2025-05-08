@@ -43,18 +43,15 @@ namespace Stolon
     }
     public class GameTextureCollection : IResourceCollection<GameTexture> 
     {
-        public Dictionary<string, GameTexture> dictionary;
         private bool disposedValue;
         private GameTexture pixel;
 
         public IEnumerable<string> Keys => dictionary.Keys;
+        public Dictionary<string, GameTexture> dictionary;
         public IEnumerable<GameTexture> Values => dictionary.Values;
         public int Count => dictionary.Count;
-
         public ContentManager ContentManager { get; }
-
         public GameTexture this[string key] => GetReference(key);
-
 
         public GameTextureCollection(ContentManager contentManager)
         {
@@ -95,7 +92,6 @@ namespace Stolon
             if (item.Palette == null) Instance.DebugStream.WriteLine("found corrupted/partial texture.");
             return item;
         }
-        
         public void Add(GameTexture resource, string? newName = null)
         {
             newName ??= resource.Name;
@@ -115,6 +111,7 @@ namespace Stolon
         {
             foreach (GameTexture texture in dictionary.Values) texture.Dispose();
             dictionary.Clear();
+            pixel.Dispose();
         }
         public bool ContainsKey(string key) => dictionary.ContainsKey(key);
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out GameTexture value) => dictionary.TryGetValue(key, out value);
@@ -123,29 +120,15 @@ namespace Stolon
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!disposedValue && disposing)
             {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
+                UnLoadAll();
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~TextureCollection()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
-
+        ~GameTextureCollection() => Dispose(disposing: false);
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
