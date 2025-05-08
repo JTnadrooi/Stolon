@@ -172,11 +172,11 @@ namespace Stolon
                 //    currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
 
                 dialogueTextPos = dialoguebounds.Location
-                    + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(toDrawDialogueText).X * StolonEnvironment.FontScale / 2f),
-                    (int)(dialoguebounds.Height / 2f - Instance.Environment.FontDimensions.Y / 2f));
+                    + new Point((int)(dialoguebounds.Width / 2f - Instance.Fonts["fonts\\fiont"].FastMeasureString(toDrawDialogueText).X / 2f),
+                    (int)(dialoguebounds.Height / 2f - Instance.Fonts["fonts\\fiont"].Dimensions.Y / 2f));
                  
                 providerTextPos = dialoguebounds.Location
-                    + new Point((int)(dialoguebounds.Width / 2f - StolonEnvironment.Font.MeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient * StolonEnvironment.FontScale / 2f), 2);
+                    + new Point((int)(dialoguebounds.Width / 2f - Instance.Fonts["fonts\\fiont"].FastMeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient / 2f), 2);
             }
             if (awaitingMouseDialogueHover) textFrameGoUp = true;
             if (SLMouse.Domain == SLMouse.MouseDomain.Dialogue)
@@ -201,8 +201,8 @@ namespace Stolon
             spriteBatch.Draw(Instance.Textures.Pixel, dialoguebounds, Color.Black);
             if (currentDialogue.HasValue)
             {
-                spriteBatch.DrawString(StolonEnvironment.Font, toDrawDialogueText, dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, StolonEnvironment.FontScale, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(StolonEnvironment.Font, currentDialogue.Value.Provider.Name.ToUpper(), providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, providerTextScaleCoefficient * StolonEnvironment.FontScale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(Instance.Fonts["fonts\\fiont"], toDrawDialogueText, dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\fiont"].Scale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(Instance.Fonts["fonts\\fiont"], currentDialogue.Value.Provider.Name.ToUpper(), providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, providerTextScaleCoefficient * Instance.Fonts["fonts\\fiont"].Scale, SpriteEffects.None, 0f);
             }
             spriteBatch.DrawRectangle(dialoguebounds, Color.White, userInterface.LineWidth);
 

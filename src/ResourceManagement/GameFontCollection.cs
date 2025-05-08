@@ -50,6 +50,7 @@ namespace Stolon
             catch { return null; }
         })
         {
+            Console.WriteLine("AYOOO" + dictionary["fonts\\fiont"].ToString());
         }
     }
 }

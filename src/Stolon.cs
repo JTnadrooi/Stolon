@@ -44,7 +44,8 @@ namespace Stolon
 		private Color[] palette;
 		private Effect replaceColorEffect;
 		private GameTextureCollection textures;
-		private BloomFilter bloomFilter;
+        private GameFontCollection fonts;
+        private BloomFilter bloomFilter;
         private Point oldWindowSize;
 
         public StolonEnvironment Environment => environment;
@@ -64,7 +65,7 @@ namespace Stolon
 
 
         public GameTextureCollection Textures => textures;
-		public Dictionary<string, SpriteFont> Fonts { get; }
+		public GameFontCollection Fonts => fonts;
 
 		public SpriteBatch SpriteBatch => spriteBatch;
 		public GraphicsDeviceManager GraphicsDeviceManager => graphics;
@@ -82,7 +83,6 @@ namespace Stolon
 			graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "content";
 			IsMouseVisible = true;
-			Fonts = new Dictionary<string, SpriteFont>();
 
             DebugStream = new AsitDebugStream();
             AudioEngine = new AudioEngine();
@@ -141,7 +141,7 @@ namespace Stolon
 
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 			textures = new GameTextureCollection(Content);
-			Fonts.Add("fiont", textures.HardLoad<SpriteFont>("fonts\\fiont"));
+            fonts = new GameFontCollection(Content);
 
 			environment = new StolonEnvironment();
 			environment.Initialize();
@@ -228,7 +228,7 @@ namespace Stolon
 
             spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
 
-            spriteBatch.DrawString(Fonts["fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fiont"].MeasureString("ver: " + VersionID).X * StolonEnvironment.FontScale / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+            spriteBatch.DrawString(Fonts["fonts\\fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fonts\\fiont"].FastMeasureString("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
 			spriteBatch.End();

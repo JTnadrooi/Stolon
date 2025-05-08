@@ -90,10 +90,6 @@ namespace Stolon
         public const float FontScale = 0.5f;
         public string SymbolNotation => "Ev";
         public string Name => "Environment";
-        /// <summary>
-        /// The dimensions of a single capital letter ("A").
-        /// </summary>
-        public Point FontDimensions { get; private set; }
 
         public TaskHeap TaskHeap { get; }
 
@@ -113,8 +109,6 @@ namespace Stolon
         }
         internal void Initialize()
         {
-            FontDimensions = (Font.MeasureString("A") * StolonEnvironment.FontScale).ToPoint();
-
             RegisterEntity(new GoldsilkEntity());
             RegisterEntity(new StoEntity());
             // RegisterCharacter(new DeadlineEntity());
@@ -206,15 +200,6 @@ namespace Stolon
         {
             entities.Remove(characterId);
         }
-
-        static StolonEnvironment()
-        {
-            Font = StolonGame.Instance.Fonts["fiont"];
-        }
-        /// <summary>
-        /// The main font used for most text.
-        /// </summary>
-        public static SpriteFont Font { get; }
 
         /// <summary>
         /// The main instance of the game.
