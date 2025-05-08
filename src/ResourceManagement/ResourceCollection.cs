@@ -120,50 +120,5 @@ namespace Stolon
             GC.SuppressFinalize(this);
         }
     }
-    public class GameTextureCollection : ResourceCollection<GameTexture>
-    {
-        private readonly GameTexture pixel;
-
-        public GameTexture Pixel => pixel;
-
-        public GameTextureCollection(ContentManager contentManager, bool debug = false) : base(contentManager, (toLoad) =>
-        {
-            try
-            {
-                GameTexture texture = new GameTexture(TexturePalette.Debug, contentManager.Load<Texture2D>(toLoad));
-                if(debug)
-                {
-                    Color[] data = new Color[texture.Width * texture.Height];
-                    texture.GetColorData(data);
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        if (!TexturePalette.Debug.Contains(data[i]) && data[i].A == 1)
-                        {
-                            Instance.DebugStream.WriteLine("found DEBUG texture: " + texture.Name);
-                            break;
-                        }
-                    }
-                }
-                return texture;
-            }
-            catch { return null; }
-        })
-        {
-            
-            pixel = new GameTexture(TexturePalette.Empty, new Texture2D(contentManager.GetGraphicsDevice(), 1, 1));
-            ((Texture2D)pixel).SetData(new[] { Color.White });
-        }
-
-        public TContent HardLoad<TContent>(string path)
-        {
-            Instance.DebugStream.WriteLine("hardloading path: " + path);
-            return ContentManager.Load<TContent>(path);
-        }
-
-        public override void UnLoadAll()
-        {
-            base.UnLoadAll();
-            pixel.Dispose();
-        }
-    }
+    
 }
