@@ -28,6 +28,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using System.IO;
 using MonoGame.Extended.Content;
 using Microsoft.Xna.Framework.Content;
+using static Stolon.StolonGame;
 #nullable enable
 
 namespace Stolon
@@ -47,8 +48,6 @@ namespace Stolon
         private bool disposedValue;
         private GameTexture pixel;
 
-        //private Dictionary<string, TContent> contentValues;
-
         public IEnumerable<string> Keys => dictionary.Keys;
         public IEnumerable<GameTexture> Values => dictionary.Values;
         public int Count => dictionary.Count;
@@ -56,7 +55,6 @@ namespace Stolon
         public ContentManager ContentManager { get; }
 
         public GameTexture this[string key] => GetReference(key);
-
 
 
         public GameTextureCollection(ContentManager contentManager)
@@ -67,13 +65,12 @@ namespace Stolon
             if (files.Length == 0) throw new Exception("No initial content found.");
             foreach (string file in files)
             {
-                //DebugStream.WriteLine("[s]found file: " + file);
+                Instance.DebugStream.WriteLine("[s]found file: " + file);
                 string toLoad = file[(contentManager.RootDirectory.Length + 1)..].Split('.')[..^1].ToJoinedString();
-                //DebugStream.WriteLine("\tloading InTexture with id/key: " + toLoad);
-                
+                Instance.DebugStream.WriteLine("\tloading InTexture with id/key: " + toLoad);
+
                 try
                 {
-                    //DebugStream.WriteLine("\tloading InTexture with palette: " + DebugPalette.Name);
                     dictionary.Add(toLoad, new GameTexture(TexturePalette.Debug, contentManager.Load<Texture2D>(toLoad)));
                     GameTexture inTexture = dictionary[toLoad];
                     Color[] data = new Color[inTexture.Width * inTexture.Height];
@@ -82,14 +79,12 @@ namespace Stolon
                     {
                         if (!TexturePalette.Debug.Contains(data[i]) && data[i].A == 1)
                         {
-                            Console.WriteLine("Well well well.. " + inTexture.Name);
+                            Instance.DebugStream.WriteLine("found DEBUG texture: " + inTexture.Name);
                             break;
                         }
                     }
                 }
-                catch
-                {
-                }
+                catch { }
             }
             pixel = new GameTexture(TexturePalette.Empty, new Texture2D(contentManager.GetGraphicsDevice(), 1, 1));
             ((Texture2D)pixel).SetData(new Color[] { Color.White });
@@ -98,10 +93,7 @@ namespace Stolon
         public GameTexture GetReference(string path)
         {
             GameTexture item = dictionary[path];
-            //DebugStream.WriteLine("\tgetting reference of: " + item.Name + " with palette; " +  item.Palette.Name + ".");
-            if (item.Palette == null) Console.WriteLine("NO GOOD");
-
-            //DebugStream.Succes(2);
+            if (item.Palette == null) Instance.DebugStream.WriteLine("found corrupted/partial texture.");
             return item;
         }
         
@@ -114,10 +106,6 @@ namespace Stolon
         {
             return ContentManager.Load<TContent>(path);
         }
-        //public Texture2D GetTexture(string path)
-        //{
-        //    return GetReference<Texture2D>("texture\\" + path);
-        //}
         public void UnLoad(string path)
         {
             dictionary[path].Dispose();
