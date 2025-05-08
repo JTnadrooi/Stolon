@@ -73,9 +73,10 @@ namespace Stolon
 		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); //  (912, 513) (if vM = 57) - (480, 270) (if vM = 30)
         public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
+        public float ScreenScale { get; private set; }
 
 
-		public AxTextureCollection Textures => textures;
+        public AxTextureCollection Textures => textures;
 		public Dictionary<string, SpriteFont> Fonts { get; }
 
 		public SpriteBatch SpriteBatch => spriteBatch;
@@ -85,7 +86,6 @@ namespace Stolon
 		public Color Color2 => palette[1];
 
 		public string VersionID => "0.051 (Open Alpha)";
-		internal float screenScale;
 
 		#pragma warning disable CS8618
 		public StolonGame()
@@ -198,7 +198,7 @@ namespace Stolon
 				else if (SLMouse.VirualPosition.X > (int)UserInterface.Line1X && SLMouse.VirualPosition.X < (int)UserInterface.Line2X) SLMouse.Domain = SLMouse.MouseDomain.Board;
 				else SLMouse.Domain = SLMouse.MouseDomain.UserInterfaceLow;
 
-				screenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
+				ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
 
 				environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
@@ -250,7 +250,7 @@ namespace Stolon
 			GraphicsDevice.Clear(Instance.Color2);
 
 			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(screenScale), effect: replaceColorEffect);
+				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(ScreenScale), effect: replaceColorEffect);
 			spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
 			spriteBatch.End();
 
@@ -296,7 +296,7 @@ namespace Stolon
 		public static MouseDomain Domain { get; internal set; }
 		public static MouseState PreviousState { get; internal set; }
 		public static MouseState CurrentState { get; internal set; }
-		public static Vector2 VirualPosition => CurrentState.Position.ToVector2() / Instance.screenScale;
+		public static Vector2 VirualPosition => CurrentState.Position.ToVector2() / Instance.ScreenScale;
 		public static bool IsPressed(MouseButton button) => IsPressed(CurrentState, button);
 		private static bool IsPressed(MouseState state, MouseButton button) => button switch
 		{
