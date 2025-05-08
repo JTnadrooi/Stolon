@@ -33,7 +33,6 @@ using static Stolon.StolonGame;
 
 namespace Stolon
 {
-    
     public interface IResourceCollection<TContent> : IDisposable, IReadOnlyDictionary<string, TContent>
     {
         public ContentManager ContentManager { get; }
@@ -104,6 +103,7 @@ namespace Stolon
         }
         public TContent HardLoad<TContent>(string path)
         {
+            Instance.DebugStream.WriteLine("hardloading path: " + path);
             return ContentManager.Load<TContent>(path);
         }
         public void UnLoad(string path)
