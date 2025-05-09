@@ -97,28 +97,19 @@ namespace Stolon
         public static void Order(UIElement[] uIElements, UIPath path, ICollection<UIElementDrawData> drawDump, IDictionary<string, UIElementUpdateData> updateDump,
             Vector2 uiOrgin, IOrderProvider orderProvider, bool isMouseRelevant = true)
         {
-            //if (!path.HasValue)
-            //{
-            //    Order(uIElements, topParentID, drawDump, updateDump, uiOrgin, orderProvider, isMouseRelevant);
-            //    return;
-            //}
-
-            //UIPath path;
-            //var temp = openPaths.Where(p => p.TopID == topParentID);
-            //if (temp.Count() > 1) throw new Exception();
-            //else path = temp.First();
-
             Order(uIElements, path.UIElementID, drawDump, updateDump, uiOrgin, orderProvider, isMouseRelevant);
         }
         public static void Order(UIElement[] uIElements, string parentID, ICollection<UIElementDrawData> drawDump, IDictionary<string, UIElementUpdateData> updateDump,
             Vector2 uiOrgin, IOrderProvider orderProvider, bool isMouseRelevant = true)
         {
-            uIElements = uIElements.Where(e => e.ChildOf == parentID).ToArray(); // slow
+            int orderIndex = 0;
             for (int i = 0; i < uIElements.Length; i++)
             {
-                //if (uIElements[i].ChildOf != parentID) continue; // works, this does not?
-                var ret = orderProvider.GetElementDrawData(uIElements[i], uiOrgin, i);
-                updateDump[uIElements[i].Id] = new UIElementUpdateData(ret.isHovered && isMouseRelevant, uIElements[i].Id);
+                UIElement element = uIElements[i];
+                if (element.ChildOf != parentID) continue;
+
+                var ret = orderProvider.GetElementDrawData(element, uiOrgin, orderIndex++);
+                updateDump[element.Id] = new UIElementUpdateData(ret.isHovered && isMouseRelevant, element.Id);
                 drawDump.Add(ret.drawData);
             }
         }
