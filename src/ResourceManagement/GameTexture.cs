@@ -75,19 +75,17 @@ namespace Stolon
             }
             else Instance.DebugStream.WriteLine("\t\t\tlazy replacement invalid, this palette: " + palette.Name + ", other: " + newPalette.Name + ".");
 
+            Dictionary<Color, Color> colorMap = new Dictionary<Color, Color>(palette.Size);
+            for (int i = 0; i < palette.Size; i++) colorMap[palette.Colors[i]] = newPalette.Colors[i];
+
             Color[] data = new Color[texture.Width * texture.Height];
 
             GetColorData(data);
             for (int i = 0; i < data.Length; i++)
-                for (int i2 = 0; i2 < palette.Size; i2++)
-                    if (data[i] == palette.Colors[i2])
-                    {
-                        data[i] = newPalette.Colors[i2];
-                        break; //this line cost me a hour
-                    }
+                if (colorMap.TryGetValue(data[i], out Color newColor)) data[i] = newColor;
             SetColorData(data);
 
-            palette = newPalette; //copy
+            palette = newPalette;
             Instance.DebugStream.Succes(3);
             return this;
         }
