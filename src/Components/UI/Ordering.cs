@@ -51,15 +51,20 @@ namespace Stolon
     /// </summary> 
     public class MenuOrderProvider : IOrderProvider
     {
+        private GameFont font;
+        public MenuOrderProvider()
+        {
+            font = Instance.Fonts["fonts\\fiont"];
+        }
         public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
         {
-            Vector2 elementPos = Centering.MiddleX((int)Instance.Fonts["fonts\\fiont"].FastMeasureString(element.Text).X,
-                                index * (Instance.Fonts["fonts\\fiont"].Dimensions.Y + 2) * 1.5f + UIOrgin.Y,
+            Vector2 elementPos = Centering.MiddleX((int)font.FastMeasureString(element.Text).X,
+                                index * (font.Dimensions.Y + 2) + UIOrgin.Y,
                                 Instance.VirtualDimensions.X, Vector2.One);
 
             Centering.OnPixel(ref elementPos);
 
-            Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point(Instance.Fonts["fonts\\fiont"].Dimensions.X * element.Text.Length, Instance.Fonts["fonts\\fiont"].Dimensions.Y));
+            Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point(font.Dimensions.X * element.Text.Length, font.Dimensions.Y));
             string elementText = element.Text;
 
             string postPre = element.Id switch
@@ -70,7 +75,7 @@ namespace Stolon
             };
             bool elementIsHovered = elementBounds.Contains(SLMouse.VirualPosition);
 
-            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, "fonts\\fiont", element.Type, elementPos + (elementIsHovered ? new Point(-Instance.Fonts["fonts\\fiont"].Dimensions.X, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
+            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, "fonts\\fiont", element.Type, elementPos + (elementIsHovered ? new Point(-font.Dimensions.X, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
         }
     }
 
