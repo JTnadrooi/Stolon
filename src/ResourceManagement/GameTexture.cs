@@ -107,19 +107,9 @@ namespace Stolon
         {
             if (!disposedValue)
             {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
-
-                texture.Dispose();
+                if (disposing) texture.Dispose();
                 disposedValue = true;
             }
-        }
-
-         ~GameTexture()
-        {
-            Dispose(disposing: false);
         }
 
         public void Dispose()
