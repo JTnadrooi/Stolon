@@ -252,9 +252,9 @@ namespace Stolon
                     {
                         boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
-                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\fiont"], string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
-                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\fiont"], ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
-                    else boardSpriteBatch.DrawString(Instance.Fonts["fonts\\fiont"], ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
+                    else boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
                 }
             boardSpriteBatch.End();
             base.Draw(spriteBatch, elapsedMiliseconds);

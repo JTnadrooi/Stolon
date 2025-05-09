@@ -54,7 +54,7 @@ namespace Stolon
         private GameFont font;
         public MenuOrderProvider()
         {
-            font = Instance.Fonts["fonts\\fiont"];
+            font = Instance.Fonts["fonts\\smollerMono"];
         }
         public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
         {
@@ -75,7 +75,7 @@ namespace Stolon
             };
             bool elementIsHovered = elementBounds.Contains(SLMouse.VirualPosition);
 
-            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, "fonts\\fiont", element.Type, elementPos + (elementIsHovered ? new Point(-font.Dimensions.X, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
+            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, font.Name, element.Type, elementPos + (elementIsHovered ? new Point(-font.Dimensions.X, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
         }
     }
 

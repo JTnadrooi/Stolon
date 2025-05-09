@@ -96,41 +96,6 @@
 /processorParam:TextureFormat=Color
 /build:../content/textures/menuLogo/lowResFonted.png;textures/menuLogo/lowResFonted.png
 
-#begin ../content/fonts/bubble-brush.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/bubble-brush.spritefont;fonts/bubble-brush.spritefont
-
-#begin ../content/fonts/Consolas.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/Consolas.spritefont;fonts/Consolas.spritefont
-
-#begin ../content/fonts/m6x11.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/m6x11.spritefont;fonts/m6x11.spritefont
-
-#begin ../content/fonts/Mini.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/Mini.spritefont;fonts/Mini.spritefont
-
-#begin ../content/fonts/Mini3x5.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/Mini3x5.spritefont;fonts/Mini3x5.spritefont
-
-#begin ../content/fonts/Monogram.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/Monogram.spritefont;fonts/Monogram.spritefont
-
-#begin ../content/fonts/TerminalFont.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/TerminalFont.spritefont;fonts/TerminalFont.spritefont
-
 #begin ../content/effects/replaceColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -159,11 +124,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:../content/textures/player1item.png;textures/player1item.png
-
-#begin ../content/fonts/fiont.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/build:../content/fonts/fiont.spritefont;fonts/fiont.spritefont
 
 #begin ../content/effects/Bloom.fx
 /importer:EffectImporter
@@ -289,3 +249,13 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:../content/textures/menuLogoMid/lowResFonted.png;textures/menuLogoMid/lowResFonted.png
+
+#begin ../content/fonts/monogram.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/monogram.spritefont;fonts/monogram.spritefont
+
+#begin ../content/fonts/smollerMono.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/smollerMono.spritefont;fonts/smollerMono.spritefont

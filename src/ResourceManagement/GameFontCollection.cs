@@ -41,7 +41,7 @@ namespace Stolon
             {
                 float scale = toLoad switch
                 {
-                    "fonts\\fiont" => 0.5f,
+                    "fonts\\smollerMono" => 0.5f,
                     _ => 1f,
                 };
                 GameFont font = new GameFont(toLoad, contentManager.Load<SpriteFont>(toLoad), scale);

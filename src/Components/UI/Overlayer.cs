@@ -282,8 +282,8 @@ namespace Stolon
             heightCoefficient = tweener.Value;
 
             drawArea = new Rectangle(area.Location, new Point(area.Width, (int)(desiredHeight * heightCoefficient)));
-            textPos = Centering.MiddleXY(Instance.Fonts["fonts\\fiont"].FastMeasureString(text).ToPoint(), drawArea, new Vector2(TextSizeMod));
-            textPos = new Vector2(textPos.X, Math.Min(textPos.Y, drawArea.Height - Instance.Fonts["fonts\\fiont"].Dimensions.Y * TextSizeMod));
+            textPos = Centering.MiddleXY(Instance.Fonts["fonts\\smollerMono"].FastMeasureString(text).ToPoint(), drawArea, new Vector2(TextSizeMod));
+            textPos = new Vector2(textPos.X, Math.Min(textPos.Y, drawArea.Height - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y * TextSizeMod));
 
             Centering.OnPixel(ref textPos);
         }
@@ -292,7 +292,7 @@ namespace Stolon
         {
             spriteBatch.Draw(Instance.Textures.Pixel, drawArea, Color.Black);
             spriteBatch.DrawRectangle(drawArea, Color.White);
-            spriteBatch.DrawString(Instance.Fonts["fonts\\fiont"], text, textPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\fiont"].Scale * TextSizeMod, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], text, textPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale * TextSizeMod, SpriteEffects.None, 0f);
         }
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)

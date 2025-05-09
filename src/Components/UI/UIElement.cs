@@ -90,7 +90,7 @@ namespace Stolon
         /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
         /// </summary>
         /// <param name="elementPos">The position of the <see cref="UIElement"/>.</param>
-        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="Instance.Fonts["fonts\\fiont"]Dimensions"/>.</i></param>
+        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="Instance.Fonts["fonts\\smollerMono"]Dimensions"/>.</i></param>
         /// <param name="clearance">The clearance between the text and the bounds. <i>(Or margin for the CSS enjoyers)</i></param>
         /// <param name="supportMultiline"></param>
         /// <param name="fontId"></param>
@@ -111,7 +111,7 @@ namespace Stolon
         /// Get the bounds of a <see cref="UIElement"/>, this also is its hitbox.
         /// </summary>
         /// <param name="elementPos">The position of the <see cref="UIElement"/>.</param>
-        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="Instance.Fonts["fonts\\fiont"]Dimensions"/>.</i></param>
+        /// <param name="fontDimensions">The dimentions of the used font. <i>See: <see cref="Instance.Fonts["fonts\\smollerMono"]Dimensions"/>.</i></param>
         /// <param name="clearance">The clearance between the text and the bounds. <i>(Or padding for the CSS enjoyers)</i></param>
         /// <param name="supportMultiline"></param>
         /// <param name="fontId"></param>

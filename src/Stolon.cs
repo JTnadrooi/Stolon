@@ -228,7 +228,7 @@ namespace Stolon
 
             spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
 
-            spriteBatch.DrawString(Fonts["fonts\\fiont"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fonts\\fiont"].FastMeasureString("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+            spriteBatch.DrawString(Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fonts\\smollerMono"].FastMeasureString("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
 			spriteBatch.End();

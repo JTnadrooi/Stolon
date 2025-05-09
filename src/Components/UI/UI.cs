@@ -570,7 +570,7 @@ namespace Stolon
             }), 2000, false);
             milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
 
-            tipPos = Centering.MiddleX((int)(Instance.Fonts["fonts\\fiont"].FastMeasureString(tips[tipId]).X),
+            tipPos = Centering.MiddleX((int)(Instance.Fonts["fonts\\smollerMono"].FastMeasureString(tips[tipId]).X),
                 menuLogoDrawPos.Y + menuLogoLines.Height + (menuLogoBoundingBoxClearing * Math.Clamp(menuRemoveTweener.Value * 2f, 0f, 1f)), Instance.VirtualDimensions.X, Vector2.One);
 
             menuRemoveLineY = (int)(menuRemoveTweener.Value * Instance.VirtualDimensions.Y);
@@ -629,7 +629,7 @@ namespace Stolon
                 case StolonEnvironment.SLGameState.InMenu:
                     spriteBatch.DrawLine(menuLine1X, -10f, menuLine1X, menuLineLenght, Color.White, menuLineWidth);
                     spriteBatch.DrawLine(menuLine2X, -10f, menuLine2X, menuLineLenght, Color.White, menuLineWidth);
-                    if (menuDone) spriteBatch.DrawString(Instance.Fonts["fonts\\fiont"], tips[tipId], tipPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\fiont"].Scale, SpriteEffects.None, 1f);
+                    if (menuDone) spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], tips[tipId], tipPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 1f);
 
                     if (drawMenuLogoLowResFonted)
                     {
@@ -656,7 +656,7 @@ namespace Stolon
             }
             foreach (UIElementDrawData elementDrawData in drawData)
             {
-                spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\fiont"].Scale, SpriteEffects.None, 1f);
+                spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 1f);
                 if (elementDrawData.DrawRectangle)
                 {
                     spriteBatch.DrawRectangle(elementDrawData.Rectangle, Color.White, 1f);
