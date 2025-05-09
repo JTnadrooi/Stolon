@@ -1,0 +1,1 @@
+﻿Monogame, Monogame.Extended and Betwixt only in this project by reference.
