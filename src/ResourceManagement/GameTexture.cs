@@ -15,19 +15,22 @@ using System.Windows;
 using System.Xml.Linq;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Collections;
+using AsitLib.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
-using System.Diagnostics;
-using System.Collections;
-using MonoGame.Extended;
-using AsitLib.Collections;
-
+using System.IO;
 using MonoGame.Extended.Content;
+using Microsoft.Xna.Framework.Content;
+using static Stolon.StolonGame;
 #nullable enable
+
 
 namespace Stolon
 {
@@ -62,18 +65,15 @@ namespace Stolon
         public void SetColorData(Color[] data) => texture.SetData(data);
         public GameTexture ApplyPalette(ITexturePalette newPalette, bool lazy = true)
         {
-            //    DebugStream.WriteLine("\t\t[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + palette.Name + "\".");
-            //    if (lazy) DebugStream.WriteLine("\t\t\tlazy is enabled.");
+            Instance.DebugStream.WriteLine("\t\t[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + palette.Name + "\".");
+            if (lazy) Instance.DebugStream.WriteLine("\t\t\tlazy is enabled.");
             if (palette.Colors.Count != palette.Colors.Count) throw new Exception();
             if (lazy && palette.PaletteEquals(newPalette))
             {
-                //DebugStream.WriteLine("\t\t\tlazy replacement succes.");
+                Instance.DebugStream.WriteLine("\t\t\tlazy replacement succes.");
                 return this;
             }
-            else
-            {
-                //DebugStream.WriteLine("\t\t\tlazy replacement invalid, this palette: " + palette.Name + ", other: " + newPalette.Name + ".");
-            }
+            else Instance.DebugStream.WriteLine("\t\t\tlazy replacement invalid, this palette: " + palette.Name + ", other: " + newPalette.Name + ".");
 
             Color[] data = new Color[texture.Width * texture.Height];
 
@@ -88,7 +88,7 @@ namespace Stolon
             SetColorData(data);
 
             palette = newPalette; //copy
-            //DebugStream.Succes(3);
+            Instance.DebugStream.Succes(3);
             return this;
         }
         public GameTexture InvertColors()
@@ -117,16 +117,13 @@ namespace Stolon
             }
         }
 
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~InTexture()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
+         ~GameTexture()
+        {
+            Dispose(disposing: false);
+        }
 
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
