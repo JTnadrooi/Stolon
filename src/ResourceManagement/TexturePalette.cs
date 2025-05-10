@@ -98,7 +98,7 @@ namespace Stolon
         public DynamicTexturePalette()
         {
             colors = Array.Empty<Color>();
-            Name = "emptyInPalette";
+            Name = "emptyDynamicTexturePalette";
         }
         public DynamicTexturePalette(string name, params Color[] colors)
         {
