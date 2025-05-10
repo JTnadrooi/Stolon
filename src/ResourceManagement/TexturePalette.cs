@@ -131,7 +131,7 @@ namespace Stolon
             this.colors = new Color[4];
             //this.colors = colors.Copy();
             Array.Copy(colors, 0, this.colors, 0, this.colors.Length);
-            AsitEnumerable.SetSize(ref colors, 4);
+            ArrayHelpers.SetSize(ref colors, 4);
         }
         public bool Contains(Color color) => colors.Contains(color);
         // Custom comparer to sort colors by brightness

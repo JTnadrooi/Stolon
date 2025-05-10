@@ -69,7 +69,7 @@ namespace Stolon
 
 		public SpriteBatch SpriteBatch => spriteBatch;
 		public GraphicsDeviceManager GraphicsDeviceManager => graphics;
-		public AsitDebugStream DebugStream { get; }
+		public DebugStream DebugStream { get; }
 		public Color Color1 => palette[0];
 		public Color Color2 => palette[1];
 
@@ -84,7 +84,7 @@ namespace Stolon
 			Content.RootDirectory = "content";
 			IsMouseVisible = true;
 
-            DebugStream = new AsitDebugStream();
+            DebugStream = new DebugStream();
             AudioEngine = new AudioEngine();
         }
 
