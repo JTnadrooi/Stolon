@@ -48,14 +48,9 @@ namespace Stolon
 			string? newName = null, bool onlyPostFix = true,
 			bool lazyCopy = true, Action<GameTexture>? action = null)
 		{
-			//if (action == null) Console.WriteLine("custom action");
 			action ??= new Action<GameTexture>(t => { });
 			newName ??= texture.Name;
 			newName = onlyPostFix ? (texture.Name.Split("\\")[..^1].ToJoinedString("\\") + "\\" + newName) : newName;
-
-			//if (onlyPostFix) DebugStream.WriteLine("\t[s]copying texture: " + texture.Name.Split("\\").Last() + " as " + newName);
-			//else DebugStream.WriteLine("\t[s]copying texture: " + texture.Name + " as " + newName);
-			//if (lazyCopy) DebugStream.WriteLine("\t\tattempting lazy copy..");
 
 			if (collection.ContainsKey(newName) && lazyCopy)
 			{

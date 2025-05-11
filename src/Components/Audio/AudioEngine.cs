@@ -24,7 +24,7 @@ namespace Stolon
     /// <summary>
     /// The main <see cref="AudioEngine"/> for the <see cref="StolonGame"/> environment. <i>Moderately thread-safe.</i>
     /// </summary>
-    public class AudioEngine : IDisposable
+    public class AudioEngine : IDisposable // NOT DEBUG SAFE
     {
         public Playlist? Current => currentPlaylist;
 
@@ -186,7 +186,7 @@ namespace Stolon
         /// <param name="id">The ost id from the <see cref="AudioLibrary"/>.</param>
         public void SetTrack(string id, bool fade = true)
         {
-            StolonGame.Instance.DebugStream.WriteLine("\ttrack changing to " + id);
+            StolonGame.Instance.DebugStream.WriteLine(">track changing to " + id);
 
             string ostProviderId = "__ostProvider";
             string ostTaskId = "ostChange";
@@ -207,7 +207,7 @@ namespace Stolon
         }
         public void SetPlayList(Playlist newPlaylist, bool fade = true)
         {
-            Instance.DebugStream.WriteLine("changing audio playlist..");
+            Instance.DebugStream.WriteLine(">changing audio playlist.");
             currentPlaylist = newPlaylist;
             trackQueue = new Queue<string>(newPlaylist.Get());
 
@@ -250,7 +250,7 @@ namespace Stolon
                 }
                 else if (currentPlaylist != null && currentPlaylist.Loop)
                 {
-                    Instance.DebugStream.WriteLine("refreshing loopable playlist queue..");
+                    Instance.DebugStream.WriteLine(">refreshing loopable playlist queue");
                     trackQueue = new Queue<string>(currentPlaylist.Get());
                     SetTrack(trackQueue.Dequeue(), false); // no fade nessesairy.
                 }

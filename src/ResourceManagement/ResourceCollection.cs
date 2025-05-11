@@ -60,11 +60,12 @@ namespace Stolon
 
             foreach (string file in files)
             {
-                Instance.DebugStream.WriteLine("[s]found file: " + file);
+                Instance.DebugStream.WriteLine("found file: " + file);
                 string toLoad = file[(contentManager.RootDirectory.Length + 1)..].Split('.')[..^1].ToJoinedString();
-                Instance.DebugStream.WriteLine("\tloading InTexture with id/key: " + toLoad);
+                Instance.DebugStream.WriteLine(">loading resource with id/key: " + toLoad);
                 TContent? loaderResult = loader(toLoad);
                 if (loaderResult != null) dictionary[toLoad] = loaderResult;
+                Instance.DebugStream.Succes();
             }
             ContentManager = contentManager;
 

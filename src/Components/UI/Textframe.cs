@@ -92,17 +92,16 @@ namespace Stolon
         }
         public void Queue(DialogueInfo dialogue)
         {
-            Instance.DebugStream.WriteLine("Dialogue queued with text: " + dialogue.Text);
             dialogueQueue.Enqueue(dialogue);
+            Instance.DebugStream.WriteLine("dialogue queued with text: " + dialogue.Text);
         }
         public void Next()
         {
-            Instance.DebugStream.WriteLine("Next dialogue has been requested.");
             if (dialogueQueue.Count == 0) throw new Exception();
 
-            Instance.DebugStream.WriteLine("\tAttempting dequeuing of dialogue with text: " + dialogueQueue.Peek().Text);
+            Instance.DebugStream.WriteLine(">attempting dequeuing of dialogue with text: " + dialogueQueue.Peek().Text);
             bool providerDiffers = currentDialogue.HasValue && currentDialogue.Value.Provider.Name != dialogueQueue.Peek().Provider.Name;
-            if (providerDiffers) Instance.DebugStream.WriteLine("\tDialogue has new provider of name: " + dialogueQueue.Peek().Provider.Name);
+            if (providerDiffers) Instance.DebugStream.WriteLine("dialogue has new provider of name: " + dialogueQueue.Peek().Provider.Name);
 
             currentDialogue = dialogueQueue.Dequeue();
             currentDialogueDrawArgs = DialogueDrawArgs.FromInfo(currentDialogue.Value);
@@ -122,15 +121,15 @@ namespace Stolon
                 providerTextSizeTweener.Start();
             }
 
-            Instance.DebugStream.Succes(1);
+            Instance.DebugStream.Succes();
         }
 
         public void Queue(int count, Func<string, int, string>? selector = null)
         {
-            Instance.DebugStream.WriteLine("Mass queueing a stream of size: " + count);
+            Instance.DebugStream.WriteLine(">mass queueing a stream of size: " + count);
             selector ??= new Func<string, int, string>((s, i) => s);
             for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke(Instance.UserInterface.GetRandomSplashText(), i)));
-            Instance.DebugStream.Succes(1);
+            Instance.DebugStream.Succes();
         }
 
         public override void Update(int elapsedMiliseconds)
@@ -159,7 +158,7 @@ namespace Stolon
                 }
                 else if (msSinceLastChar > currentDialogueDrawArgs!.Value.TimeMap[charsRead]) // else if its time for a new char..
                 {
-                    Console.WriteLine(currentDialogueDrawArgs!.Value.TimeMap[charsRead]);
+                    //Console.WriteLine(currentDialogueDrawArgs!.Value.TimeMap[charsRead]);
                     toDrawDialogueText += currentDialogue.Value.Text[charsRead]; // ..add said char.
                     charsRead++; 
                     msSinceLastChar = 0;

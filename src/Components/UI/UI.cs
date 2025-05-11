@@ -168,19 +168,21 @@ namespace Stolon
                 return char.ToLower(x[0]) + x.Substring(1);
             }
             string menuDataFolder = "menuLogoMid";
+            Instance.DebugStream.WriteLine(">[s]contructing stolon ui");
 
             environment = Instance.Environment;
 
             lineOffset = 96f;
             lineWidth = 2;
 
-            Instance.DebugStream.WriteLine("[s]loaded audio..");
+            Instance.DebugStream.WriteLine(">loading audio");
             foreach (string filePath in Directory.GetFiles("audio", "*.wav", SearchOption.AllDirectories))
             {
                 string fileName = camelCase(Path.GetFileNameWithoutExtension(filePath).Replace(" ", string.Empty));
                 AudioEngine.AudioLibrary.Add(fileName, new CachedAudio(filePath, fileName));
-                Instance.DebugStream.WriteLine("\tloaded audio with id: " + fileName);
+                Instance.DebugStream.WriteLine("loaded audio with id: " + fileName);
             }
+            Instance.DebugStream.Succes();
 
             menuLogoLines = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lines");
             menuLogoDummyTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\dummyTiles");
@@ -304,10 +306,11 @@ namespace Stolon
             };
 
             tipId = new Random().Next(0, tips.Length);
+            Instance.DebugStream.Succes();
         }
         public void Initialize()
         {
-            StolonGame.Instance.DebugStream.WriteLine("[s]initializing ui..");
+            StolonGame.Instance.DebugStream.WriteLine(">[s]initializing ui..");
             // top
             AddElement(new UIElement(titleParentId, UIElement.topId, string.Empty, UIElementType.Listen));
 
@@ -346,9 +349,11 @@ namespace Stolon
 
             MenuPath = GetSelfPath(titleParentId);
 
-            StolonGame.Instance.DebugStream.WriteLine("autogenerating _back_ buttons..");
+            StolonGame.Instance.DebugStream.WriteLine(">autogenerating _back_ buttons");
             HashSet<string> parentIds = GetParentIDs();
             foreach (string id in parentIds) AddElement(new UIElement("_back_" + id, id, "Back", UIElementType.Listen));
+            Instance.DebugStream.Succes();
+            Instance.DebugStream.Succes();
         }
         /// <summary>
         /// Clears both the updatedata and drawdata collections, making them ready to be repopulated by the methods in the <see cref="UIOrdering"/> class.<br/>
@@ -397,7 +402,7 @@ namespace Stolon
                         if (updateData2.IsClicked)
                         {
                             MenuPath = UIElement.GetParentPath(item);
-                            Console.WriteLine(GetSelfPath(item));
+                            //Console.WriteLine(GetSelfPath(item));
                         }
                     }
                 }
@@ -484,7 +489,7 @@ namespace Stolon
             {
                 menuLogoEaseTweener.Reverse();
                 menuLogoEaseTweener.Start();
-                Instance.DebugStream.WriteLine("\treversing icon tweener.");
+                Instance.DebugStream.WriteLine("reversed icon tweener.");
             }
             menuLogoBoundingBox =
                 new Rectangle(menuLogoDrawPos.ToPoint() + new Point(-menuLogoBoundingBoxClearing), menuLogoLines.Bounds.Size + new Point(menuLogoBoundingBoxClearing * 2));
@@ -517,12 +522,12 @@ namespace Stolon
             if (updateData["volUp"].IsClicked)
             {
                 AudioEngine.Audio.MasterVolume += 0.1001f;
-                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Audio.MasterVolume);
+                Instance.DebugStream.WriteLine("new volume: " + AudioEngine.Audio.MasterVolume);
             }
             if (updateData["volDown"].IsClicked)
             {
                 AudioEngine.Audio.MasterVolume -= 0.1001f;
-                Instance.DebugStream.WriteLine("\tnew volume: " + AudioEngine.Audio.MasterVolume);
+                Instance.DebugStream.WriteLine("new volume: " + AudioEngine.Audio.MasterVolume);
             }
             if (updateData["startStory"].IsClicked)
             {
@@ -672,9 +677,8 @@ namespace Stolon
         public void AddElement(UIElement element)
         {
             AllUIElements.Add(element.Id, element);
-            Instance.DebugStream.WriteLine("\tui-element with id " + element.Id + " added.");
+            Instance.DebugStream.WriteLine("ui-element with id " + element.Id + " added.");
             //updateData.Add(element.Id, default);
-            //Instance.DebugStream.WriteLine("\t\tstale-ui-element with id " + element.Id + " added.");
         }
         /// <summary>
         /// Remove an <see cref="UIElement"/> from the <see cref="UserInterface"/>.
@@ -683,7 +687,7 @@ namespace Stolon
         public void RemoveElement(string elementID)
         {
             AllUIElements.Remove(elementID);
-            Instance.DebugStream.WriteLine("\tui-element with id " + elementID + " removed.");
+            Instance.DebugStream.WriteLine("ui-element with id " + elementID + " removed.");
         }
 
         public static UserInterface UI => Instance.Environment.UI;

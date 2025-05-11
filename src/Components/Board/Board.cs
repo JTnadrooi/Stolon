@@ -168,8 +168,10 @@ namespace Stolon
         }
         public void Undo()
         {
-            Instance.DebugStream.WriteLine("Attempting move undo..");
+            Instance.DebugStream.WriteLine(">attempting move undo");
             state.Undo();
+            Instance.DebugStream.Succes();
+
         }
         public void AfterMove()
         {
@@ -204,7 +206,7 @@ namespace Stolon
             }
             else if (StolonStatic.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && MouseIsOnBoard)
             {
-                Instance.DebugStream.WriteLine("Attempting board alter after mouseclick..");
+                Instance.DebugStream.WriteLine(">attempting board alter after mouseclick");
                 Move? move = null;
                 for (int x = 0; x < state.Tiles.GetLength(0); x++)
                     for (int y = 0; y < state.Tiles.GetLength(1); y++)
@@ -218,22 +220,22 @@ namespace Stolon
                     History.Push(State.DeepCopy());
                     State.Alter(move!.Value, true);
                     AfterMove();
-                    Instance.DebugStream.Succes(1);
+                    Instance.DebugStream.Succes();
                     return true;
                 }
-                else Instance.DebugStream.Fail(1);
+                else Instance.DebugStream.Fail();
             }
             return false;
         }
         public void Reset()
         {
-            Instance.DebugStream.WriteLine("Resetting the board..");
+            Instance.DebugStream.WriteLine(">resetting board");
 
             computerMoveTask = null;
             State = InitialState.DeepCopy();
 
 
-            Instance.DebugStream.Succes(1);
+            Instance.DebugStream.Succes();
         }
         public void EndMove()
         {
@@ -272,9 +274,10 @@ namespace Stolon
         public void EndGame(int winner)
         {
             bool draw = winner < 0;
-            Instance.DebugStream.WriteLine("[s]ending game with " + (draw ? "a draw" : "winner: " + state.Players[winner]));
+            Instance.DebugStream.WriteLine(">ending game with " + (draw ? "a draw" : "winner: " + state.Players[winner]));
 
             Instance.Environment.Overlayer.Activate("transition", Instance.VirtualBounds);
+            Instance.DebugStream.Succes();
         }
     }
 
@@ -303,7 +306,7 @@ namespace Stolon
             TurnsRemaining = turnsRemaining;
             Id = id;
 
-            Instance.DebugStream.WriteLine("\tsearchTarget with nodes {" + Nodes.ToJoinedString(", ") + "} created.");
+            Instance.DebugStream.WriteLine("searchTarget with nodes {" + Nodes.ToJoinedString(", ") + "} created.");
         }
         public bool DecrementTurn()
         {

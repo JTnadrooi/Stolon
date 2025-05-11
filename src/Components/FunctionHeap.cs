@@ -103,11 +103,11 @@ namespace Stolon
         /// <param name="overwrite">If the task.</param>
         public void SafePush(string id, DynamicTask dynamicTask, int waitTime, bool overwrite = true)
         {
-            Instance.DebugStream.WriteLine("\tpushing task with id: " + id);
+            Instance.DebugStream.WriteLine(">pushing task with id: " + id);
 
             if (waitTime < 0)
             {
-                Instance.DebugStream.WriteLine("\t\tinsta-ran with id: " + id);
+                Instance.DebugStream.WriteLine("insta-ran with id: " + id);
                 object? ret = dynamicTask.Run();
                 frameCompletedTasks.Add(id, ret);
                 allCompletedTasks.Add(id);
@@ -115,16 +115,18 @@ namespace Stolon
             }
 
             if (taskDictionary.ContainsKey(id)) 
-                if (overwrite) Instance.DebugStream.WriteLine("\t\tkey already known, overwriting task.");
+                if (overwrite) Instance.DebugStream.WriteLine("key already known, overwriting task.");
                 else
                 {
                     //Instance.DebugStream.WriteLine("\t\tkey already known, overwrite is dissabled, skipping push.");
+                    Instance.DebugStream.Succes();
                     return;
                 }
             taskWaitDataCollection[id] = waitTime;
             taskDictionary[id] = dynamicTask;
 
-            Instance.DebugStream.WriteLine("\ttask pushed with id: " + id);
+            Instance.DebugStream.WriteLine("task pushed with id: " + id);
+            Instance.DebugStream.Succes();
         }
         public void Push(string id, DynamicTask dynamicTask, int waitTime)
         {
@@ -133,13 +135,14 @@ namespace Stolon
         }
         public string EnsurePush(DynamicTask dynamicTask, int waitTime)
         {
-            Instance.DebugStream.WriteLine("\tensuring task push.");
+            Instance.DebugStream.WriteLine(">ensuring task push.");
             string id = Enumerable.Range(0, int.MaxValue).Select(i => "__" + i).First(key => !taskDictionary.ContainsKey(key));
 
             Push(id, dynamicTask, waitTime);
 
-            Instance.DebugStream.WriteLine("\ttask pushed with id: " + id);
-            
+            Instance.DebugStream.WriteLine("task pushed with id: " + id);
+            Instance.DebugStream.Succes();
+
             return id;
         }
 

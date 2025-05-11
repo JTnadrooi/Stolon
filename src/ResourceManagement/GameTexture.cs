@@ -65,15 +65,15 @@ namespace Stolon
         public void SetColorData(Color[] data) => texture.SetData(data);
         public GameTexture ApplyPalette(ITexturePalette newPalette, bool lazy = true)
         {
-            Instance.DebugStream.WriteLine("\t\t[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + palette.Name + "\".");
-            if (lazy) Instance.DebugStream.WriteLine("\t\t\tlazy is enabled.");
+            Instance.DebugStream.WriteLine(">[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + palette.Name + "\".");
+            if (lazy) Instance.DebugStream.WriteLine("lazy is enabled.");
             if (palette.Colors.Count != palette.Colors.Count) throw new Exception();
             if (lazy && palette.PaletteEquals(newPalette))
             {
-                Instance.DebugStream.WriteLine("\t\t\tlazy replacement succes.");
+                Instance.DebugStream.WriteLine("lazy replacement succes.");
                 return this;
             }
-            else Instance.DebugStream.WriteLine("\t\t\tlazy replacement invalid, this palette: " + palette.Name + ", other: " + newPalette.Name + ".");
+            else Instance.DebugStream.WriteLine("lazy replacement invalid, this palette: " + palette.Name + ", other: " + newPalette.Name + ".");
 
             Dictionary<Color, Color> colorMap = new Dictionary<Color, Color>(palette.Size);
             for (int i = 0; i < palette.Size; i++) colorMap[palette.Colors[i]] = newPalette.Colors[i];
@@ -86,7 +86,7 @@ namespace Stolon
             SetColorData(data);
 
             palette = newPalette;
-            Instance.DebugStream.Succes(3);
+            Instance.DebugStream.Succes();
             return this;
         }
         public GameTexture InvertColors()

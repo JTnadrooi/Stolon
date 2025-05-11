@@ -84,14 +84,14 @@ namespace Stolon
 			Content.RootDirectory = "content";
 			IsMouseVisible = true;
 
-            DebugStream = new DebugStream();
+            DebugStream = new DebugStream(header: "stolon");
+            DebugStream.Silent = false;
             AudioEngine = new AudioEngine();
         }
 
 		protected override void Initialize()
 		{
-			DebugStream.WriteLine("[s]initializing..");
-
+			DebugStream.WriteLine(">[s]initializing stolon");
 			DRP = new DiscordRichPresence();
 			DRP.UpdateDetails("Initializing..");
 
@@ -137,7 +137,7 @@ namespace Stolon
 		public void SetDesiredResolution(Point resolution) => desiredModifier = resolution.X / aspectRatio.X;
 		protected override void LoadContent()
 		{
-			DebugStream.WriteLine("[s]loading content..");
+			DebugStream.WriteLine(">[s]loading stolon content");
 
 			spriteBatch = new SpriteBatch(GraphicsDevice);
 			textures = new GameTextureCollection(Content);
