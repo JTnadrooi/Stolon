@@ -77,7 +77,7 @@ namespace Stolon
             sources = new Dictionary<string, ISampleProvider>();
             Sources = sources.AsReadOnly();
             WaveFormat = waveFormat;
-            Instance.DebugStream.WriteLine("created new DictionaryMixingSampleProvider with waveformat:" + WaveFormat);
+            Instance.DebugStream.Log("created new DictionaryMixingSampleProvider with waveformat:" + WaveFormat);
         }
 
         /// <summary>

@@ -186,7 +186,7 @@ namespace Stolon
         /// <param name="id">The ost id from the <see cref="AudioLibrary"/>.</param>
         public void SetTrack(string id, bool fade = true)
         {
-            StolonGame.Instance.DebugStream.WriteLine(">track changing to " + id);
+            StolonGame.Instance.DebugStream.Log(">track changing to " + id);
 
             string ostProviderId = "__ostProvider";
             string ostTaskId = "ostChange";
@@ -196,7 +196,7 @@ namespace Stolon
             TaskHeap.Heap.SafePush(ostTaskId, new DynamicTask(() => // fire and forget game logic ftw
             {
                 TryRemoveMixerInput(ostProviderId, AudioDomain.OST);
-                StolonGame.Instance.DebugStream.WriteLine("\ttrack changed to " + id);
+                StolonGame.Instance.DebugStream.Log("\ttrack changed to " + id);
                 fadeInOutSampleProviderSource = AudioLibrary[id].GetAsSampleProvider();
                 fadeInOutSampleProvider = new FadeInOutSampleProvider(fadeInOutSampleProviderSource);
 
@@ -207,7 +207,7 @@ namespace Stolon
         }
         public void SetPlayList(Playlist newPlaylist, bool fade = true)
         {
-            Instance.DebugStream.WriteLine(">changing audio playlist.");
+            Instance.DebugStream.Log(">changing audio playlist.");
             currentPlaylist = newPlaylist;
             trackQueue = new Queue<string>(newPlaylist.Get());
 
@@ -246,11 +246,11 @@ namespace Stolon
                 {
                     nextTrack = trackQueue.Dequeue();
                     SetTrack(nextTrack, false); // no fade nessesairy.
-                    Instance.DebugStream.WriteLine("dequeued next track; " + nextTrack);
+                    Instance.DebugStream.Log("dequeued next track; " + nextTrack);
                 }
                 else if (currentPlaylist != null && currentPlaylist.Loop)
                 {
-                    Instance.DebugStream.WriteLine(">refreshing loopable playlist queue");
+                    Instance.DebugStream.Log(">refreshing loopable playlist queue");
                     trackQueue = new Queue<string>(currentPlaylist.Get());
                     SetTrack(trackQueue.Dequeue(), false); // no fade nessesairy.
                 }
@@ -259,7 +259,7 @@ namespace Stolon
 
         public void Dispose()
         {
-            Instance.DebugStream.WriteLine("disposing audio engine..");
+            Instance.DebugStream.Log("disposing audio engine..");
             outputDevice.Dispose();
         }
         /// <summary>

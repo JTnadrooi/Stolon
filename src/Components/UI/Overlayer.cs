@@ -31,17 +31,17 @@ namespace Stolon
         public void AddOverlay<TOverlay>() where TOverlay : IOverlay, new() => AddOverlay(new TOverlay());
         public void AddOverlay(IOverlay overlay)
         {
-            Instance.DebugStream.WriteLine(">adding overlay of id " + overlay.ID + ".");
+            Instance.DebugStream.Log(">adding overlay of id " + overlay.ID + ".");
             overlays.Add(overlay.ID, overlay);
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Success();
         }
 
         public void RemoveOverlay(string overlayId)
         {
-            Instance.DebugStream.WriteLine(">removing overlay of id " + overlayId + ".");
+            Instance.DebugStream.Log(">removing overlay of id " + overlayId + ".");
             Deactivate(overlayId);
             overlays.Remove(overlayId);
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Success();
         }
 
         public void Activate(string overlayId, params object?[] args)
@@ -49,10 +49,10 @@ namespace Stolon
             
             if (!initialized.Contains(overlayId))
             {
-                Instance.DebugStream.WriteLine(">[s]activating overlay of id " + overlayId + ".");
+                Instance.DebugStream.Log(">[s]activating overlay of id " + overlayId + ".");
                 overlays[overlayId].Initialize(this, args);
                 initialized.Add(overlayId);
-                Instance.DebugStream.Succes();
+                Instance.DebugStream.Success();
             }
         }
 
@@ -66,9 +66,9 @@ namespace Stolon
         {
             if (initialized.Contains(overlayId))
             {
-                Instance.DebugStream.WriteLine(">deactivating overlay of id " + overlayId + ".");
+                Instance.DebugStream.Log(">deactivating overlay of id " + overlayId + ".");
                 overlays[overlayId].Reset();
-                Instance.DebugStream.Succes();
+                Instance.DebugStream.Success();
             }
             initialized.Remove(overlayId);
         }
@@ -82,9 +82,9 @@ namespace Stolon
                 overlay.Update(elapsedMiliseconds);
                 if (overlay.Ended)
                 {
-                    Instance.DebugStream.WriteLine(">deactivating and resetting ended overlay of id " + overlay.ID + ".");
+                    Instance.DebugStream.Log(">deactivating and resetting ended overlay of id " + overlay.ID + ".");
                     Deactivate(overlay.ID);
-                    Instance.DebugStream.Succes();
+                    Instance.DebugStream.Success();
                 }
             }
             base.Update(elapsedMiliseconds);

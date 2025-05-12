@@ -168,9 +168,9 @@ namespace Stolon
         }
         public void Undo()
         {
-            Instance.DebugStream.WriteLine(">attempting move undo");
+            Instance.DebugStream.Log(">attempting move undo");
             state.Undo();
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Success();
 
         }
         public void AfterMove()
@@ -206,7 +206,7 @@ namespace Stolon
             }
             else if (StolonStatic.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && MouseIsOnBoard)
             {
-                Instance.DebugStream.WriteLine(">attempting board alter after mouseclick");
+                Instance.DebugStream.Log(">attempting board alter after mouseclick");
                 Move? move = null;
                 for (int x = 0; x < state.Tiles.GetLength(0); x++)
                     for (int y = 0; y < state.Tiles.GetLength(1); y++)
@@ -220,7 +220,7 @@ namespace Stolon
                     History.Push(State.DeepCopy());
                     State.Alter(move!.Value, true);
                     AfterMove();
-                    Instance.DebugStream.Succes();
+                    Instance.DebugStream.Success();
                     return true;
                 }
                 else Instance.DebugStream.Fail();
@@ -229,13 +229,13 @@ namespace Stolon
         }
         public void Reset()
         {
-            Instance.DebugStream.WriteLine(">resetting board");
+            Instance.DebugStream.Log(">resetting board");
 
             computerMoveTask = null;
             State = InitialState.DeepCopy();
 
 
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Success();
         }
         public void EndMove()
         {
@@ -274,10 +274,10 @@ namespace Stolon
         public void EndGame(int winner)
         {
             bool draw = winner < 0;
-            Instance.DebugStream.WriteLine(">ending game with " + (draw ? "a draw" : "winner: " + state.Players[winner]));
+            Instance.DebugStream.Log(">ending game with " + (draw ? "a draw" : "winner: " + state.Players[winner]));
 
             Instance.Environment.Overlayer.Activate("transition", Instance.VirtualBounds);
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Success();
         }
     }
 
@@ -306,7 +306,7 @@ namespace Stolon
             TurnsRemaining = turnsRemaining;
             Id = id;
 
-            Instance.DebugStream.WriteLine("searchTarget with nodes {" + Nodes.ToJoinedString(", ") + "} created.");
+            Instance.DebugStream.Log("searchTarget with nodes {" + Nodes.ToJoinedString(", ") + "} created.");
         }
         public bool DecrementTurn()
         {

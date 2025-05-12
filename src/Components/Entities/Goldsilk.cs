@@ -62,7 +62,7 @@ namespace Stolon
         private static int negaCount = 0;
         public static NegamaxEndResult Search(BoardState state, UniqueMoveBoardMap map, int depth)
         {
-            Instance.DebugStream.WriteLine(">[s]initializing parallel alpha-beta algorithm..");
+            Instance.DebugStream.Log(">[s]initializing parallel alpha-beta algorithm..");
 
             ConcurrentDictionary<int, TTEntry> tt = new ConcurrentDictionary<int, TTEntry>();
             List<Move> moves = map.GetAllMoves(state);
@@ -84,12 +84,12 @@ namespace Stolon
 
                 lock (lockObj)
                 {
-                    Instance.DebugStream.WriteLine("evaluated move " + moves[i] + ", winstate score: " + score + ".");
+                    Instance.DebugStream.Log("evaluated move " + moves[i] + ", winstate score: " + score + ".");
                     negaMaxedMoves.Add((score, moves[i]));
                 }
             });
 
-            Instance.DebugStream.WriteLine(">attemting further move ordering");
+            Instance.DebugStream.Log(">attemting further move ordering");
 
             negaMaxedMoves = negaMaxedMoves.Select((x, i) => new { Index = i, Value = x })
                 .Where(x => x.Value.score == negaMaxedMoves.Select(t => t.score).Max())
@@ -99,21 +99,21 @@ namespace Stolon
                 int score = MoveEvaluate(state, moveTuple.move, moveTuple.score);
                 evaluatedMoves.Add((score, moveTuple.move));
 
-                Instance.DebugStream.WriteLine("move " + moveTuple.move + " has an evaluated score of " + score + ".");
+                Instance.DebugStream.Log("move " + moveTuple.move + " has an evaluated score of " + score + ".");
             }
-            Instance.DebugStream.Succes();
-            Instance.DebugStream.WriteLine(">attempting best move selection");
+            Instance.DebugStream.Success();
+            Instance.DebugStream.Log(">attempting best move selection");
             (int score, Move move) bestItem = evaluatedMoves.Where(t => t.score == evaluatedMoves.Select(t => t.score).Max()).First();
 
             stopwatch.Stop();
-            Instance.DebugStream.WriteLine("bestMove found with a score of: " + bestItem.score + " and move " + bestItem.move);
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Log("bestMove found with a score of: " + bestItem.score + " and move " + bestItem.move);
+            Instance.DebugStream.Success();
             return new NegamaxEndResult(bestItem.move, negaCount, (int)stopwatch.ElapsedMilliseconds);
         }
         public const int evalNum = 10000;
         public static int MoveEvaluate(BoardState state, Move move, int score)
         {
-            Instance.DebugStream.WriteLine(">starting eval of move " + move + "..");
+            Instance.DebugStream.Log(">starting eval of move " + move + "..");
 
             int connectScore;
             int positionalScore;
@@ -124,22 +124,22 @@ namespace Stolon
             state.Alter(move, true);
 
             connectScore = state.DeepSearchFrom(sim.TiledPosition, out _, null).Score;
-            Instance.DebugStream.WriteLine("move has a connectScore of " + connectScore);
+            Instance.DebugStream.Log("move has a connectScore of " + connectScore);
 
             int distanceFromCenter = (int)MathF.Abs((sim.TiledPosition.X - (state.Dimensions.X / 2f))); // more = bad
             int distanceFromGround = Math.Abs(move.Origin.Y - sim.TiledPosition.Y); // more = bad
             positionalScore = distanceFromCenter * distanceFromCenter * -1 * distanceFromGround * distanceFromGround;
-            Instance.DebugStream.WriteLine("move has a positionalScore of " + positionalScore + ", xDelta: " + distanceFromCenter + ", yDelta: " + distanceFromGround);
+            Instance.DebugStream.Log("move has a positionalScore of " + positionalScore + ", xDelta: " + distanceFromCenter + ", yDelta: " + distanceFromGround);
 
             Random random = new Random();
             randomScore = random.Next(1, 40);
-            Instance.DebugStream.WriteLine("move has a randomScore of " + randomScore);
+            Instance.DebugStream.Log("move has a randomScore of " + randomScore);
 
             state.Undo();
             outScore = score + connectScore + positionalScore + randomScore;
 
-            Instance.DebugStream.WriteLine("total: " + outScore);
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Log("total: " + outScore);
+            Instance.DebugStream.Success();
 
             return outScore;
         }

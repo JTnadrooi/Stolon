@@ -53,7 +53,7 @@ namespace Stolon
                     {
                         if (!TexturePalette.Debug.Contains(data[i]) && data[i].A == 1)
                         {
-                            Instance.DebugStream.WriteLine("found DEBUG texture: " + texture.Name);
+                            Instance.DebugStream.Log("found DEBUG texture: " + texture.Name);
                             break;
                         }
                     }
@@ -70,7 +70,7 @@ namespace Stolon
 
         public TContent HardLoad<TContent>(string path)
         {
-            Instance.DebugStream.WriteLine("hardloading path: " + path);
+            Instance.DebugStream.Log("hardloading path: " + path);
             return ContentManager.Load<TContent>(path);
         }
 

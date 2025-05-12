@@ -91,7 +91,7 @@ namespace Stolon
 
 		protected override void Initialize()
 		{
-			DebugStream.WriteLine(">[s]initializing stolon");
+			DebugStream.Log(">[s]initializing stolon");
 			DRP = new DiscordRichPresence();
 			DRP.UpdateDetails("Initializing..");
 
@@ -110,7 +110,7 @@ namespace Stolon
 
 
 			Window.ClientSizeChanged += Window_ClientSizeChanged;
-			DebugStream.Succes();
+			DebugStream.Success();
 			base.Initialize();
 		}
 		void Window_ClientSizeChanged(object? sender, EventArgs e)
@@ -137,9 +137,9 @@ namespace Stolon
 		public void SetDesiredResolution(Point resolution) => desiredModifier = resolution.X / aspectRatio.X;
 		protected override void LoadContent()
 		{
-			DebugStream.WriteLine(">[s]loading stolon content");
+			DebugStream.Log(">[s]loading stolon content");
 
-			spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch = new SpriteBatch(GraphicsDevice);
 			textures = new GameTextureCollection(Content);
             fonts = new GameFontCollection(Content);
 
@@ -157,8 +157,8 @@ namespace Stolon
 			bloomFilter.Load(GraphicsDevice, Content, aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
 			bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
 
-			DebugStream.Succes();
-			base.LoadContent();
+            DebugStream.Success();
+            base.LoadContent();
 		}
 		protected override void UnloadContent()
 		{

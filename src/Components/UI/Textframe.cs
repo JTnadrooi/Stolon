@@ -93,15 +93,15 @@ namespace Stolon
         public void Queue(DialogueInfo dialogue)
         {
             dialogueQueue.Enqueue(dialogue);
-            Instance.DebugStream.WriteLine("dialogue queued with text: " + dialogue.Text);
+            Instance.DebugStream.Log("dialogue queued with text: " + dialogue.Text);
         }
         public void Next()
         {
             if (dialogueQueue.Count == 0) throw new Exception();
 
-            Instance.DebugStream.WriteLine(">attempting dequeuing of dialogue with text: " + dialogueQueue.Peek().Text);
+            Instance.DebugStream.Log(">attempting dequeuing of dialogue with text: " + dialogueQueue.Peek().Text);
             bool providerDiffers = currentDialogue.HasValue && currentDialogue.Value.Provider.Name != dialogueQueue.Peek().Provider.Name;
-            if (providerDiffers) Instance.DebugStream.WriteLine("dialogue has new provider of name: " + dialogueQueue.Peek().Provider.Name);
+            if (providerDiffers) Instance.DebugStream.Log("dialogue has new provider of name: " + dialogueQueue.Peek().Provider.Name);
 
             currentDialogue = dialogueQueue.Dequeue();
             currentDialogueDrawArgs = DialogueDrawArgs.FromInfo(currentDialogue.Value);
@@ -121,15 +121,15 @@ namespace Stolon
                 providerTextSizeTweener.Start();
             }
 
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Success();
         }
 
         public void Queue(int count, Func<string, int, string>? selector = null)
         {
-            Instance.DebugStream.WriteLine(">mass queueing a stream of size: " + count);
+            Instance.DebugStream.Log(">mass queueing a stream of size: " + count);
             selector ??= new Func<string, int, string>((s, i) => s);
             for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke(Instance.UserInterface.GetRandomSplashText(), i)));
-            Instance.DebugStream.Succes();
+            Instance.DebugStream.Success();
         }
 
         public override void Update(int elapsedMiliseconds)
