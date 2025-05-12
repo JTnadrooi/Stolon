@@ -47,7 +47,7 @@ namespace Stolon
         private Texture2D menuLogoDummyTiles;
         private Texture2D menuLogoFilledTiles;
         private Texture2D menuLogoLowResFonted;
-        private Texture2D dither8x8;
+        private Texture2D dither32;
 
         private Rectangle menuLogoTileHider;
 
@@ -188,7 +188,7 @@ namespace Stolon
             menuLogoDummyTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\dummyTiles");
             menuLogoFilledTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\filledTiles");
             menuLogoLowResFonted = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lowResFonted");
-            dither8x8 = Instance.Textures.GetReference("textures\\dither8x8");
+            dither32 = Instance.Textures.GetReference("textures\\dither_32");
 
             AllUIElements = new Dictionary<string, UIElement>();
 
@@ -441,7 +441,7 @@ namespace Stolon
             milisecondsSinceStartup += elapsedMiliseconds;
             menuLogoDrawPos = Vector2.Round(Centering.MiddleX(menuLogoLines, logoYoffset, Instance.VirtualDimensions.X, Vector2.One) + new Vector2(0, 8f * menuLogoEaseTweener.Value * (1 - menuRemoveTweener.Value)))
                 + new Vector2(0, ((Centering.MiddleY(menuLogoLines, 1, Instance.VirtualDimensions.Y, Vector2.One).Y - logoYoffset * 1.5f) * menuRemoveTweener.Value));
-            menuDitherTexturePositions = new Point[(int)Math.Ceiling(Instance.VirtualDimensions.Y / (float)dither8x8.Height) * 2];
+            menuDitherTexturePositions = new Point[(int)Math.Ceiling(Instance.VirtualDimensions.Y / (float)dither32.Height) * 2];
 
             menuFlashStart = 1200;
             menuFlashEnd = menuFlashStart + 400;
@@ -496,8 +496,8 @@ namespace Stolon
 
             for (int i = 0; i < menuDitherTexturePositions.Length; i++) // dithering positions.
                 menuDitherTexturePositions[i] = new Point(
-                        (i >= menuDitherTexturePositions.Length / 2f) ? menuLine2X : menuLine1X - dither8x8.Width,
-                        (i % (int)(menuDitherTexturePositions.Length / 2f)) * dither8x8.Height);
+                        (i >= menuDitherTexturePositions.Length / 2f) ? menuLine2X : menuLine1X - dither32.Width,
+                        (i % (int)(menuDitherTexturePositions.Length / 2f)) * dither32.Height);
 
             UIOrdering.Order(AllUIElements.Values.ToArray(), MenuPath, drawData, updateData, new Vector2(0, uiElementOffsetY), OrderProviders.Menu);
 
@@ -639,7 +639,7 @@ namespace Stolon
                     if (drawMenuLogoLowResFonted)
                     {
                         for (int i = 0; i < menuDitherTexturePositions.Length; i++)
-                            spriteBatch.Draw(dither8x8, menuDitherTexturePositions[i].ToVector2(), null, Color.White, 0f, Vector2.Zero, 1f,
+                            spriteBatch.Draw(dither32, menuDitherTexturePositions[i].ToVector2(), null, Color.White, 0f, Vector2.Zero, 1f,
                                 (i >= menuDitherTexturePositions.Length / 2f) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
                         spriteBatch.Draw(Instance.Textures.Pixel, menuLogoBoundingBox, Color.Black);

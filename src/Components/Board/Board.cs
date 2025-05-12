@@ -83,7 +83,7 @@ namespace Stolon
 
             for (int x = 0; x < conf.Dimensions.X; x++)
             {
-                Vector2 topleft = new Vector2(x * 64, 0);
+                Vector2 topleft = new Vector2(x * 96, 0);
             }
         }
 
@@ -252,7 +252,7 @@ namespace Stolon
                     int playerid = tile.GetOccupiedByPlayerID();
                     if (playerid != -1)
                     {
-                        boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                        boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item_96"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
                     else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
                     else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
@@ -446,7 +446,7 @@ namespace Stolon
         }
 
 
-        public static float BoardMultiplier => 64f;
+        public static float BoardMultiplier => 96;
         public static Tile[,] GetTiles(Point dimensions, bool random = false)
         {
             Tile[,] tiles = new Tile[dimensions.X, dimensions.Y];
@@ -485,7 +485,7 @@ namespace Stolon
             Texture = texture;
         }
 
-        public static TileType Void => new TileType("void", Instance.Textures.GetReference("textures\\box2"));
+        public static TileType Void => new TileType("void", Instance.Textures.GetReference("textures\\box_96"));
     }
 
 }
