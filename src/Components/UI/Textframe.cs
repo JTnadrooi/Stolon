@@ -172,7 +172,7 @@ namespace Stolon
 
                 dialogueTextPos = dialoguebounds.Location
                     + new Point((int)(dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasureString(toDrawDialogueText).X / 2f),
-                    (int)(dialoguebounds.Height / 2f - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y / 2f));
+                    (int)(dialoguebounds.Height / 2f - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y));
                  
                 providerTextPos = dialoguebounds.Location
                     + new Point((int)(dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasureString(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient / 2f), 2);

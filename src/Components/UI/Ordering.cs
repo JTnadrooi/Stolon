@@ -54,17 +54,18 @@ namespace Stolon
         private GameFont font;
         public MenuOrderProvider()
         {
-            font = Instance.Fonts["fonts\\smollerMono"];
+            //font = Instance.Fonts["fonts\\smollerMono"];
+            font = Instance.Fonts["fonts\\monogram"];
         }
         public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
         {
             Vector2 elementPos = Centering.MiddleX((int)font.FastMeasureString(element.Text).X,
-                                index * (font.Dimensions.Y + 2) + UIOrgin.Y,
+                                index * (font.Dimensions.Y * 2 + 2) + UIOrgin.Y,
                                 Instance.VirtualDimensions.X, Vector2.One);
 
             Centering.OnPixel(ref elementPos);
 
-            Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point(font.Dimensions.X * element.Text.Length, font.Dimensions.Y));
+            Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point((int)font.FastMeasureString(element.Text).X, font.Dimensions.Y));
             string elementText = element.Text;
 
             string postPre = element.Id switch
@@ -75,7 +76,7 @@ namespace Stolon
             };
             bool elementIsHovered = elementBounds.Contains(SLMouse.VirualPosition);
 
-            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, font.Name, element.Type, elementPos + (elementIsHovered ? new Point(-font.Dimensions.X, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
+            return (new UIElementDrawData(element.Id, elementIsHovered ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) : elementText, font.Name, element.Type, elementPos + (elementIsHovered ? new Point(-(font.Dimensions.X * 2), 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), elementIsHovered);
         }
     }
 

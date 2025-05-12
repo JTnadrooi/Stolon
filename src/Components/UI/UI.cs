@@ -661,7 +661,7 @@ namespace Stolon
             }
             foreach (UIElementDrawData elementDrawData in drawData)
             {
-                spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 1f);
+                spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, Instance.Fonts[elementDrawData.FontName].Scale, SpriteEffects.None, 1f);
                 if (elementDrawData.DrawRectangle)
                 {
                     spriteBatch.DrawRectangle(elementDrawData.Rectangle, Color.White, 1f);

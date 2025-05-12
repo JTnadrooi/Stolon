@@ -20,10 +20,10 @@ namespace Stolon
         {
             Name = name;
             SpriteFont = spriteFont;
-            Dimensions = spriteFont.MeasureString("A").ToPoint();
+            Dimensions = (spriteFont.MeasureString("A") * scale).ToPoint();
             Scale = scale;
         }
-        public Vector2 FastMeasureString(string s) => Dimensions.ToVector2() * Scale * s.Length;
+        public Vector2 FastMeasureString(string s) => Dimensions.ToVector2() * s.Length;
         public override string ToString() => Name + " (Scale: " + Scale + ", Dimensions: " + Dimensions + ")";
         public static implicit operator SpriteFont(GameFont font) => font.SpriteFont;
     }
