@@ -103,30 +103,26 @@ namespace Stolon
         /// <param name="overwrite">If the task.</param>
         public void SafePush(string id, DynamicTask dynamicTask, int waitTime, bool overwrite = true)
         {
-            Instance.DebugStream.Log(">pushing task with id: " + id);
 
             if (waitTime < 0)
             {
                 object? ret = dynamicTask.Run();
-                Instance.DebugStream.Log("insta-ran with id: " + id);
+                Instance.DebugStream.Log("insta-ran task with id: " + id);
                 frameCompletedTasks.Add(id, ret);
                 allCompletedTasks.Add(id);
                 return;
             }
 
             if (taskDictionary.ContainsKey(id)) 
-                if (overwrite) Instance.DebugStream.Log("key already known, overwriting task.");
+                if (overwrite) Instance.DebugStream.Log("key already known, overwriting task with id: " + id);
                 else
                 {
                     //Instance.DebugStream.Log("\t\tkey already known, overwrite is dissabled, skipping push.");
-                    Instance.DebugStream.Success();
                     return;
                 }
             taskWaitDataCollection[id] = waitTime;
             taskDictionary[id] = dynamicTask;
-
-            Instance.DebugStream.Log("task pushed with id: " + id);
-            Instance.DebugStream.Success();
+            Instance.DebugStream.Log("pushed task with id: " + id);
         }
         public void Push(string id, DynamicTask dynamicTask, int waitTime)
         {
