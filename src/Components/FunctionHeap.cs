@@ -115,11 +115,7 @@ namespace Stolon
 
             if (taskDictionary.ContainsKey(id)) 
                 if (overwrite) Instance.DebugStream.Log("key already known, overwriting task with id: " + id);
-                else
-                {
-                    //Instance.DebugStream.Log("\t\tkey already known, overwrite is dissabled, skipping push.");
-                    return;
-                }
+                else return;
             taskWaitDataCollection[id] = waitTime;
             taskDictionary[id] = dynamicTask;
             Instance.DebugStream.Log("pushed task with id: " + id);
