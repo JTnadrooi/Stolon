@@ -15,15 +15,15 @@ namespace Stolon
         public string Name { get; }
         public SpriteFont SpriteFont { get; }
         public float Scale { get; }
-        public Point Dimensions { get; }
+        public Vector2 Dimensions { get; }
         public GameFont(string name, SpriteFont spriteFont, float scale = 1)
         {
             Name = name;
             SpriteFont = spriteFont;
-            Dimensions = (spriteFont.MeasureString("A") * scale).ToPoint();
+            Dimensions = spriteFont.MeasureString("A") * scale;
             Scale = scale;
         }
-        public Vector2 FastMeasureString(string s) => Dimensions.ToVector2() * s.Length;
+        public Vector2 FastMeasureString(string s) => Dimensions * s.Length + new Vector2();
         public override string ToString() => Name + " (Scale: " + Scale + ", Dimensions: " + Dimensions + ")";
         public static implicit operator SpriteFont(GameFont font) => font.SpriteFont;
     }

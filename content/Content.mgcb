@@ -307,3 +307,8 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:../content/textures/player1item_96.png;textures/player1item_96.png
+
+#begin ../content/fonts/pixeloidMono.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/build:../content/fonts/pixeloidMono.spritefont;fonts/pixeloidMono.spritefont
