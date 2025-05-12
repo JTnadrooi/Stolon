@@ -108,6 +108,7 @@ namespace Stolon
             stopwatch.Stop();
             Instance.DebugStream.Log("bestMove found with a score of: " + bestItem.score + " and move " + bestItem.move);
             Instance.DebugStream.Success();
+            Instance.DebugStream.Success();
             return new NegamaxEndResult(bestItem.move, negaCount, (int)stopwatch.ElapsedMilliseconds);
         }
         public const int evalNum = 10000;
