@@ -31,6 +31,7 @@ namespace Stolon
     {
         public Camera2D Camera { get; }
         public float Zoom { get; private set; }
+        public const int TILE_SIZE = 96;
 
         public float MaxDeltaZoom => SmoothnessModifier * 10f;
         public float ZoomIntensity => (Zoom - desiredZoom) / MaxDeltaZoom;
@@ -57,7 +58,7 @@ namespace Stolon
         private bool locked;
 
         private BoardState.SearchTargetCollection searchTargets;
-        private const float confZoomCoefficient = 0.98f; // 0.98f
+        private const float CONF_ZOOM_COEFFICIENT = 0.98f; // 0.98f
 
         public UniqueMoveBoardMap UniqueMoveBoardMap { get; }
 
@@ -68,7 +69,7 @@ namespace Stolon
 
             state = conf;
             boardSpriteBatch = new SpriteBatch(Instance.GraphicsDevice);
-            desiredZoom = MathF.Max(0.45f, confZoomCoefficient * (4f / conf.Dimensions.X)); // does not change.
+            desiredZoom = MathF.Max(0.45f, CONF_ZOOM_COEFFICIENT * (4f / conf.Dimensions.X)); // does not change.
             desiredCameraPos = BoardCenter;
             Camera.Position = desiredCameraPos;
             searchTargets = conf.WinSearchTargets;
@@ -83,7 +84,7 @@ namespace Stolon
 
             for (int x = 0; x < conf.Dimensions.X; x++)
             {
-                Vector2 topleft = new Vector2(x * 96, 0);
+                Vector2 topleft = new Vector2(x * Board.TILE_SIZE, 0);
             }
         }
 
@@ -446,7 +447,7 @@ namespace Stolon
         }
 
 
-        public static float BoardMultiplier => 96;
+        public static float BoardMultiplier => Board.TILE_SIZE;
         public static Tile[,] GetTiles(Point dimensions, bool random = false)
         {
             Tile[,] tiles = new Tile[dimensions.X, dimensions.Y];
