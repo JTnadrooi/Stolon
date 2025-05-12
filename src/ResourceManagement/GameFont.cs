@@ -23,7 +23,8 @@ namespace Stolon
             Dimensions = spriteFont.MeasureString("A") * scale;
             Scale = scale;
         }
-        public Vector2 FastMeasureString(string s) => Dimensions * s.Length + new Vector2();
+        public Vector2 FastMeasure(int i) => FastMeasure(new string('A', i));
+        public Vector2 FastMeasure(string s) => Dimensions * s.Length + (new Vector2(Math.Max((s.Length) * SpriteFont.Spacing, 0), 0) * Scale);
         public override string ToString() => Name + " (Scale: " + Scale + ", Dimensions: " + Dimensions + ")";
         public static implicit operator SpriteFont(GameFont font) => font.SpriteFont;
     }

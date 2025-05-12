@@ -575,7 +575,7 @@ namespace Stolon
             }), 2000, false);
             milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
 
-            tipPos = Centering.MiddleX((int)(Instance.Fonts["fonts\\smollerMono"].FastMeasureString(tips[tipId]).X),
+            tipPos = Centering.MiddleX((int)(Instance.Fonts["fonts\\smollerMono"].FastMeasure(tips[tipId]).X),
                 menuLogoDrawPos.Y + menuLogoLines.Height + (menuLogoBoundingBoxClearing * Math.Clamp(menuRemoveTweener.Value * 2f, 0f, 1f)), Instance.VirtualDimensions.X, Vector2.One);
 
             menuRemoveLineY = (int)(menuRemoveTweener.Value * Instance.VirtualDimensions.Y);

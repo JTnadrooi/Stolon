@@ -286,7 +286,7 @@ namespace Stolon
             heightCoefficient = tweener.Value;
 
             drawArea = new Rectangle(area.Location, new Point(area.Width, (int)(desiredHeight * heightCoefficient)));
-            textPos = Centering.MiddleXY(Instance.Fonts["fonts\\smollerMono"].FastMeasureString(text).ToPoint(), drawArea, new Vector2(TextSizeMod));
+            textPos = Centering.MiddleXY(Instance.Fonts["fonts\\smollerMono"].FastMeasure(text).ToPoint(), drawArea, new Vector2(TextSizeMod));
             textPos = new Vector2(textPos.X, Math.Min(textPos.Y, drawArea.Height - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y * TextSizeMod));
 
             Centering.OnPixel(ref textPos);
