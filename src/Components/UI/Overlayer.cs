@@ -19,20 +19,20 @@ namespace Stolon
 {
     public class OverlayEngine : GameComponent
     {
-        private Dictionary<string, IOverlay> overlays;
-        private List<string> initialized;
+        private Dictionary<string, IOverlay> _overlays;
+        private List<string> _initialized;
 
         public OverlayEngine() : base(StolonEnvironment.Instance)
         {
-            overlays = new Dictionary<string, IOverlay>();
-            initialized = new List<string>();
+            _overlays = new Dictionary<string, IOverlay>();
+            _initialized = new List<string>();
         }
 
         public void AddOverlay<TOverlay>() where TOverlay : IOverlay, new() => AddOverlay(new TOverlay());
         public void AddOverlay(IOverlay overlay)
         {
             Instance.DebugStream.Log(">adding overlay of id " + overlay.ID + ".");
-            overlays.Add(overlay.ID, overlay);
+            _overlays.Add(overlay.ID, overlay);
             Instance.DebugStream.Success();
         }
 
@@ -40,18 +40,18 @@ namespace Stolon
         {
             Instance.DebugStream.Log(">removing overlay of id " + overlayId + ".");
             Deactivate(overlayId);
-            overlays.Remove(overlayId);
+            _overlays.Remove(overlayId);
             Instance.DebugStream.Success();
         }
 
         public void Activate(string overlayId, params object?[] args)
         {
             
-            if (!initialized.Contains(overlayId))
+            if (!_initialized.Contains(overlayId))
             {
                 Instance.DebugStream.Log(">[s]activating overlay of id " + overlayId + ".");
-                overlays[overlayId].Initialize(this, args);
-                initialized.Add(overlayId);
+                _overlays[overlayId].Initialize(this, args);
+                _initialized.Add(overlayId);
                 Instance.DebugStream.Success();
             }
         }
@@ -59,26 +59,26 @@ namespace Stolon
         public bool IsActive(IOverlay overlay) => IsActive(overlay.ID);
         public bool IsActive(string overlayId)
         {
-            return initialized.Contains(overlayId);
+            return _initialized.Contains(overlayId);
         }
 
         public void Deactivate(string overlayId) // ensure
         {
-            if (initialized.Contains(overlayId))
+            if (_initialized.Contains(overlayId))
             {
                 Instance.DebugStream.Log(">deactivating overlay of id " + overlayId + ".");
-                overlays[overlayId].Reset();
+                _overlays[overlayId].Reset();
                 Instance.DebugStream.Success();
             }
-            initialized.Remove(overlayId);
+            _initialized.Remove(overlayId);
         }
 
         public override void Update(int elapsedMiliseconds)
         {
             IOverlay overlay;
-            for (int i = 0; i < initialized.Count; i++) // for all initialized overlays
+            for (int i = 0; i < _initialized.Count; i++) // for all initialized overlays
             {
-                overlay = overlays[initialized[i]];
+                overlay = _overlays[_initialized[i]];
                 overlay.Update(elapsedMiliseconds);
                 if (overlay.Ended)
                 {
@@ -91,9 +91,9 @@ namespace Stolon
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            for (int i = 0; i < initialized.Count; i++)
+            for (int i = 0; i < _initialized.Count; i++)
             {
-                overlays[initialized[i]].Draw(spriteBatch, elapsedMiliseconds);
+                _overlays[_initialized[i]].Draw(spriteBatch, elapsedMiliseconds);
             }
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
@@ -118,25 +118,25 @@ namespace Stolon
 
         private Texture2D lineTexture;
 
-        private float rotation;
-        private float rotationSpeed;
-        private Vector2 pos;
-        private float scale;
+        private float _rotation;
+        private float _rotationSpeed;
+        private Vector2 _pos;
+        private float _scale;
 
         public LoadOverlay()
         {
             lineTexture = Instance.Textures.GetReference("textures\\loading1");
-            rotation = 0f;
-            scale = 0.20f;
-            rotationSpeed = 40f;
+            _rotation = 0f;
+            _scale = 0.20f;
+            _rotationSpeed = 40f;
 
-            pos = Instance.VirtualBounds.Size.ToVector2() + new Vector2(-lineTexture.Width, -lineTexture.Height) * scale;
+            _pos = Instance.VirtualBounds.Size.ToVector2() + new Vector2(-lineTexture.Width, -lineTexture.Height) * _scale;
 
         }
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
-            pos = (Vector2)((args.Length > 0 ? args[0] : null) ?? pos);
+            _pos = (Vector2)((args.Length > 0 ? args[0] : null) ?? _pos);
         }
 
         public void Reset()
@@ -146,12 +146,12 @@ namespace Stolon
 
         public void Update(int elapsedMiliseconds)
         {
-            rotation += rotationSpeed;
+            _rotation += _rotationSpeed;
         }
 
         public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            spriteBatch.Draw(lineTexture, pos, null, Color.White, rotation / 360f, new Vector2(lineTexture.Width / 2f, lineTexture.Height / 2f), scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(lineTexture, _pos, null, Color.White, _rotation / 360f, new Vector2(lineTexture.Width / 2f, lineTexture.Height / 2f), _scale, SpriteEffects.None, 0);
             //spriteBatch.DrawCircle(pos, scale * lineTexture.Width * 0.8f, 15, Color.White, 2);
         }
     }
@@ -159,33 +159,33 @@ namespace Stolon
     {
         public string ID => "transitionDither";
 
-        public bool Ended => ended;
+        public bool Ended => _ended;
 
-        private Texture2D ditherTexture;
-        private int pixelsToRemovePerFrame; // Number of pixels to turn transparent each frame
-        private Color[] pixelData; // Holds the pixel data for the dither texture
-        private Random random;
-        private GraphicsDevice graphicsDevice;
-        private bool ended;
-        private int resolution;
-        private int width;
-        private int height;
-        private Tweener<float> tweener;
+        private Texture2D _ditherTexture;
+        private int _pixelsToRemovePerFrame; // Number of pixels to turn transparent each frame
+        private Color[] _pixelData; // Holds the pixel data for the dither texture
+        private Random _random;
+        private GraphicsDevice _graphicsDevice;
+        private bool _ended;
+        private int _resolution;
+        private int _width;
+        private int _height;
+        private Tweener<float> _tweener;
 
         public TransitionDitherOverlay(GraphicsDevice graphicsDevice, int pixelsToRemovePerFrame = 11150, int time = 2, int resolution = 2)
         {
-            this.pixelsToRemovePerFrame = pixelsToRemovePerFrame / (resolution);
-            this.graphicsDevice = graphicsDevice;
-            this.resolution = resolution;
-            random = new Random();
+            this._pixelsToRemovePerFrame = pixelsToRemovePerFrame / (resolution);
+            this._graphicsDevice = graphicsDevice;
+            this._resolution = resolution;
+            _random = new Random();
 
 
-            tweener = new Tweener<float>(1, this.pixelsToRemovePerFrame, 5f, Ease.Expo.In);
-            height = Instance.VirtualDimensions.Y / resolution;
-            width = Instance.VirtualDimensions.X / resolution;
+            _tweener = new Tweener<float>(1, this._pixelsToRemovePerFrame, 5f, Ease.Expo.In);
+            _height = Instance.VirtualDimensions.Y / resolution;
+            _width = Instance.VirtualDimensions.X / resolution;
 
-            ditherTexture = null!;
-            pixelData = null!;
+            _ditherTexture = null!;
+            _pixelData = null!;
             ResetTexture();
         }
 
@@ -197,15 +197,15 @@ namespace Stolon
 
         public void ResetTexture()
         {
-            ditherTexture = new Texture2D(graphicsDevice, width, height);
-            pixelData = new Color[width * height];
-            for (int i = 0; i < pixelData.Length; i++) pixelData[i] = Color.White;
-            ditherTexture.SetData(pixelData);
+            _ditherTexture = new Texture2D(_graphicsDevice, _width, _height);
+            _pixelData = new Color[_width * _height];
+            for (int i = 0; i < _pixelData.Length; i++) _pixelData[i] = Color.White;
+            _ditherTexture.SetData(_pixelData);
         }
 
         public void Reset()
         {
-            tweener .Reset();
+            _tweener .Reset();
             ResetTexture();
         }
 
@@ -214,29 +214,29 @@ namespace Stolon
             int removedPixels = 0;
             int dullPixels = 0;
 
-            tweener.Update(elapsedMiliseconds / 1000f);
+            _tweener.Update(elapsedMiliseconds / 1000f);
 
-            while (removedPixels < tweener.Value)
+            while (removedPixels < _tweener.Value)
             {
-                int index = random.Next(pixelData.Length);
-                if (pixelData[index] == Color.White)
+                int index = _random.Next(_pixelData.Length);
+                if (_pixelData[index] == Color.White)
                 {
-                    pixelData[index] = Color.Transparent;
+                    _pixelData[index] = Color.Transparent;
                     removedPixels++;
                 }
                 else dullPixels++;
                 if (dullPixels > 100000)
                 {
-                    ended = true;
+                    _ended = true;
                     return;
                 }
             }
-            ditherTexture.SetData(pixelData);
+            _ditherTexture.SetData(_pixelData);
         }
 
         public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            spriteBatch.Draw(ditherTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, resolution, SpriteEffects.None, 1f);
+            spriteBatch.Draw(_ditherTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, _resolution, SpriteEffects.None, 1f);
         }
     }
     public class TransitionOverlay : IOverlay
@@ -245,79 +245,79 @@ namespace Stolon
 
         public bool Ended { get; private set; }
 
-        private Rectangle area;
-        private OverlayEngine overlayer;
-        private Tweener<float> tweener;
-        private string text;
+        private Rectangle _area;
+        private OverlayEngine _overlayer;
+        private Tweener<float> _tweener;
+        private string _text;
 
-        private Rectangle drawArea;
-        private float heightCoefficient;
-        private Vector2 textPos;
-        private Action action;
+        private Rectangle _drawArea;
+        private float _heightCoefficient;
+        private Vector2 _textPos;
+        private Action _action;
 
-        private bool hasHitMax;
+        private bool _hasHitMax;
 
         public TransitionOverlay()
         {
-            area = Rectangle.Empty;
-            drawArea = Rectangle.Empty;
-            overlayer = null!; // I know I know
-            tweener = null!; // yupyup
+            _area = Rectangle.Empty;
+            _drawArea = Rectangle.Empty;
+            _overlayer = null!; // I know I know
+            _tweener = null!; // yupyup
             Ended = false;
-            text = string.Empty;
-            textPos = Vector2.Zero;
-            action = () => { };
+            _text = string.Empty;
+            _textPos = Vector2.Zero;
+            _action = () => { };
         }
 
         public void Update(int elapsedMiliseconds)
         {
-            int desiredHeight = area.Height;
-            if (!hasHitMax && heightCoefficient > 0.999f)
+            int desiredHeight = _area.Height;
+            if (!_hasHitMax && _heightCoefficient > 0.999f)
             {
-                tweener = new Tweener<float>(1f, 0f, Duration / 1000f / 2, Ease.Sine.In);
-                action();
-                tweener.Start();
-                hasHitMax = true;
+                _tweener = new Tweener<float>(1f, 0f, Duration / 1000f / 2, Ease.Sine.In);
+                _action();
+                _tweener.Start();
+                _hasHitMax = true;
             }
-            Ended = hasHitMax && heightCoefficient < 0.001f;
+            Ended = _hasHitMax && _heightCoefficient < 0.001f;
 
-            tweener.Update(elapsedMiliseconds / 1000f);
+            _tweener.Update(elapsedMiliseconds / 1000f);
 
-            heightCoefficient = tweener.Value;
+            _heightCoefficient = _tweener.Value;
 
-            drawArea = new Rectangle(area.Location, new Point(area.Width, (int)(desiredHeight * heightCoefficient)));
-            textPos = Centering.MiddleXY(Instance.Fonts["fonts\\smollerMono"].FastMeasure(text).ToPoint(), drawArea, new Vector2(TextSizeMod));
-            textPos = new Vector2(textPos.X, Math.Min(textPos.Y, drawArea.Height - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y * TextSizeMod));
+            _drawArea = new Rectangle(_area.Location, new Point(_area.Width, (int)(desiredHeight * _heightCoefficient)));
+            _textPos = Centering.MiddleXY(Instance.Fonts["fonts\\smollerMono"].FastMeasure(_text).ToPoint(), _drawArea, new Vector2(TextSizeMod));
+            _textPos = new Vector2(_textPos.X, Math.Min(_textPos.Y, _drawArea.Height - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y * TextSizeMod));
 
-            Centering.OnPixel(ref textPos);
+            Centering.OnPixel(ref _textPos);
         }
 
         public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            spriteBatch.Draw(Instance.Textures.Pixel, drawArea, Color.Black);
-            spriteBatch.DrawRectangle(drawArea, Color.White);
-            spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], text, textPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale * TextSizeMod, SpriteEffects.None, 0f);
+            spriteBatch.Draw(Instance.Textures.Pixel, _drawArea, Color.Black);
+            spriteBatch.DrawRectangle(_drawArea, Color.White);
+            spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _text, _textPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale * TextSizeMod, SpriteEffects.None, 0f);
         }
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
             Ended = false;
-            tweener = new Tweener<float>(0f, 1f, Duration / 1000f / 2, Ease.Sine.Out);
-            area = (Rectangle)((args.Length > 0 ? args[0] : null) ?? Instance.VirtualBounds);
-            text = (string)(args[2] ?? string.Empty);
-            action = (Action)(args[1]! ?? action);
+            _tweener = new Tweener<float>(0f, 1f, Duration / 1000f / 2, Ease.Sine.Out);
+            _area = (Rectangle)((args.Length > 0 ? args[0] : null) ?? Instance.VirtualBounds);
+            _text = (string)(args[2] ?? string.Empty);
+            _action = (Action)(args[1]! ?? _action);
 
-            tweener.Start();
+            _tweener.Start();
 
-            this.overlayer = overlayer;
+            this._overlayer = overlayer;
         }
 
         public void Reset()
         {
-            tweener.Stop();
-            tweener.Reset();
-            hasHitMax = false;
-            heightCoefficient = 0f;
+            _tweener.Stop();
+            _tweener.Reset();
+            _hasHitMax = false;
+            _heightCoefficient = 0f;
         }
 
         public static int Duration => 4000;

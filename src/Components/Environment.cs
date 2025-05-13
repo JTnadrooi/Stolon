@@ -61,50 +61,46 @@ namespace Stolon
         /// </summary>
         public SLGameState GameState
         {
-            get => gameState; 
-            set => gameState = value;
+            get => _gameState; 
+            set => _gameState = value;
         }
         /// <summary>
         /// The current <see cref="Stolon.Scene"/>.
         /// </summary>
         public Scene Scene
         {
-            get => scene;
-            set => scene = value;
+            get => _scene;
+            set => _scene = value;
         }
         /// <summary>
         /// The <see cref="UserInterface"/>.
         /// </summary>
-        public UserInterface UI => userInterface;
+        public UserInterface UI => _userInterface;
         /// <summary>
         /// The <see cref="Stolon.OverlayEngine"/>.
         /// </summary>
-        public OverlayEngine Overlayer => overlayer;
+        public OverlayEngine Overlayer => _overlayer;
         /// <summary>
         /// A <see cref="Dictionary{TKey, TValue}"/> listing all <see cref="EntityBase"/> objects and their <see cref="EntityBase.Id"/>.
         /// </summary>
-        public ReadOnlyDictionary<string, EntityBase> Entities => new ReadOnlyDictionary<string, EntityBase>(entities);
-        /// <summary>
-        /// The scaling applied to the <see cref="Font"/>.
-        /// </summary>
-        public const float FontScale = 0.5f;
+        public ReadOnlyDictionary<string, EntityBase> Entities => new ReadOnlyDictionary<string, EntityBase>(_entities);
         public string SymbolNotation => "Ev";
         public string Name => "Environment";
 
         public TaskHeap TaskHeap { get; }
 
-        private Scene scene;
-        private UserInterface userInterface;
-        private OverlayEngine overlayer;
-        private SLGameState gameState;
-        private Dictionary<string, EntityBase> entities;
+        private Scene _scene;
+        private UserInterface _userInterface;
+        private OverlayEngine _overlayer;
+        private SLGameState _gameState;
+        private Dictionary<string, EntityBase> _entities;
 
         internal StolonEnvironment() : base(null)
         {
-            scene = new Scene();
-            entities = new Dictionary<string, EntityBase>();
-            userInterface = null!;
-            overlayer = null!;
+            _scene = new Scene();
+            _entities = new Dictionary<string, EntityBase>();
+            _userInterface = null!;
+            _overlayer = null!;
             TaskHeap = new TaskHeap();
         }
         internal void Initialize()
@@ -113,16 +109,16 @@ namespace Stolon
             RegisterEntity(new StoEntity());
             // RegisterCharacter(new DeadlineEntity());
 
-            userInterface = new UserInterface();
-            userInterface.Initialize();
+            _userInterface = new UserInterface();
+            _userInterface.Initialize();
 
-            overlayer = new OverlayEngine();
+            _overlayer = new OverlayEngine();
 
-            gameState = SLGameState.InMenu;
+            _gameState = SLGameState.InMenu;
 
-            overlayer.AddOverlay(new TransitionOverlay());
-            overlayer.AddOverlay(new LoadOverlay());
-            overlayer.AddOverlay(new TransitionDitherOverlay(StolonGame.Instance.GraphicsDevice));
+            _overlayer.AddOverlay(new TransitionOverlay());
+            _overlayer.AddOverlay(new LoadOverlay());
+            _overlayer.AddOverlay(new TransitionDitherOverlay(StolonGame.Instance.GraphicsDevice));
 
             //StolonGame.Instance.AudioEngine.SetPlayList(new Playlist(
             //    "debug1",
@@ -131,7 +127,7 @@ namespace Stolon
         }
         public GamestateInfo GetGamestateInfo()
         {
-            return gameState switch
+            return _gameState switch
             {
                 SLGameState.OpenBoard => new GamestateInfo("cityLights", "openBoard"),
                 SLGameState.InMenu => new GamestateInfo("menuTheme", "inMenu"),
@@ -141,13 +137,13 @@ namespace Stolon
         public override void Update(int elapsedMiliseconds)
         {
             TaskHeap.Update(elapsedMiliseconds);
-            userInterface.Update(elapsedMiliseconds);
+            _userInterface.Update(elapsedMiliseconds);
             AudioEngine.Audio.Update(elapsedMiliseconds);
 
-            switch (gameState)
+            switch (_gameState)
             {
                 case SLGameState.OpenBoard:
-                    scene.Update(elapsedMiliseconds);
+                    _scene.Update(elapsedMiliseconds);
                     break;
                 case SLGameState.InMenu:
                     break;
@@ -155,7 +151,7 @@ namespace Stolon
                     break;
             }
 
-            StolonGame.Instance.DRP.UpdateDetails(gameState switch
+            StolonGame.Instance.DRP.UpdateDetails(_gameState switch
             {
                 SLGameState.OpenBoard => "Placing some markers..",
                 SLGameState.InMenu => "Admiring the main menu..",
@@ -163,12 +159,12 @@ namespace Stolon
                 _ => "Unset."
             });
 
-            overlayer.Update(elapsedMiliseconds);
+            _overlayer.Update(elapsedMiliseconds);
             base.Update(elapsedMiliseconds);
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            switch (gameState)
+            switch (_gameState)
             {
                 case SLGameState.OpenBoard:
                     break;
@@ -177,10 +173,10 @@ namespace Stolon
                 case SLGameState.Loading:
                     break;
             }
-            scene.Draw(spriteBatch, elapsedMiliseconds);
-            userInterface.Draw(spriteBatch, elapsedMiliseconds);
+            _scene.Draw(spriteBatch, elapsedMiliseconds);
+            _userInterface.Draw(spriteBatch, elapsedMiliseconds);
 
-            overlayer.Draw(spriteBatch, elapsedMiliseconds);
+            _overlayer.Draw(spriteBatch, elapsedMiliseconds);
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
 
@@ -190,7 +186,7 @@ namespace Stolon
         /// <param name="entity">The entity to register.</param>
         public void RegisterEntity(EntityBase entity)
         {
-            entities.Add(entity.Id, entity);
+            _entities.Add(entity.Id, entity);
         }
         /// <summary>
         /// Deregister a new <see cref="EntityBase"/>. <strong>Should never be used.</strong>
@@ -198,7 +194,7 @@ namespace Stolon
         /// <param name="entity">The entity to deregister.</param>
         public void DeregisterEntity(string characterId)
         {
-            entities.Remove(characterId);
+            _entities.Remove(characterId);
         }
 
         /// <summary>

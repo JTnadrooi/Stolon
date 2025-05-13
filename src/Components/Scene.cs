@@ -19,13 +19,13 @@ namespace Stolon
             Empty,
         }
 
-        public Board Board => board ?? throw new Exception();
+        public Board Board => _board ?? throw new Exception();
         public static Scene MainInstance => Instance.Scene;
-        public bool HasBoard => board != null;
+        public bool HasBoard => _board != null;
 
-        private Board? board;
+        private Board? _board;
 
-        private Texture2D? bg;
+        private Texture2D? _bg;
 
         public Scene(SLScenePreset preset = SLScenePreset.Empty) : base(Instance.Environment)
         {
@@ -41,9 +41,9 @@ namespace Stolon
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
             if (HasBoard && Instance.Environment.GameState == StolonEnvironment.SLGameState.OpenBoard) Board.Draw(spriteBatch, elapsedMiliseconds);
-            if (bg != null)
+            if (_bg != null)
             {
-                spriteBatch.Draw(bg, new Rectangle(Point.Zero, Instance.VirtualDimensions), Color.White);
+                spriteBatch.Draw(_bg, new Rectangle(Point.Zero, Instance.VirtualDimensions), Color.White);
             }
 
             base.Draw(spriteBatch, elapsedMiliseconds);
@@ -53,12 +53,12 @@ namespace Stolon
         public void SetBoard(Player[] players) => SetBoard(new BoardState(Tile.GetTiles(new Vector2(8).ToPoint()), players, new BoardState.SearchTargetCollection()));
         public void SetBoard(BoardState state)
         {
-            if (BoardState.Validate(state)) board = new Board(this, state);
+            if (BoardState.Validate(state)) _board = new Board(this, state);
             else throw new Exception();
         }
         public void SetImage(Texture2D texture)
         {
-            bg = texture;
+            _bg = texture;
         }
         public Scene Current => Instance.Environment.Scene;
     }

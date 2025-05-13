@@ -20,24 +20,24 @@ namespace Stolon
     /// </summary>
     public class AutoDisposeFileReader : ISampleProvider
     {
-        private readonly AudioFileReader reader;
-        private bool isDisposed;
+        private readonly AudioFileReader _reader;
+        private bool _isDisposed;
         /// <summary>
         /// Create a new <see cref="AutoDisposeFileReader"/> from a <see cref="AudioFileReader"/>.
         /// </summary>
         /// <param name="reader">The reader to create the wrapper around.</param>
         public AutoDisposeFileReader(AudioFileReader reader)
         {
-            this.reader = reader;
+            this._reader = reader;
             this.WaveFormat = reader.WaveFormat;
         }
         public int Read(float[] buffer, int offset, int count)
         {
-            if (isDisposed) return 0;
-            if (reader.Read(buffer, offset, count) is int read && read == 0) // woaaaaah!
+            if (_isDisposed) return 0;
+            if (_reader.Read(buffer, offset, count) is int read && read == 0) // woaaaaah!
             {
-                reader.Dispose();
-                isDisposed = true;
+                _reader.Dispose();
+                _isDisposed = true;
             }
             return read;
         }
@@ -48,9 +48,9 @@ namespace Stolon
     /// </summary>
     public class DictionaryMixingSampleProvider : ISampleProvider
     {
-        private readonly Dictionary<string, ISampleProvider> sources;
-        private float[] sourceBuffer;
-        private const int maxInputs = 256; // to protect ourselves against doing something rather goofy.
+        private readonly Dictionary<string, ISampleProvider> _sources;
+        private float[] _sourceBuffer;
+        private const int MAX_INPUTS = 256; // to protect ourselves against doing something rather goofy.
 
         public ReadOnlyDictionary<string, ISampleProvider> Sources { get; }
         public WaveFormat? WaveFormat { get; private set; }
@@ -72,10 +72,10 @@ namespace Stolon
         /// <param name="waveFormat">The WaveFormat of this mixer. All inputs must be in this format</param>
         public DictionaryMixingSampleProvider(WaveFormat waveFormat)
         {
-            sourceBuffer = Array.Empty<float>();
+            _sourceBuffer = Array.Empty<float>();
             if (waveFormat.Encoding != WaveFormatEncoding.IeeeFloat) throw new ArgumentException("mixer wave format must be IEEE float.");
-            sources = new Dictionary<string, ISampleProvider>();
-            Sources = sources.AsReadOnly();
+            _sources = new Dictionary<string, ISampleProvider>();
+            Sources = _sources.AsReadOnly();
             WaveFormat = waveFormat;
             Instance.DebugStream.Log("created new DictionaryMixingSampleProvider with waveformat:" + WaveFormat);
         }
@@ -87,11 +87,11 @@ namespace Stolon
         /// all be of the same WaveFormat. There must be at least one input</param>
         public DictionaryMixingSampleProvider(IDictionary<string, ISampleProvider> sources)
         {
-            sourceBuffer = Array.Empty<float>();
-            this.sources = new Dictionary<string, ISampleProvider>();
+            _sourceBuffer = Array.Empty<float>();
+            this._sources = new Dictionary<string, ISampleProvider>();
             Sources = sources.AsReadOnly();
             foreach (var source in sources) AddMixerInput(source.Key, source.Value);
-            if (this.sources.Count == 0) throw new ArgumentException("must provide at least one input in this constructor.");
+            if (this._sources.Count == 0) throw new ArgumentException("must provide at least one input in this constructor.");
         }
 
         /// <summary>
@@ -125,9 +125,9 @@ namespace Stolon
         /// <param name="mixerInput">Mixer input</param>
         public void AddMixerInput(string key, ISampleProvider mixerInput)
         {
-            lock (sources)
-                if (sources.Count >= maxInputs) throw new InvalidOperationException("too many mixer inputs.");
-                else sources[key] = mixerInput;
+            lock (_sources)
+                if (_sources.Count >= MAX_INPUTS) throw new InvalidOperationException("too many mixer inputs.");
+                else _sources[key] = mixerInput;
             if (WaveFormat == null) WaveFormat = mixerInput.WaveFormat;
             //else if(WaveFormat.SampleRate != mixerInput.WaveFormat.SampleRate || WaveFormat.Channels != mixerInput.WaveFormat.Channels)
             //    throw new ArgumentException("All mixer inputs must have the same WaveFormat: mx:" + WaveFormat + " other: " + mixerInput.WaveFormat);
@@ -140,10 +140,10 @@ namespace Stolon
         /// <param name="key">Key of the mixer input to remove</param>
         public void RemoveMixerInput(string key)
         {
-            lock (sources)
+            lock (_sources)
             {
-                if (sources.ContainsKey(key))
-                    sources.Remove(key);
+                if (_sources.ContainsKey(key))
+                    _sources.Remove(key);
                 else throw new InvalidOperationException();
             }
         }
@@ -153,13 +153,13 @@ namespace Stolon
         /// </summary>
         public void RemoveAllMixerInputs()
         {
-            lock (sources) sources.Clear();
+            lock (_sources) _sources.Clear();
         }
         public int Read(float[] buffer, int offset, int count)
         {
             int outputSamples = 0;
-            sourceBuffer = BufferHelpers.Ensure(sourceBuffer, count);
-            lock (sources)
+            _sourceBuffer = BufferHelpers.Ensure(_sourceBuffer, count);
+            lock (_sources)
             {
                 if (PauzeWhenInactive && !Instance.IsActive)
                 {
@@ -168,16 +168,16 @@ namespace Stolon
                     return count;
                 }
 
-                foreach (var sourceEntry in sources.ToArray())
+                foreach (var sourceEntry in _sources.ToArray())
                 {
                     var source = sourceEntry.Value;
-                    int samplesRead = source.Read(sourceBuffer, 0, count);
+                    int samplesRead = source.Read(_sourceBuffer, 0, count);
                     int outIndex = offset;
                     for (int n = 0; n < samplesRead; n++)
-                        if (n >= outputSamples) buffer[outIndex++] = sourceBuffer[n];
-                        else buffer[outIndex++] += sourceBuffer[n];
+                        if (n >= outputSamples) buffer[outIndex++] = _sourceBuffer[n];
+                        else buffer[outIndex++] += _sourceBuffer[n];
                     outputSamples = Math.Max(samplesRead, outputSamples);
-                    if (samplesRead < count) sources.Remove(sourceEntry.Key);
+                    if (samplesRead < count) _sources.Remove(sourceEntry.Key);
                 }
             }
             if (ReadFully && outputSamples < count)

@@ -34,30 +34,30 @@ namespace Stolon
         public const int TILE_SIZE = 96;
 
         public float MaxDeltaZoom => SmoothnessModifier * 10f;
-        public float ZoomIntensity => (Zoom - desiredZoom) / MaxDeltaZoom;
-        public Vector2 BoardCenter => state.Tiles[state.Tiles.GetLength(0) / 2, state.Tiles.GetLength(1) / 2].BoardPosition;
+        public float ZoomIntensity => (Zoom - _desiredZoom) / MaxDeltaZoom;
+        public Vector2 BoardCenter => _state.Tiles[_state.Tiles.GetLength(0) / 2, _state.Tiles.GetLength(1) / 2].BoardPosition;
         public float SmoothnessModifier => 0.003f;
         public int TurnNumber { get; private set; }
-        public ref BoardState State => ref state;
-        public ReadOnlyDictionary<string, SearchTarget> SearchTargets => new ReadOnlyDictionary<string, SearchTarget>(searchTargets);
+        public ref BoardState State => ref _state;
+        public ReadOnlyDictionary<string, SearchTarget> SearchTargets => new ReadOnlyDictionary<string, SearchTarget>(_searchTargets);
         public BoardState InitialState { get; }
         public Stack<BoardState> History { get; private set; }
 
         public bool MouseIsOnBoard => SLMouse.Domain == SLMouse.MouseDomain.Board;
         public Vector2 WorldMousePos { get; private set; }
 
-        private SpriteBatch boardSpriteBatch;
-        private BoardState state;
+        private SpriteBatch _boardSpriteBatch;
+        private BoardState _state;
 
-        int mouseStateCoefficient;
-        private float desiredZoom;
-        private Vector2 desiredCameraPos;
-        bool firstFrame;
+        int _mouseStateCoefficient;
+        private float _desiredZoom;
+        private Vector2 _desiredCameraPos;
+        bool _firstFrame;
 
-        private Task? computerMoveTask;
-        private bool locked;
+        private Task? _computerMoveTask;
+        private bool _locked;
 
-        private BoardState.SearchTargetCollection searchTargets;
+        private BoardState.SearchTargetCollection _searchTargets;
         private const float CONF_ZOOM_COEFFICIENT = 0.98f; // 0.98f
 
         public UniqueMoveBoardMap UniqueMoveBoardMap { get; }
@@ -67,14 +67,14 @@ namespace Stolon
             Camera = new Camera2D();
             TurnNumber = 0;
 
-            state = conf;
-            boardSpriteBatch = new SpriteBatch(Instance.GraphicsDevice);
-            desiredZoom = MathF.Max(0.45f, CONF_ZOOM_COEFFICIENT * (4f / conf.Dimensions.X)); // does not change.
-            desiredCameraPos = BoardCenter;
-            Camera.Position = desiredCameraPos;
-            searchTargets = conf.WinSearchTargets;
-            computerMoveTask = null!;
-            firstFrame = false;
+            _state = conf;
+            _boardSpriteBatch = new SpriteBatch(Instance.GraphicsDevice);
+            _desiredZoom = MathF.Max(0.45f, CONF_ZOOM_COEFFICIENT * (4f / conf.Dimensions.X)); // does not change.
+            _desiredCameraPos = BoardCenter;
+            Camera.Position = _desiredCameraPos;
+            _searchTargets = conf.WinSearchTargets;
+            _computerMoveTask = null!;
+            _firstFrame = false;
 
             Zoom = 1f;
             InitialState = conf.DeepCopy();
@@ -90,11 +90,11 @@ namespace Stolon
 
         public void Lock()
         {
-            locked = true;
+            _locked = true;
         }
         public void Unlock()
         {
-            locked = false;
+            _locked = false;
         }
 
         /// <summary>
@@ -103,28 +103,28 @@ namespace Stolon
         /// <param name="elapsedMiliseconds"></param>
         public override void Update(int elapsedMiliseconds)
         {
-            if (!firstFrame) firstFrame = true;
+            if (!_firstFrame) _firstFrame = true;
 
             WorldMousePos = Camera.Unproject(SLMouse.VirualPosition);
 
-            mouseStateCoefficient = SLMouse.CurrentState.GetMouseStateCoefficient();
+            _mouseStateCoefficient = SLMouse.CurrentState.GetMouseStateCoefficient();
 
             if (SLKeyboard.IsPressed(Keys.LeftShift))
             {
-                if (mouseStateCoefficient == 0) mouseStateCoefficient = 1;
+                if (_mouseStateCoefficient == 0) _mouseStateCoefficient = 1;
                 if (SLKeyboard.IsPressed(Keys.A))
-                    desiredCameraPos.X -= 1;
+                    _desiredCameraPos.X -= 1;
                 if (SLKeyboard.IsPressed(Keys.D))
-                    desiredCameraPos.X += 1;
+                    _desiredCameraPos.X += 1;
                 if (SLKeyboard.IsPressed(Keys.W))
-                    desiredCameraPos.Y -= 1;
+                    _desiredCameraPos.Y -= 1;
                 if (SLKeyboard.IsPressed(Keys.S))
-                    desiredCameraPos.Y += 1;
+                    _desiredCameraPos.Y += 1;
             }
 
-            if (SLMouse.IsPressed(SLMouse.MouseButton.Right)) desiredCameraPos += (SLMouse.PreviousState.Position - SLMouse.CurrentState.Position).ToVector2();
-            Zoom += (desiredZoom - Zoom) * 0.1f + mouseStateCoefficient * SmoothnessModifier;
-            Camera.Position += (desiredCameraPos - Camera.Position) * 0.1f + (WorldMousePos - Camera.Position) * SmoothnessModifier * Math.Abs(mouseStateCoefficient);
+            if (SLMouse.IsPressed(SLMouse.MouseButton.Right)) _desiredCameraPos += (SLMouse.PreviousState.Position - SLMouse.CurrentState.Position).ToVector2();
+            Zoom += (_desiredZoom - Zoom) * 0.1f + _mouseStateCoefficient * SmoothnessModifier;
+            Camera.Position += (_desiredCameraPos - Camera.Position) * 0.1f + (WorldMousePos - Camera.Position) * SmoothnessModifier * Math.Abs(_mouseStateCoefficient);
             Camera.Zoom = Zoom;
 
             Listen();
@@ -170,7 +170,7 @@ namespace Stolon
         public void Undo()
         {
             Instance.DebugStream.Log(">attempting move undo");
-            state.Undo();
+            _state.Undo();
             Instance.DebugStream.Success();
 
         }
@@ -180,28 +180,28 @@ namespace Stolon
         }
         public bool Listen()
         {
-            if (locked)
+            if (_locked)
             {
-                computerMoveTask = null;
+                _computerMoveTask = null;
                 Instance.Environment.Overlayer.Deactivate("loading");
                 return false;
             }
-            if (computerMoveTask != null && computerMoveTask.IsCompletedSuccessfully)
+            if (_computerMoveTask != null && _computerMoveTask.IsCompletedSuccessfully)
             {
                 Instance.Environment.Overlayer.Deactivate("loading");
-                computerMoveTask = null;
+                _computerMoveTask = null;
             }
             if (State.CurrentPlayer.IsComputer)
             {
-                computerMoveTask ??= new Task(() =>
+                _computerMoveTask ??= new Task(() =>
                 {
                     State.CurrentPlayer.Computer!.DoMove(this);
                     AfterMove();
                 });
 
-                if (computerMoveTask.Status == TaskStatus.Created)
+                if (_computerMoveTask.Status == TaskStatus.Created)
                 {
-                    computerMoveTask.Start();
+                    _computerMoveTask.Start();
                     Instance.Environment.Overlayer.Activate("loading");
                 }
             }
@@ -209,9 +209,9 @@ namespace Stolon
             {
                 Instance.DebugStream.Log(">attempting board alter after mouseclick");
                 Move? move = null;
-                for (int x = 0; x < state.Tiles.GetLength(0); x++)
-                    for (int y = 0; y < state.Tiles.GetLength(1); y++)
-                        if (state.Tiles[x, y].HitBox.Contains(WorldMousePos) && !state.Tiles[x, y].IsSolid())
+                for (int x = 0; x < _state.Tiles.GetLength(0); x++)
+                    for (int y = 0; y < _state.Tiles.GetLength(1); y++)
+                        if (_state.Tiles[x, y].HitBox.Contains(WorldMousePos) && !_state.Tiles[x, y].IsSolid())
                         {
                             move = new Move(x, y);
                             break;
@@ -232,7 +232,7 @@ namespace Stolon
         {
             Instance.DebugStream.Log(">resetting board");
 
-            computerMoveTask = null;
+            _computerMoveTask = null;
             State = InitialState.DeepCopy();
 
 
@@ -244,22 +244,22 @@ namespace Stolon
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            boardSpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.View);
-            for (int x = 0; x < state.Dimensions.X; x++)
-                for (int y = 0; y < state.Dimensions.Y; y++)
+            _boardSpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: Camera.View);
+            for (int x = 0; x < _state.Dimensions.X; x++)
+                for (int y = 0; y < _state.Dimensions.Y; y++)
                 {
-                    Tile tile = state.Tiles[x, y];
-                    boardSpriteBatch.Draw(tile.TileType.Texture, tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    Tile tile = _state.Tiles[x, y];
+                    _boardSpriteBatch.Draw(tile.TileType.Texture, tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     int playerid = tile.GetOccupiedByPlayerID();
                     if (playerid != -1)
                     {
-                        boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item_96"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                        _boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item_96"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
-                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
-                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
-                    else boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) _boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) _boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
+                    else _boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
                 }
-            boardSpriteBatch.End();
+            _boardSpriteBatch.End();
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
         public string GetPlayerTile(int playerIndex) => playerIndex switch
@@ -275,7 +275,7 @@ namespace Stolon
         public void EndGame(int winner)
         {
             bool draw = winner < 0;
-            Instance.DebugStream.Log(">ending game with " + (draw ? "a draw" : "winner: " + state.Players[winner]));
+            Instance.DebugStream.Log(">ending game with " + (draw ? "a draw" : "winner: " + _state.Players[winner]));
 
             Instance.Environment.Overlayer.Activate("transition", Instance.VirtualBounds);
             Instance.DebugStream.Success();

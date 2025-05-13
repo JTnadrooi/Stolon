@@ -18,29 +18,29 @@ namespace Stolon
     {
         public class SearchTargetCollection : IDictionary<string, SearchTarget>
         {
-            private Dictionary<string, SearchTarget> dictionary;
+            private Dictionary<string, SearchTarget> _dictionary;
 
             public SearchTargetCollection(SearchTarget[]? searchTargets = null)
             {
-                dictionary = searchTargets == null ? DefaultWinTargets.ToDictionary(kp => kp.Key, kp => kp.Value) : searchTargets.ToDictionary(s => s.Id);
+                _dictionary = searchTargets == null ? DefaultWinTargets.ToDictionary(kp => kp.Key, kp => kp.Value) : searchTargets.ToDictionary(s => s.Id);
             }
 
-            public SearchTarget this[string key] { get => ((IDictionary<string, SearchTarget>)dictionary)[key]; set => ((IDictionary<string, SearchTarget>)dictionary)[key] = value; }
-            public ICollection<string> Keys => ((IDictionary<string, SearchTarget>)dictionary).Keys;
-            public ICollection<SearchTarget> Values => ((IDictionary<string, SearchTarget>)dictionary).Values;
-            public int Count => ((ICollection<KeyValuePair<string, SearchTarget>>)dictionary).Count;
-            public bool IsReadOnly => ((ICollection<KeyValuePair<string, SearchTarget>>)dictionary).IsReadOnly;
-            public void Add(string key, SearchTarget value) => ((IDictionary<string, SearchTarget>)dictionary).Add(key, value);
-            public void Add(KeyValuePair<string, SearchTarget> item) => ((ICollection<KeyValuePair<string, SearchTarget>>)dictionary).Add(item);
-            public void Clear() => ((ICollection<KeyValuePair<string, SearchTarget>>)dictionary).Clear();
-            public bool Contains(KeyValuePair<string, SearchTarget> item) => ((ICollection<KeyValuePair<string, SearchTarget>>)dictionary).Contains(item);
-            public bool ContainsKey(string key) => ((IDictionary<string, SearchTarget>)dictionary).ContainsKey(key);
-            public void CopyTo(KeyValuePair<string, SearchTarget>[] array, int arrayIndex) => ((ICollection<KeyValuePair<string, SearchTarget>>)dictionary).CopyTo(array, arrayIndex);
-            public IEnumerator<KeyValuePair<string, SearchTarget>> GetEnumerator() => ((IEnumerable<KeyValuePair<string, SearchTarget>>)dictionary).GetEnumerator();
-            public bool Remove(string key) => ((IDictionary<string, SearchTarget>)dictionary).Remove(key);
-            public bool Remove(KeyValuePair<string, SearchTarget> item) => ((ICollection<KeyValuePair<string, SearchTarget>>)dictionary).Remove(item);
-            public bool TryGetValue(string key, [MaybeNullWhen(false)] out SearchTarget value) => ((IDictionary<string, SearchTarget>)dictionary).TryGetValue(key, out value);
-            IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)dictionary).GetEnumerator();
+            public SearchTarget this[string key] { get => ((IDictionary<string, SearchTarget>)_dictionary)[key]; set => ((IDictionary<string, SearchTarget>)_dictionary)[key] = value; }
+            public ICollection<string> Keys => ((IDictionary<string, SearchTarget>)_dictionary).Keys;
+            public ICollection<SearchTarget> Values => ((IDictionary<string, SearchTarget>)_dictionary).Values;
+            public int Count => ((ICollection<KeyValuePair<string, SearchTarget>>)_dictionary).Count;
+            public bool IsReadOnly => ((ICollection<KeyValuePair<string, SearchTarget>>)_dictionary).IsReadOnly;
+            public void Add(string key, SearchTarget value) => ((IDictionary<string, SearchTarget>)_dictionary).Add(key, value);
+            public void Add(KeyValuePair<string, SearchTarget> item) => ((ICollection<KeyValuePair<string, SearchTarget>>)_dictionary).Add(item);
+            public void Clear() => ((ICollection<KeyValuePair<string, SearchTarget>>)_dictionary).Clear();
+            public bool Contains(KeyValuePair<string, SearchTarget> item) => ((ICollection<KeyValuePair<string, SearchTarget>>)_dictionary).Contains(item);
+            public bool ContainsKey(string key) => ((IDictionary<string, SearchTarget>)_dictionary).ContainsKey(key);
+            public void CopyTo(KeyValuePair<string, SearchTarget>[] array, int arrayIndex) => ((ICollection<KeyValuePair<string, SearchTarget>>)_dictionary).CopyTo(array, arrayIndex);
+            public IEnumerator<KeyValuePair<string, SearchTarget>> GetEnumerator() => ((IEnumerable<KeyValuePair<string, SearchTarget>>)_dictionary).GetEnumerator();
+            public bool Remove(string key) => ((IDictionary<string, SearchTarget>)_dictionary).Remove(key);
+            public bool Remove(KeyValuePair<string, SearchTarget> item) => ((ICollection<KeyValuePair<string, SearchTarget>>)_dictionary).Remove(item);
+            public bool TryGetValue(string key, [MaybeNullWhen(false)] out SearchTarget value) => ((IDictionary<string, SearchTarget>)_dictionary).TryGetValue(key, out value);
+            IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_dictionary).GetEnumerator();
 
             public static ReadOnlyDictionary<string, SearchTarget> DefaultWinTargets { get; }
 

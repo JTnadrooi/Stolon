@@ -32,11 +32,11 @@ namespace Stolon
     }
     public class GraphicElement : ICloneable
     {
-        private Vector2 scale;
+        private Vector2 _scale;
 
         public virtual GameTexture Texture { get; protected set; }
         public Vector2 Position { get; set; } //relative to parent
-        public virtual Vector2 Scale { get => scale; set => scale = value; }
+        public virtual Vector2 Scale { get => _scale; set => _scale = value; }
         public virtual Rectangle Bounds => new Rectangle((int)Position.X, (int)Position.Y, (int)Width, (int)Height);
         public IGraphicElementParent Source { get; }
 
@@ -45,8 +45,8 @@ namespace Stolon
         public virtual float Height => (Texture.Height * Scale.Y);
         public virtual float Width => (Texture.Width * Scale.X);
 
-        public ReadOnlyCollection<GameTexture> Textures => textures.ToList().AsReadOnly();
-        protected GameTexture[] textures;
+        public ReadOnlyCollection<GameTexture> Textures => _textures.ToList().AsReadOnly();
+        protected GameTexture[] _textures;
 
         public GraphicElement(IGraphicElementParent source, GameTexture texture) : this(source, texture, Vector2.Zero, Vector2.One) { }
 
@@ -56,10 +56,10 @@ namespace Stolon
             Position = position;
             Source = source;
 
-            textures = new GameTexture[textureSlots];
-            textures[0] = texture;
+            _textures = new GameTexture[textureSlots];
+            _textures[0] = texture;
 
-            this.scale = scale;
+            this._scale = scale;
         }
 
         public virtual void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds, SpriteEffects effects = SpriteEffects.None)
@@ -74,23 +74,23 @@ namespace Stolon
         public virtual GraphicElement AddTexture(int index, GameTexture texture)
         {
             if (texture == null) throw new Exception();
-            textures[index] = texture;
+            _textures[index] = texture;
             return this;
         }
 
         public virtual void SetTexture(int index)
         {
-            Texture = textures[index];
+            Texture = _textures[index];
         }
 
         public void CastTexturesTo(GraphicElement element2)
         {
             if (element2.Texture.Height == Texture.Height && element2.Texture.Width == Texture.Width)
-                element2._SetTextures(textures.Copy());
+                element2._SetTextures(_textures.Copy());
             else throw new InvalidOperationException("dimensions do not match.");
         }
 
-        internal void _SetTextures(GameTexture[] textures) => this.textures = textures;
+        internal void _SetTextures(GameTexture[] textures) => this._textures = textures;
         public GraphicElement SetPosition(Vector2 newPos, Orgin orgin = Orgin.TopLeft)
         {
             Position = orgin switch
@@ -110,6 +110,6 @@ namespace Stolon
             Scale = newScaling;
             return this;
         }
-        public object Clone() => new GraphicElement(Source, Texture, Position, Scale, textures.Length);
+        public object Clone() => new GraphicElement(Source, Texture, Position, Scale, _textures.Length);
     }
 }

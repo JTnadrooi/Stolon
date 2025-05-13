@@ -36,9 +36,9 @@ namespace Stolon
 {
     public class GameTextureCollection : ResourceCollection<GameTexture>
     {
-        private readonly GameTexture pixel;
+        private readonly GameTexture _pixel;
 
-        public GameTexture Pixel => pixel;
+        public GameTexture Pixel => _pixel;
 
         public GameTextureCollection(ContentManager contentManager, bool debug = false) : base(contentManager, (toLoad) =>
         {
@@ -64,8 +64,8 @@ namespace Stolon
         })
         {
 
-            pixel = new GameTexture(TexturePalette.Empty, new Texture2D(contentManager.GetGraphicsDevice(), 1, 1));
-            ((Texture2D)pixel).SetData(new[] { Color.White });
+            _pixel = new GameTexture(TexturePalette.Empty, new Texture2D(contentManager.GetGraphicsDevice(), 1, 1));
+            ((Texture2D)_pixel).SetData(new[] { Color.White });
         }
 
         public TContent HardLoad<TContent>(string path)
@@ -77,7 +77,7 @@ namespace Stolon
         public override void UnLoadAll()
         {
             base.UnLoadAll();
-            pixel.Dispose();
+            _pixel.Dispose();
         }
     }
 }

@@ -51,19 +51,17 @@ namespace Stolon
     }
     public abstract class GameComponent : IGameComponent, IGraphicElementParent
     {
-        public ReadOnlyDictionary<string, GraphicElement> Elements => new ReadOnlyDictionary<string, GraphicElement>(graphicElements);
-
+        public ReadOnlyDictionary<string, GraphicElement> Elements => new ReadOnlyDictionary<string, GraphicElement>(_graphicElements);
         public virtual Vector2 Position { get; protected set; }
-
         public IGameComponent? Source { get; }
 
-        protected GraphicElementCollection graphicElements;
+        protected GraphicElementCollection _graphicElements;
 
         protected GameComponent(IGameComponent? source = null)
         {
             Position = Vector2.Zero;
             Source = source;
-            graphicElements = new GraphicElementCollection(this);
+            _graphicElements = new GraphicElementCollection(this);
         }
         public virtual void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
@@ -75,10 +73,9 @@ namespace Stolon
         }
         protected virtual GraphicElement AddGraphicElement(GraphicElement element)
         {
-            graphicElements.Add(element.Name, element);
+            _graphicElements.Add(element.Name, element);
             return element;
         }
-        //protected virtual UIElement LoadElement(string name) => AddElement(new UIElement(this, GameContent.LoadTexture(name)));
     }
    
 }

@@ -89,51 +89,51 @@ namespace Stolon
     }
     public readonly struct DynamicTexturePalette : ITexturePalette
     {
-        public ReadOnlyCollection<Color> Colors => colors.ToList().AsReadOnly();
+        public ReadOnlyCollection<Color> Colors => _colors.ToList().AsReadOnly();
 
         public string Name { get; }
 
-        private readonly Color[] colors;
+        private readonly Color[] _colors;
 
         public DynamicTexturePalette()
         {
-            colors = Array.Empty<Color>();
+            _colors = Array.Empty<Color>();
             Name = "emptyDynamicTexturePalette";
         }
         public DynamicTexturePalette(string name, params Color[] colors)
         {
-            this.colors = colors.Copy();
+            this._colors = colors.Copy();
             Name = name;
         }
     }
     public readonly struct TexturePalette4 : ITexturePalette
     {
-        public Color Color1 => colors[0]; //lightest
-        public Color Color2 => colors[1];
-        public Color Color3 => colors[2];
-        public Color Color4 => colors[3];
+        public Color Color1 => _colors[0]; //lightest
+        public Color Color2 => _colors[1];
+        public Color Color3 => _colors[2];
+        public Color Color4 => _colors[3];
 
-        public ReadOnlyCollection<Color> Colors => colors.ToList().AsReadOnly();
+        public ReadOnlyCollection<Color> Colors => _colors.ToList().AsReadOnly();
 
         public string Name { get; }
 
-        private readonly Color[] colors;
+        private readonly Color[] _colors;
 
         public TexturePalette4(string name, Bitmap bitmap, bool unique = true)
         {
-            colors = new Color[4];
+            _colors = new Color[4];
             Name = name;
-            Array.Copy(StolonStatic.GetColors(bitmap, unique), 0 , colors, 0, colors.Length);
+            Array.Copy(StolonStatic.GetColors(bitmap, unique), 0 , _colors, 0, _colors.Length);
         }
         public TexturePalette4(string name, params Color[] colors)
         {
             Name = name;
-            this.colors = new Color[4];
+            this._colors = new Color[4];
             //this.colors = colors.Copy();
-            Array.Copy(colors, 0, this.colors, 0, this.colors.Length);
+            Array.Copy(colors, 0, this._colors, 0, this._colors.Length);
             ArrayHelpers.SetSize(ref colors, 4);
         }
-        public bool Contains(Color color) => colors.Contains(color);
+        public bool Contains(Color color) => _colors.Contains(color);
         // Custom comparer to sort colors by brightness
         //public static int CompareColorsByBrightness(Color color1, Color color2)
         //{

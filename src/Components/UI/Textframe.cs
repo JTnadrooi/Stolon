@@ -34,56 +34,56 @@ namespace Stolon
                 char c = info.Text[i];
                 return c switch
                 {
-                    '.' => Textframe.CharReadMiliseconds * 3,
-                    '?' => Textframe.CharReadMiliseconds * 3,
-                    _ => Textframe.CharReadMiliseconds,
+                    '.' => Textframe.CHAR_READ_MILISECONDS * 3,
+                    '?' => Textframe.CHAR_READ_MILISECONDS * 3,
+                    _ => Textframe.CHAR_READ_MILISECONDS,
                 };
             }).ToArray(), info.PostMiliseconds);
         }
     }
     public class Textframe : GameComponent
     {
-        private Queue<DialogueInfo> dialogueQueue;
-        private Rectangle dialoguebounds;
-        private DialogueInfo? currentDialogue;
-        private DialogueDrawArgs? currentDialogueDrawArgs;
-        private Point dialogueTextPos;
-        private string toDrawDialogueText;
+        private Queue<DialogueInfo> _dialogueQueue;
+        private Rectangle _dialoguebounds;
+        private DialogueInfo? _currentDialogue;
+        private DialogueDrawArgs? _currentDialogueDrawArgs;
+        private Point _dialogueTextPos;
+        private string _toDrawDialogueText;
 
-        private Point providerTextPos;
-        private float providerTextScaleCoefficient;
-        private Tweener<float>? providerTextSizeTweener;
+        private Point _providerTextPos;
+        private float _providerTextScaleCoefficient;
+        private Tweener<float>? _providerTextSizeTweener;
 
-        private float dialogueShowCoefficient;
-        private bool awaitingMouseDialogueHover;
-        private bool dialogueIsHidden;
+        private float _dialogueShowCoefficient;
+        private bool _awaitingMouseDialogueHover;
+        private bool _dialogueIsHidden;
         public bool DialogueIsHidden
         {
-            get => dialogueIsHidden;
-            set => dialogueIsHidden = value;
+            get => _dialogueIsHidden;
+            set => _dialogueIsHidden = value;
         }
 
-        public Rectangle DialogueBounds => dialoguebounds;
-        public const int CharReadMiliseconds = 75; // per char
-        public const int PostReadMiliseconds = CharReadMiliseconds * 10; // how long the dialogue stagnates after its finished.
+        public Rectangle DialogueBounds => _dialoguebounds;
+        public const int CHAR_READ_MILISECONDS = 75; // per char
+        public const int POST_READ_MILISECONDS = CHAR_READ_MILISECONDS * 10; // how long the dialogue stagnates after its finished.
 
-        private int msSinceLastChar;
-        private int charsRead;
-        private int postTimeRead;
+        private int _msSinceLastChar;
+        private int _charsRead;
+        private int _postTimeRead;
 
-        private UserInterface userInterface;
+        private UserInterface _userInterface;
 
         public Textframe(UserInterface userInterface)
         {
-            dialogueQueue = new Queue<DialogueInfo>();
-            dialogueTextPos = Point.Zero;
-            currentDialogue = null;
-            currentDialogueDrawArgs = null;
-            dialogueShowCoefficient = 0f;
-            msSinceLastChar = 0;
-            charsRead = 0;
-            toDrawDialogueText = string.Empty;
-            this.userInterface = userInterface;
+            _dialogueQueue = new Queue<DialogueInfo>();
+            _dialogueTextPos = Point.Zero;
+            _currentDialogue = null;
+            _currentDialogueDrawArgs = null;
+            _dialogueShowCoefficient = 0f;
+            _msSinceLastChar = 0;
+            _charsRead = 0;
+            _toDrawDialogueText = string.Empty;
+            _userInterface = userInterface;
         }
         public void Queue(DialogueInfo[] dialogue)
         {
@@ -92,33 +92,33 @@ namespace Stolon
         }
         public void Queue(DialogueInfo dialogue)
         {
-            dialogueQueue.Enqueue(dialogue);
+            _dialogueQueue.Enqueue(dialogue);
             Instance.DebugStream.Log("dialogue queued with text: " + dialogue.Text);
         }
         public void Next()
         {
-            if (dialogueQueue.Count == 0) throw new Exception();
+            if (_dialogueQueue.Count == 0) throw new Exception();
 
-            Instance.DebugStream.Log(">attempting dequeuing of dialogue with text: " + dialogueQueue.Peek().Text);
-            bool providerDiffers = currentDialogue.HasValue && currentDialogue.Value.Provider.Name != dialogueQueue.Peek().Provider.Name;
-            if (providerDiffers) Instance.DebugStream.Log("dialogue has new provider of name: " + dialogueQueue.Peek().Provider.Name);
+            Instance.DebugStream.Log(">attempting dequeuing of dialogue with text: " + _dialogueQueue.Peek().Text);
+            bool providerDiffers = _currentDialogue.HasValue && _currentDialogue.Value.Provider.Name != _dialogueQueue.Peek().Provider.Name;
+            if (providerDiffers) Instance.DebugStream.Log("dialogue has new provider of name: " + _dialogueQueue.Peek().Provider.Name);
 
-            currentDialogue = dialogueQueue.Dequeue();
-            currentDialogueDrawArgs = DialogueDrawArgs.FromInfo(currentDialogue.Value);
+            _currentDialogue = _dialogueQueue.Dequeue();
+            _currentDialogueDrawArgs = DialogueDrawArgs.FromInfo(_currentDialogue.Value);
 
-            toDrawDialogueText = string.Empty;
-            msSinceLastChar = 0;
-            charsRead = 0;
-            postTimeRead = 0;
+            _toDrawDialogueText = string.Empty;
+            _msSinceLastChar = 0;
+            _charsRead = 0;
+            _postTimeRead = 0;
 
             //initialDialogueMiliseconds = GetMilisecondsFromText(currentDialogue.Value.Text) + currentDialogue.Value.ExtraMS;
             //dialogueMilisecondsRemaining = initialDialogueMiliseconds;
 
-            awaitingMouseDialogueHover = true;
-            if (providerDiffers || providerTextSizeTweener == null) // initialize or refresh.
+            _awaitingMouseDialogueHover = true;
+            if (providerDiffers || _providerTextSizeTweener == null) // initialize or refresh.
             {
-                providerTextSizeTweener = new Tweener<float>(0.0001f, 1f, 1, Ease.Sine.Out); // 0 does not work with size calculations..
-                providerTextSizeTweener.Start();
+                _providerTextSizeTweener = new Tweener<float>(0.0001f, 1f, 1, Ease.Sine.Out); // 0 does not work with size calculations..
+                _providerTextSizeTweener.Start();
             }
 
             Instance.DebugStream.Success();
@@ -135,75 +135,75 @@ namespace Stolon
         public override void Update(int elapsedMiliseconds)
         {
             Point dialogueBoxDimensions = new Point(256, 64);
-            int dialogueYoffset = (int)(-10f * (dialogueIsHidden ? dialogueShowCoefficient : 1f));
+            int dialogueYoffset = (int)(-10f * (_dialogueIsHidden ? _dialogueShowCoefficient : 1f));
             bool textFrameGoUp = false;
-            dialoguebounds = new Rectangle(
+            _dialoguebounds = new Rectangle(
                 (int)(Instance.VirtualBounds.Width * 0.5f - dialogueBoxDimensions.X * 0.5f),
-                (int)(Instance.VirtualBounds.Height - (dialogueBoxDimensions.Y * dialogueShowCoefficient) + dialogueYoffset),
+                (int)(Instance.VirtualBounds.Height - (dialogueBoxDimensions.Y * _dialogueShowCoefficient) + dialogueYoffset),
                 dialogueBoxDimensions.X,
                 dialogueBoxDimensions.Y);
 
-            msSinceLastChar += elapsedMiliseconds;
+            _msSinceLastChar += elapsedMiliseconds;
 
-            if (dialogueQueue.Count > 0 && !currentDialogue.HasValue) Next();
+            if (_dialogueQueue.Count > 0 && !_currentDialogue.HasValue) Next();
 
-            if (currentDialogue.HasValue) // dialogue is here!
+            if (_currentDialogue.HasValue) // dialogue is here!
             {
-                if (currentDialogue.Value.Text.Length == 0) throw new Exception("Text size zero.");
+                if (_currentDialogue.Value.Text.Length == 0) throw new Exception("Text size zero.");
 
-                if (toDrawDialogueText == currentDialogue.Value.Text) // if no text is left to add..
+                if (_toDrawDialogueText == _currentDialogue.Value.Text) // if no text is left to add..
                 {
-                    postTimeRead += elapsedMiliseconds; // only add postread if text is full.
-                    if (dialogueQueue.Count > 0 && postTimeRead > currentDialogueDrawArgs!.Value.PostTime) Next(); // ..and queue is full, go next.
+                    _postTimeRead += elapsedMiliseconds; // only add postread if text is full.
+                    if (_dialogueQueue.Count > 0 && _postTimeRead > _currentDialogueDrawArgs!.Value.PostTime) Next(); // ..and queue is full, go next.
                 }
-                else if (msSinceLastChar > currentDialogueDrawArgs!.Value.TimeMap[charsRead]) // else if its time for a new char..
+                else if (_msSinceLastChar > _currentDialogueDrawArgs!.Value.TimeMap[_charsRead]) // else if its time for a new char..
                 {
                     //Console.WriteLine(currentDialogueDrawArgs!.Value.TimeMap[charsRead]);
-                    toDrawDialogueText += currentDialogue.Value.Text[charsRead]; // ..add said char.
-                    charsRead++; 
-                    msSinceLastChar = 0;
+                    _toDrawDialogueText += _currentDialogue.Value.Text[_charsRead]; // ..add said char.
+                    _charsRead++; 
+                    _msSinceLastChar = 0;
                 }
 
-                providerTextSizeTweener!.Update(elapsedMiliseconds / 1000f);
-                providerTextScaleCoefficient = MathF.Min(providerTextSizeTweener.Value, dialogueShowCoefficient > 0.9f ? 1f : dialogueShowCoefficient);
+                _providerTextSizeTweener!.Update(elapsedMiliseconds / 1000f);
+                _providerTextScaleCoefficient = MathF.Min(_providerTextSizeTweener.Value, _dialogueShowCoefficient > 0.9f ? 1f : _dialogueShowCoefficient);
 
                 //toDrawDialogueText = dialogueMilisecondsRemaining < 0 ? currentDialogue.Value.Text :
                 //    currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
 
-                dialogueTextPos = dialoguebounds.Location
-                    + new Point((int)(dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasure(toDrawDialogueText).X / 2f),
-                    (int)(dialoguebounds.Height / 2f - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y));
+                _dialogueTextPos = _dialoguebounds.Location
+                    + new Point((int)(_dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasure(_toDrawDialogueText).X / 2f),
+                    (int)(_dialoguebounds.Height / 2f - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y));
                  
-                providerTextPos = dialoguebounds.Location
-                    + new Point((int)(dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasure(currentDialogue.Value.Provider.Name).X * providerTextScaleCoefficient / 2f), 2);
+                _providerTextPos = _dialoguebounds.Location
+                    + new Point((int)(_dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasure(_currentDialogue.Value.Provider.Name).X * _providerTextScaleCoefficient / 2f), 2);
             }
-            if (awaitingMouseDialogueHover) textFrameGoUp = true;
+            if (_awaitingMouseDialogueHover) textFrameGoUp = true;
             if (SLMouse.Domain == SLMouse.MouseDomain.Dialogue)
             {
-                awaitingMouseDialogueHover = false;
+                _awaitingMouseDialogueHover = false;
                 textFrameGoUp = true;
             }
-            else if (!awaitingMouseDialogueHover)
+            else if (!_awaitingMouseDialogueHover)
             {
                 textFrameGoUp = false;
             }
 
-            DynamicTweening.PushSubunitary(ref dialogueShowCoefficient, textFrameGoUp, elapsedMiliseconds, smoothness: 2);
-            dialogueShowCoefficient = Math.Clamp(dialogueShowCoefficient, 0.1f, 1f);
+            DynamicTweening.PushSubunitary(ref _dialogueShowCoefficient, textFrameGoUp, elapsedMiliseconds, smoothness: 2);
+            _dialogueShowCoefficient = Math.Clamp(_dialogueShowCoefficient, 0.1f, 1f);
         }
         public int GetMilisecondsFromText(string text)
         {
-            return text.Length * CharReadMiliseconds;
+            return text.Length * CHAR_READ_MILISECONDS;
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            spriteBatch.Draw(Instance.Textures.Pixel, dialoguebounds, Color.Black);
-            if (currentDialogue.HasValue)
+            spriteBatch.Draw(Instance.Textures.Pixel, _dialoguebounds, Color.Black);
+            if (_currentDialogue.HasValue)
             {
-                spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], toDrawDialogueText, dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], currentDialogue.Value.Provider.Name.ToUpper(), providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, providerTextScaleCoefficient * Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _toDrawDialogueText, _dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _currentDialogue.Value.Provider.Name.ToUpper(), _providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, _providerTextScaleCoefficient * Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 0f);
             }
-            spriteBatch.DrawRectangle(dialoguebounds, Color.White, userInterface.LineWidth);
+            spriteBatch.DrawRectangle(_dialoguebounds, Color.White, _userInterface.LineWidth);
 
             base.Draw(spriteBatch, elapsedMiliseconds);
         }

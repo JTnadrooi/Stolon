@@ -17,23 +17,23 @@ namespace Stolon
 {
     public class CachedAudioSampleProvider : ISampleProvider
     {
-        private readonly CachedAudio cachedAudio;
-        private long position;
+        private readonly CachedAudio _cachedAudio;
+        private long _position;
 
-        public long Position => position;
-        public CachedAudio CachedAudio => cachedAudio;
+        public long Position => _position;
+        public CachedAudio CachedAudio => _cachedAudio;
         public WaveFormat WaveFormat => CachedAudio.WaveFormat;
         public long Lenght => CachedAudio.AudioData.Length;
         public bool Finished => AvailableSamples < 1;
         public long AvailableSamples => Lenght - Position;
 
-        public CachedAudioSampleProvider(CachedAudio audio) => cachedAudio = audio;
+        public CachedAudioSampleProvider(CachedAudio audio) => _cachedAudio = audio;
 
         public int Read(float[] buffer, int offset, int count)
         {
             long samplesToCopy = Math.Min(AvailableSamples, count);
-            Array.Copy(cachedAudio.AudioData, position, buffer, offset, samplesToCopy);
-            position += samplesToCopy;
+            Array.Copy(_cachedAudio.AudioData, _position, buffer, offset, samplesToCopy);
+            _position += samplesToCopy;
             return (int)samplesToCopy;
         }
     }

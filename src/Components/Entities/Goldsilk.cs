@@ -25,15 +25,15 @@ namespace Stolon
     /// </summary>
     public class GoldsilkEntity : EntityBase
     {
-        public override SLComputer Computer => computer;
+        public override SLComputer Computer => _computer;
         public override Texture2D Splash => Instance.Textures.GetReference("textures\\splash\\goldsilk"); // unrelevant in first ver
         public override string? Description => "This shoulden't be readable in the current verion.";
 
-        private GoldsilkCom computer;
+        private GoldsilkCom _computer;
 
         public GoldsilkEntity() : base("goldsilk", "Opponent", "O")
         {
-            computer = new GoldsilkCom(this);
+            _computer = new GoldsilkCom(this);
         }
 
         public override DialogueInfo GetReaction(PrimitiveReactOption reactOption)

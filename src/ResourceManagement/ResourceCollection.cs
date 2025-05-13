@@ -43,8 +43,8 @@ namespace Stolon
     }
     public abstract class ResourceCollection<TContent> : IResourceCollection<TContent>
     {
-        protected readonly Dictionary<string, TContent> dictionary = new();
-        private bool disposedValue;
+        protected readonly Dictionary<string, TContent> dictionary = new Dictionary<string, TContent>();
+        private bool _disposedValue;
 
         public ContentManager ContentManager { get; }
 
@@ -106,10 +106,10 @@ namespace Stolon
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue && disposing)
+            if (!_disposedValue && disposing)
             {
                 UnLoadAll();
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

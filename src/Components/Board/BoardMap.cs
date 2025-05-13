@@ -31,16 +31,16 @@ namespace Stolon
         /// </summary>
         public int InitialUniqueMoveCount { get; }
 
-        private Move[] moves;
-        int w = 8;
+        private Move[] _moves;
+        private int _width = 8;
 
         public UniqueMoveBoardMap()
         {
             InitialUniqueMoveCount = 16;
-            moves = new Move[InitialUniqueMoveCount];
+            _moves = new Move[InitialUniqueMoveCount];
             for (int i = 0; i < InitialUniqueMoveCount; i++)
             {
-                moves[i] = new Move(GetMovePos(i));
+                _moves[i] = new Move(GetMovePos(i));
             }
         }
         /// <summary>
@@ -72,7 +72,7 @@ namespace Stolon
         /// <returns>The orgin of a <see cref="Move"/> with the <see cref="UniqueMoveBoardMap"/> relevant index.</returns>
         public Point GetMovePos(int moveIndex)
         {
-            return new Point(moveIndex % w, moveIndex >= w ? 4 : 3);
+            return new Point(moveIndex % _width, moveIndex >= _width ? 4 : 3);
         }
         /// <summary>
         /// Get the <see cref="Move"/> with the <see cref="UniqueMoveBoardMap"/> relevant index.
@@ -81,7 +81,7 @@ namespace Stolon
         /// <returns>The <see cref="Move"/> with the <see cref="UniqueMoveBoardMap"/> relevant index.</returns>
         public Move GetMove(int moveIndex)
         {
-            return moves[moveIndex];
+            return _moves[moveIndex];
         }
         /// <summary>
         /// Get a <see cref="List{T}"/> holding all legal and unique moves.

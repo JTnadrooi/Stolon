@@ -33,26 +33,26 @@ namespace Stolon
     /// </summary>
     public class GraphicElementCollection : IDictionary<string, GraphicElement>
     {
-        private IDictionary<string, GraphicElement> elements;
+        private IDictionary<string, GraphicElement> _elements;
         public IGraphicElementParent Source { get; }
 
         public GraphicElementCollection(IGraphicElementParent source) : this(source, new Dictionary<string, GraphicElement>()) { }
         public GraphicElementCollection(IGraphicElementParent source, IDictionary<string, GraphicElement> elements)
         {
-            this.elements = elements;
+            this._elements = elements;
             Source = source;
         }
-        public ReadOnlyDictionary<string, GraphicElement> AsReadOnly() => new ReadOnlyDictionary<string, GraphicElement>(elements);
+        public ReadOnlyDictionary<string, GraphicElement> AsReadOnly() => new ReadOnlyDictionary<string, GraphicElement>(_elements);
         public GraphicElement AddElement(GraphicElement element)
         {
             if (element.Source != Source) throw new Exception();
-            elements.Add(element.Name, element);
+            _elements.Add(element.Name, element);
             return element;
         }
         public GraphicElement AddGraphicElement(GameTextureCollection textures, string textureKey, string? newName = null)
         {
             GraphicElement element = new GraphicElement(Source, textures.GetReference("textures\\" + textureKey));
-            elements.Add(newName ?? textureKey.Split("\\").Last(), element);
+            _elements.Add(newName ?? textureKey.Split("\\").Last(), element);
             return element;
         }
         public void MergeWith(GraphicElement[] elements)
@@ -61,22 +61,22 @@ namespace Stolon
                 AddElement(element);
         }
 
-        public GraphicElement this[string key] { get => elements[key]; set => elements[key] = value; }
-        public ICollection<string> Keys => elements.Keys;
-        public ICollection<GraphicElement> Values => elements.Values;
-        public int Count => elements.Count;
+        public GraphicElement this[string key] { get => _elements[key]; set => _elements[key] = value; }
+        public ICollection<string> Keys => _elements.Keys;
+        public ICollection<GraphicElement> Values => _elements.Values;
+        public int Count => _elements.Count;
         public bool IsReadOnly => false;
-        public void Add(string key, GraphicElement value) => elements.Add(key, value);
-        public void Add(KeyValuePair<string, GraphicElement> item) => elements.Add(item.Key, item.Value);
-        public void Clear() => elements.Clear();
-        public bool Contains(KeyValuePair<string, GraphicElement> item) => elements.Contains(item);
-        public bool ContainsKey(string key) => elements.ContainsKey(key);
-        public void CopyTo(KeyValuePair<string, GraphicElement>[] array, int arrayIndex) => ((IDictionary<string, GraphicElement>)elements).CopyTo(array, arrayIndex);
-        public IEnumerator<KeyValuePair<string, GraphicElement>> GetEnumerator() => elements.GetEnumerator();
-        public bool Remove(string key) => elements.Remove(key);
-        public bool Remove(KeyValuePair<string, GraphicElement> item) => elements.Remove(item.Key);
-        public bool TryGetValue(string key, [MaybeNullWhen(false)] out GraphicElement value) => elements.TryGetValue(key, out value);
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)elements).GetEnumerator();
+        public void Add(string key, GraphicElement value) => _elements.Add(key, value);
+        public void Add(KeyValuePair<string, GraphicElement> item) => _elements.Add(item.Key, item.Value);
+        public void Clear() => _elements.Clear();
+        public bool Contains(KeyValuePair<string, GraphicElement> item) => _elements.Contains(item);
+        public bool ContainsKey(string key) => _elements.ContainsKey(key);
+        public void CopyTo(KeyValuePair<string, GraphicElement>[] array, int arrayIndex) => ((IDictionary<string, GraphicElement>)_elements).CopyTo(array, arrayIndex);
+        public IEnumerator<KeyValuePair<string, GraphicElement>> GetEnumerator() => _elements.GetEnumerator();
+        public bool Remove(string key) => _elements.Remove(key);
+        public bool Remove(KeyValuePair<string, GraphicElement> item) => _elements.Remove(item.Key);
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out GraphicElement value) => _elements.TryGetValue(key, out value);
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_elements).GetEnumerator();
 
     }
 }

@@ -25,18 +25,18 @@ namespace DiscordRPC
 {
 	public class DiscordRichPresence
 	{
-		public DiscordRpcClient client;
-		private RichPresence presence; // Store the current RichPresence
+		public DiscordRpcClient _client;
+		private RichPresence _presence;
 
 		public DiscordRichPresence()
 		{
-			client = new DiscordRpcClient("1291994415207944255");
+			_client = new DiscordRpcClient("1291994415207944255");
 			//client.Logger = new ConsoleLogger()
 			//{
 			//	Level = LogLevel.Warning,
 			//};
-			client.Initialize();
-			presence = new RichPresence()
+			_client.Initialize();
+			_presence = new RichPresence()
 			{
 				Details = "Stolon",
 				State = string.Empty,
@@ -47,21 +47,21 @@ namespace DiscordRPC
 					SmallImageKey = string.Empty,
 				}
 			};
-			client.SetPresence(presence);
+			_client.SetPresence(_presence);
 		}
 
 		public void UpdateState(string newState)
 		{
-			presence.State = newState;
-			client.SetPresence(presence);
+			_presence.State = newState;
+			_client.SetPresence(_presence);
 		}
 
 		public void UpdateDetails(string newDetails)
 		{
-			presence.Details = newDetails;
-			client.SetPresence(presence);
+			_presence.Details = newDetails;
+			_client.SetPresence(_presence);
 		}
 
-		public void DisposeRPC() => client.Dispose();
+		public void DisposeRPC() => _client.Dispose();
 	}
 }

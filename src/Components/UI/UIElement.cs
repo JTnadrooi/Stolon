@@ -49,10 +49,10 @@ namespace Stolon
             /// </summary>
             Ignore,
         }
-        public bool IsTop => ChildOf == topId;
+        public bool IsTop => ChildOf == TOP_ID;
         public string ClickSoundID { get; }
         public CachedAudio ClickSound => AudioEngine.AudioLibrary[ClickSoundID];
-        public const string topId = "_";
+        public const string TOP_ID = "_";
         /// <summary>
         /// The type of the <see cref="UIElement"/>.
         /// </summary>
@@ -103,7 +103,7 @@ namespace Stolon
         public static UIPath GetSelfPath(string id)
         {
             IEnumerable<string> GetListPath(string idForSearch)
-                => idForSearch == topId ? idForSearch.ToSingleArray() : GetListPath(Instance.Environment.UI.UIElements[idForSearch].ChildOf).Concat(idForSearch.ToSingleArray());
+                => idForSearch == TOP_ID ? idForSearch.ToSingleArray() : GetListPath(Instance.Environment.UI.UIElements[idForSearch].ChildOf).Concat(idForSearch.ToSingleArray());
             return new UIPath(GetListPath(id).ToArray()[1..]);
         }
         public static UIPath GetParentPath(string id) => new UIPath(GetSelfPath(id).Segments.ToArray()[..^1]);

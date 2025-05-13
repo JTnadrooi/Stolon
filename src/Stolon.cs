@@ -31,47 +31,47 @@ namespace Stolon
  //   }
     public partial class StolonGame : Game
 	{
-		private GraphicsDeviceManager graphics;
-		private SpriteBatch spriteBatch;
-		private RenderTarget2D renderTarget;
+		private GraphicsDeviceManager _graphics;
+		private SpriteBatch _spriteBatch;
+		private RenderTarget2D _renderTarget;
 
-		private RenderTarget2D bloomRenderTarget;
-		private StolonEnvironment environment;
-		private Point aspectRatio = new Point(16, 9);
-		private float AspectRatioFloat => aspectRatio.X / aspectRatio.Y * 1.7776f;
-		private int virtualModifier;
-		private int desiredModifier;
-		private Color[] palette;
-		private Effect replaceColorEffect;
-		private GameTextureCollection textures;
-        private GameFontCollection fonts;
-        private BloomFilter bloomFilter;
-        private Point oldWindowSize;
+		private RenderTarget2D _bloomRenderTarget;
+		private StolonEnvironment _environment;
+		private Point _aspectRatio = new Point(16, 9);
+		private float AspectRatioFloat => _aspectRatio.X / _aspectRatio.Y * 1.7776f;
+		private int _virtualModifier;
+		private int _desiredModifier;
+		private Color[] _palette;
+		private Effect _replaceColorEffect;
+		private GameTextureCollection _textures;
+        private GameFontCollection _fonts;
+        private BloomFilter _bloomFilter;
+        private Point _oldWindowSize;
 
-        public StolonEnvironment Environment => environment;
+        public StolonEnvironment Environment => _environment;
 		public Scene Scene
 		{
-			get => environment.Scene;
-			set => environment.Scene = value;
+			get => _environment.Scene;
+			set => _environment.Scene = value;
 		}
 		public AudioEngine AudioEngine { get; private set; }
         public DiscordRichPresence DRP { get; set; }
-        public UserInterface UserInterface => environment.UI;
+        public UserInterface UserInterface => _environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
-		public Point VirtualDimensions => new Point(aspectRatio.X * virtualModifier, aspectRatio.Y * virtualModifier); //  (912, 513) (if vM = 57) - (480, 270) (if vM = 30)
-        public Point DesiredDimensions => new Point(aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
+		public Point VirtualDimensions => new Point(_aspectRatio.X * _virtualModifier, _aspectRatio.Y * _virtualModifier); //  (912, 513) (if vM = 57) - (480, 270) (if vM = 30)
+        public Point DesiredDimensions => new Point(_aspectRatio.X * _desiredModifier, _aspectRatio.Y * _desiredModifier);
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
         public float ScreenScale { get; private set; }
 
 
-        public GameTextureCollection Textures => textures;
-		public GameFontCollection Fonts => fonts;
+        public GameTextureCollection Textures => _textures;
+		public GameFontCollection Fonts => _fonts;
 
-		public SpriteBatch SpriteBatch => spriteBatch;
-		public GraphicsDeviceManager GraphicsDeviceManager => graphics;
+		public SpriteBatch SpriteBatch => _spriteBatch;
+		public GraphicsDeviceManager GraphicsDeviceManager => _graphics;
 		public DebugStream DebugStream { get; }
-		public Color Color1 => palette[0];
-		public Color Color2 => palette[1];
+		public Color Color1 => _palette[0];
+		public Color Color2 => _palette[1];
 
 		public string VersionID => "0.051 (Open Alpha)";
 
@@ -80,7 +80,7 @@ namespace Stolon
 		#pragma warning restore CS8618
 		{
 			Instance = this;
-			graphics = new GraphicsDeviceManager(this);
+			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "content";
 			IsMouseVisible = true;
 
@@ -95,18 +95,18 @@ namespace Stolon
 			DRP = new DiscordRichPresence();
 			DRP.UpdateDetails("Initializing..");
 
-			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
+			_oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
 
-			desiredModifier = 57; 
-			virtualModifier = 57; //(prev = 30, so = x1.9)
+			_desiredModifier = 57; 
+			_virtualModifier = 57; //(prev = 30, so = x1.9)
 
-            graphics.PreferredBackBufferWidth = DesiredDimensions.X;
-			graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
+            _graphics.PreferredBackBufferWidth = DesiredDimensions.X;
+			_graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
 			Window.AllowUserResizing = true;
-			graphics.ApplyChanges();
+			_graphics.ApplyChanges();
 
-			renderTarget = new RenderTarget2D(GraphicsDevice, VirtualDimensions.X, VirtualDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
-			bloomRenderTarget = new RenderTarget2D(GraphicsDevice, DesiredDimensions.X, DesiredDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+			_renderTarget = new RenderTarget2D(GraphicsDevice, VirtualDimensions.X, VirtualDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
+			_bloomRenderTarget = new RenderTarget2D(GraphicsDevice, DesiredDimensions.X, DesiredDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
 
 
 			Window.ClientSizeChanged += Window_ClientSizeChanged;
@@ -117,52 +117,52 @@ namespace Stolon
 		{
 			Window.ClientSizeChanged -= new EventHandler<EventArgs>(Window_ClientSizeChanged);
 
-			if (Window.ClientBounds.Width != oldWindowSize.X)
+			if (Window.ClientBounds.Width != _oldWindowSize.X)
 			{
-				graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-				graphics.PreferredBackBufferHeight = (int)(Window.ClientBounds.Width / AspectRatioFloat);
+				_graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+				_graphics.PreferredBackBufferHeight = (int)(Window.ClientBounds.Width / AspectRatioFloat);
 			}
-			else if (Window.ClientBounds.Height != oldWindowSize.Y)
+			else if (Window.ClientBounds.Height != _oldWindowSize.Y)
 			{
-				graphics.PreferredBackBufferWidth = (int)(Window.ClientBounds.Height * AspectRatioFloat);
-				graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+				_graphics.PreferredBackBufferWidth = (int)(Window.ClientBounds.Height * AspectRatioFloat);
+				_graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
 			}
 
-			graphics.ApplyChanges();
+			_graphics.ApplyChanges();
 
-			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
+			_oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
 
 			Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
 		}
-		public void SetDesiredResolution(Point resolution) => desiredModifier = resolution.X / aspectRatio.X;
+		public void SetDesiredResolution(Point resolution) => _desiredModifier = resolution.X / _aspectRatio.X;
 		protected override void LoadContent()
 		{
 			DebugStream.Log(">[s]loading stolon content");
 
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-			textures = new GameTextureCollection(Content);
-            fonts = new GameFontCollection(Content);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+			_textures = new GameTextureCollection(Content);
+            _fonts = new GameFontCollection(Content);
 
-			environment = new StolonEnvironment();
-			environment.Initialize();
+			_environment = new StolonEnvironment();
+			_environment.Initialize();
 
-            replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
-			palette = new Color[]
+            _replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
+			_palette = new Color[]
 			{
 				System.Drawing.ColorTranslator.FromHtml("#f2fbeb").ToColor(),
 				System.Drawing.ColorTranslator.FromHtml("#171219").ToColor(),
 			};
 
-			bloomFilter = new BloomFilter();
-			bloomFilter.Load(GraphicsDevice, Content, aspectRatio.X * desiredModifier, aspectRatio.Y * desiredModifier);
-			bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
+			_bloomFilter = new BloomFilter();
+			_bloomFilter.Load(GraphicsDevice, Content, _aspectRatio.X * _desiredModifier, _aspectRatio.Y * _desiredModifier);
+			_bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
 
             DebugStream.Success();
             base.LoadContent();
 		}
 		protected override void UnloadContent()
 		{
-			bloomFilter.Dispose();
+			_bloomFilter.Dispose();
 		}
 		public void SLExit()
 		{
@@ -187,7 +187,7 @@ namespace Stolon
 
 				ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
 
-				environment.Update(gameTime.ElapsedGameTime.Milliseconds);
+				_environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
 				if (SLKeyboard.IsClicked(Keys.F)) GoFullscreen();
 			}
@@ -195,51 +195,51 @@ namespace Stolon
 		}
 		public void GoFullscreen()
 		{
-			if (graphics.IsFullScreen)
+			if (_graphics.IsFullScreen)
 			{
-				graphics.PreferredBackBufferWidth = DesiredDimensions.X;
-				graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
+				_graphics.PreferredBackBufferWidth = DesiredDimensions.X;
+				_graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
 			}
 			else
 			{
-				graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
-				graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
-				graphics.ApplyChanges();
+				_graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
+				_graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
+				_graphics.ApplyChanges();
 			}
-			bloomFilter.UpdateResolution(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-			graphics.ToggleFullScreen();
-			graphics.ApplyChanges();
+			_bloomFilter.UpdateResolution(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+			_graphics.ToggleFullScreen();
+			_graphics.ApplyChanges();
 		}
 
 		protected override void Draw(GameTime gameTime)
 		{
 			// replaceColor shader values setting.
-			replaceColorEffect.Parameters["dcolor1"].SetValue(Color.White.ToVector4());
-			replaceColorEffect.Parameters["dcolor2"].SetValue(Color.Black.ToVector4());
+			_replaceColorEffect.Parameters["dcolor1"].SetValue(Color.White.ToVector4());
+			_replaceColorEffect.Parameters["dcolor2"].SetValue(Color.Black.ToVector4());
 
-			replaceColorEffect.Parameters["color1"].SetValue(palette[0].ToVector4());
-			replaceColorEffect.Parameters["color2"].SetValue(palette[1].ToVector4());
+			_replaceColorEffect.Parameters["color1"].SetValue(_palette[0].ToVector4());
+			_replaceColorEffect.Parameters["color2"].SetValue(_palette[1].ToVector4());
 
-			GraphicsDevice.SetRenderTarget(renderTarget);
+			GraphicsDevice.SetRenderTarget(_renderTarget);
 			GraphicsDevice.Clear(Instance.Color2);
-			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+			_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
-			environment.Draw(spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
+			_environment.Draw(_spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
 
-            spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
+            _spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
 
-            spriteBatch.DrawString(Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
-			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
+            _spriteBatch.DrawString(Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+			_spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
-			spriteBatch.End();
+			_spriteBatch.End();
 			//GraphicsDevice.SetRenderTarget(bloomRenderTarget);
 			GraphicsDevice.SetRenderTarget(null);
 			GraphicsDevice.Clear(Instance.Color2);
 
-			spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(ScreenScale), effect: replaceColorEffect);
-			spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
-			spriteBatch.End();
+			_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
+				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(ScreenScale), effect: _replaceColorEffect);
+			_spriteBatch.Draw(_renderTarget, Vector2.Zero, Color.White);
+			_spriteBatch.End();
 
 			//         Texture2D bloom = _bloomFilter.Draw(bloomRenderTarget, DesiredDimensions.X, DesiredDimensions.Y);
 			//         GraphicsDevice.SetRenderTarget(null);
@@ -252,7 +252,7 @@ namespace Stolon
 			//spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
 			//spriteBatch.End();
 
-			replaceColorEffect.CurrentTechnique.Passes[0].Apply();
+			_replaceColorEffect.CurrentTechnique.Passes[0].Apply();
 
 			base.Draw(gameTime);
 		}

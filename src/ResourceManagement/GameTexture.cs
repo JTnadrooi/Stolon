@@ -36,62 +36,62 @@ namespace Stolon
 {
     public class GameTexture
     {
-        public ITexturePalette Palette => palette;
-        public string Name { get => texture.Name; set => texture.Name = value; }
-        public object Tag { get => texture.Tag; set => texture.Tag = value; }
-        public int Width => texture.Width;
-        public int Height => texture.Height;
-        public Rectangle Bounds => texture.Bounds;
-        public bool IsDisposed => texture.IsDisposed;
+        public ITexturePalette Palette => _palette;
+        public string Name { get => _texture.Name; set => _texture.Name = value; }
+        public object Tag { get => _texture.Tag; set => _texture.Tag = value; }
+        public int Width => _texture.Width;
+        public int Height => _texture.Height;
+        public Rectangle Bounds => _texture.Bounds;
+        public bool IsDisposed => _texture.IsDisposed;
 
-        private ITexturePalette palette;
-        private Texture2D texture;
-        private bool disposedValue;
+        private ITexturePalette _palette;
+        private Texture2D _texture;
+        private bool _disposedValue;
 
         public GameTexture(ITexturePalette palette, Texture2D texture)
         {
             if (palette == null || texture == null) throw new Exception();
-            this.palette = palette;
-            this.texture = texture;
+            this._palette = palette;
+            this._texture = texture;
         }
         public GameTexture(ITexturePalette palette, GraphicsDevice graphicsDevice, int width, int height, string name = "")
         {
-            texture = new Texture2D(graphicsDevice, width, height);
-            texture.Name = name;
+            _texture = new Texture2D(graphicsDevice, width, height);
+            _texture.Name = name;
             if (palette == null) throw new Exception();
-            this.palette = palette;
+            this._palette = palette;
         }
-        public void GetColorData(Color[] data) => texture.GetData(data);
-        public void SetColorData(Color[] data) => texture.SetData(data);
+        public void GetColorData(Color[] data) => _texture.GetData(data);
+        public void SetColorData(Color[] data) => _texture.SetData(data);
         public GameTexture ApplyPalette(ITexturePalette newPalette, bool lazy = true)
         {
-            Instance.DebugStream.Log(">[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + palette.Name + "\".");
+            Instance.DebugStream.Log(">[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + _palette.Name + "\".");
             if (lazy) Instance.DebugStream.Log("lazy is enabled.");
-            if (palette.Colors.Count != palette.Colors.Count) throw new Exception();
-            if (lazy && palette.PaletteEquals(newPalette))
+            if (_palette.Colors.Count != _palette.Colors.Count) throw new Exception();
+            if (lazy && _palette.PaletteEquals(newPalette))
             {
                 Instance.DebugStream.Log("lazy replacement succes.");
                 return this;
             }
-            else Instance.DebugStream.Log("lazy replacement invalid, this palette: " + palette.Name + ", other: " + newPalette.Name + ".");
+            else Instance.DebugStream.Log("lazy replacement invalid, this palette: " + _palette.Name + ", other: " + newPalette.Name + ".");
 
-            Dictionary<Color, Color> colorMap = new Dictionary<Color, Color>(palette.Size);
-            for (int i = 0; i < palette.Size; i++) colorMap[palette.Colors[i]] = newPalette.Colors[i];
+            Dictionary<Color, Color> colorMap = new Dictionary<Color, Color>(_palette.Size);
+            for (int i = 0; i < _palette.Size; i++) colorMap[_palette.Colors[i]] = newPalette.Colors[i];
 
-            Color[] data = new Color[texture.Width * texture.Height];
+            Color[] data = new Color[_texture.Width * _texture.Height];
 
             GetColorData(data);
             for (int i = 0; i < data.Length; i++)
                 if (colorMap.TryGetValue(data[i], out Color newColor)) data[i] = newColor;
             SetColorData(data);
 
-            palette = newPalette;
+            _palette = newPalette;
             Instance.DebugStream.Success();
             return this;
         }
         public GameTexture InvertColors()
         {
-            return ApplyPalette(palette.AsInverted(), true);
+            return ApplyPalette(_palette.AsInverted(), true);
         }
         public static GameTexture GetPixel(GraphicsDevice graphicsDevice, string name = "pixel")
         {
@@ -103,10 +103,10 @@ namespace Stolon
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
-                if (disposing) texture.Dispose();
-                disposedValue = true;
+                if (disposing) _texture.Dispose();
+                _disposedValue = true;
             }
         }
 
@@ -115,7 +115,7 @@ namespace Stolon
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-        public static implicit operator Texture2D(GameTexture t) => t.texture;
+        public static implicit operator Texture2D(GameTexture t) => t._texture;
         public static explicit operator GameTexture(Texture2D t) => new GameTexture(TexturePalette.Debug, t);
     }
 }

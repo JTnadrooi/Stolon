@@ -51,24 +51,24 @@ namespace Stolon
     /// </summary> 
     public class MenuOrderProvider : IOrderProvider
     {
-        private GameFont font;
-        private bool capitalise = true;
+        private GameFont _font;
+        private bool _capitalise = true;
         public MenuOrderProvider()
         {
             //font = Instance.Fonts["fonts\\smollerMono"];
-            font = Instance.Fonts["fonts\\monogram"];
-            font = Instance.Fonts["fonts\\pixeloidMono"];
+            _font = Instance.Fonts["fonts\\monogram"];
+            _font = Instance.Fonts["fonts\\pixeloidMono"];
         }
         public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
         {
-            Vector2 elementPos = Centering.MiddleX((int)font.FastMeasure(element.Text).X,
-                                index * (font.Dimensions.Y * 2 + 2) + UIOrgin.Y,
+            Vector2 elementPos = Centering.MiddleX((int)_font.FastMeasure(element.Text).X,
+                                index * (_font.Dimensions.Y * 2 + 2) + UIOrgin.Y,
                                 Instance.VirtualDimensions.X, Vector2.One);
             Centering.OnPixel(ref elementPos);
 
-            Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point((int)font.FastMeasure(element.Text).X, (int)font.Dimensions.Y));
+            Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point((int)_font.FastMeasure(element.Text).X, (int)_font.Dimensions.Y));
             string elementText = element.Text;
-            if(capitalise) element.Text = element.Text.ToUpper();
+            if(_capitalise) element.Text = element.Text.ToUpper();
 
             string postPre = element.Id switch
             {
@@ -80,7 +80,7 @@ namespace Stolon
 
             return (new UIElementDrawData(element.Id, elementIsHovered 
                 ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) 
-                :  elementText, font.Name, element.Type, elementPos + (elementIsHovered ? new Point(-(int)font.FastMeasure(2).X, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), 
+                :  elementText, _font.Name, element.Type, elementPos + (elementIsHovered ? new Point(-(int)_font.FastMeasure(2).X, 0) : Point.Zero).ToVector2(), Rectangle.Empty, false), 
                 elementIsHovered);
         }
     }

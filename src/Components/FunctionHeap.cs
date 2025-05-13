@@ -34,51 +34,51 @@ namespace Stolon
         public ReadOnlyDictionary<string, DynamicTask> Functions { get; }
         public ReadOnlyDictionary<string, object?> FrameCompletedTasks { get; } 
 
-        private Dictionary<string, DynamicTask> taskDictionary;
-        private Dictionary<string, object?> frameCompletedTasks;
-        private Dictionary<string, int> taskWaitDataCollection;
-        private List<string> allCompletedTasks;
+        private Dictionary<string, DynamicTask> _taskDictionary;
+        private Dictionary<string, object?> _frameCompletedTasks;
+        private Dictionary<string, int> _taskWaitDataCollection;
+        private List<string> _allCompletedTasks;
 
         public TaskHeap()
         {
-            taskDictionary = new Dictionary<string, DynamicTask>();
-            frameCompletedTasks = new Dictionary<string, object?>();
-            taskWaitDataCollection = new Dictionary<string, int>();
-            allCompletedTasks = new List<string>();
-            Functions = taskDictionary.AsReadOnly();
-            FrameCompletedTasks = frameCompletedTasks.AsReadOnly();
+            _taskDictionary = new Dictionary<string, DynamicTask>();
+            _frameCompletedTasks = new Dictionary<string, object?>();
+            _taskWaitDataCollection = new Dictionary<string, int>();
+            _allCompletedTasks = new List<string>();
+            Functions = _taskDictionary.AsReadOnly();
+            FrameCompletedTasks = _frameCompletedTasks.AsReadOnly();
         }
 
         public void Update(int elapsedMiliseconds)
         {
-            frameCompletedTasks.Clear();
+            _frameCompletedTasks.Clear();
 
-            foreach (KeyValuePair<string, DynamicTask> taskKvp in taskDictionary)
+            foreach (KeyValuePair<string, DynamicTask> taskKvp in _taskDictionary)
             {
-                if (taskWaitDataCollection[taskKvp.Key] < 0)
+                if (_taskWaitDataCollection[taskKvp.Key] < 0)
                 {
                     Instance.DebugStream.Log("(interupt:taskheap) runningtask with id; " + taskKvp.Key);
                     ForceRun(taskKvp.Key);
                 }
-                else taskWaitDataCollection[taskKvp.Key] -= elapsedMiliseconds;
+                else _taskWaitDataCollection[taskKvp.Key] -= elapsedMiliseconds;
             }
         }
 
         public object? ForceRun(string id)
         {
-            object? ret = taskDictionary[id].Run();
+            object? ret = _taskDictionary[id].Run();
 
-            frameCompletedTasks.Add(id, ret);
-            allCompletedTasks.Add(id);
+            _frameCompletedTasks.Add(id, ret);
+            _allCompletedTasks.Add(id);
 
-            taskWaitDataCollection.Remove(id);
-            taskDictionary.Remove(id);
+            _taskWaitDataCollection.Remove(id);
+            _taskDictionary.Remove(id);
 
             return ret;
         }
 
-        public string[] GetHistory() => allCompletedTasks.ToArray();
-        public bool IsCompleted(string id) => frameCompletedTasks.ContainsKey(id);
+        public string[] GetHistory() => _allCompletedTasks.ToArray();
+        public bool IsCompleted(string id) => _frameCompletedTasks.ContainsKey(id);
         public bool IsCompleted<T>(string id, out T? returned) 
         {
             if (IsCompleted(id))
@@ -93,7 +93,7 @@ namespace Stolon
             }
         }
 
-        public bool IsQueued(string id) => taskDictionary.ContainsKey(id);
+        public bool IsQueued(string id) => _taskDictionary.ContainsKey(id);
         /// <summary>
         /// Push a task to the <see cref="TaskHeap"/>.
         /// </summary>
@@ -108,16 +108,16 @@ namespace Stolon
             {
                 object? ret = dynamicTask.Run();
                 Instance.DebugStream.Log("insta-ran task with id: " + id);
-                frameCompletedTasks.Add(id, ret);
-                allCompletedTasks.Add(id);
+                _frameCompletedTasks.Add(id, ret);
+                _allCompletedTasks.Add(id);
                 return;
             }
 
-            if (taskDictionary.ContainsKey(id)) 
+            if (_taskDictionary.ContainsKey(id)) 
                 if (overwrite) Instance.DebugStream.Log("key already known, overwriting task with id: " + id);
                 else return;
-            taskWaitDataCollection[id] = waitTime;
-            taskDictionary[id] = dynamicTask;
+            _taskWaitDataCollection[id] = waitTime;
+            _taskDictionary[id] = dynamicTask;
             Instance.DebugStream.Log("pushed task with id: " + id);
         }
         public void Push(string id, DynamicTask dynamicTask, int waitTime)
@@ -128,7 +128,7 @@ namespace Stolon
         public string EnsurePush(DynamicTask dynamicTask, int waitTime)
         {
             Instance.DebugStream.Log(">ensuring task push.");
-            string id = Enumerable.Range(0, int.MaxValue).Select(i => "__" + i).First(key => !taskDictionary.ContainsKey(key));
+            string id = Enumerable.Range(0, int.MaxValue).Select(i => "__" + i).First(key => !_taskDictionary.ContainsKey(key));
 
             Push(id, dynamicTask, waitTime);
 

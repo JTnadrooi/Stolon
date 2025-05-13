@@ -26,90 +26,90 @@ namespace Stolon
     /// </summary>
     public class AudioEngine : IDisposable // NOT DEBUG SAFE
     {
-        public Playlist? Current => currentPlaylist;
+        public Playlist? Current => _currentPlaylist;
 
-        private IWavePlayer outputDevice;
+        private IWavePlayer _outputDevice;
 
         #region mixers
 
-        private MixingSampleProvider masterMixer;
-        private VolumeSampleProvider masterVolumeSampleProvider;
+        private MixingSampleProvider _masterMixer;
+        private VolumeSampleProvider _masterVolumeSampleProvider;
 
-        private DictionaryMixingSampleProvider fxMixer;
-        private DictionaryMixingSampleProvider ostMixer;
-        private VolumeSampleProvider fxVolumeSampleProvider;
-        private VolumeSampleProvider ostVolumeSampleProvider;
+        private DictionaryMixingSampleProvider _fxMixer;
+        private DictionaryMixingSampleProvider _ostMixer;
+        private VolumeSampleProvider _fxVolumeSampleProvider;
+        private VolumeSampleProvider _ostVolumeSampleProvider;
 
         #endregion
 
-        private FadeInOutSampleProvider? fadeInOutSampleProvider;
-        private CachedAudioSampleProvider? fadeInOutSampleProviderSource;
-        private List<string> trackHistory;
-        private Queue<string> trackQueue;
-        private Playlist? currentPlaylist;
+        private FadeInOutSampleProvider? _fadeInOutSampleProvider;
+        private CachedAudioSampleProvider? _fadeInOutSampleProviderSource;
+        private List<string> _trackHistory;
+        private Queue<string> _trackQueue;
+        private Playlist? _currentPlaylist;
 
 
         /// <summary>
         /// The mixer used to mix all the <see cref="AudioFileReader"/>
         /// </summary>
-        public DictionaryMixingSampleProvider FXMixer => fxMixer;
-        public DictionaryMixingSampleProvider OSTMixer => ostMixer;
-        public MixingSampleProvider MasterMixer => masterMixer;
+        public DictionaryMixingSampleProvider FXMixer => _fxMixer;
+        public DictionaryMixingSampleProvider OSTMixer => _ostMixer;
+        public MixingSampleProvider MasterMixer => _masterMixer;
         /// <summary>
         /// The fx volume.
         /// </summary>
         public float FxVolume
         {
-            get => fxVolumeSampleProvider.Volume;
-            set => fxVolumeSampleProvider.Volume = Math.Clamp(value, 0f, 1f);
+            get => _fxVolumeSampleProvider.Volume;
+            set => _fxVolumeSampleProvider.Volume = Math.Clamp(value, 0f, 1f);
         }
         /// <summary>
         /// The master volume.
         /// </summary>
         public float MasterVolume
         {
-            get => masterVolumeSampleProvider.Volume;
-            set => masterVolumeSampleProvider.Volume = Math.Clamp(value, 0f, 1f);
+            get => _masterVolumeSampleProvider.Volume;
+            set => _masterVolumeSampleProvider.Volume = Math.Clamp(value, 0f, 1f);
         }
         /// <summary>
         /// The st volume.
         /// </summary>
         public float OstVolume
         {
-            get => ostVolumeSampleProvider.Volume;
-            set => ostVolumeSampleProvider.Volume = Math.Clamp(value, 0f, 1f);
+            get => _ostVolumeSampleProvider.Volume;
+            set => _ostVolumeSampleProvider.Volume = Math.Clamp(value, 0f, 1f);
         }
         /// <summary>
         /// Initialize a new <see cref="AudioEngine"/>.
         /// </summary>
         public AudioEngine()
         {
-            outputDevice = new DirectSoundOut(40);
+            _outputDevice = new DirectSoundOut(40);
             WaveFormat waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
             ConfigParser parser = new ConfigParser(@"user.cfg");
 
-            masterMixer = new MixingSampleProvider(waveFormat);
-            masterMixer.ReadFully = true;
-            masterVolumeSampleProvider = new VolumeSampleProvider(masterMixer);
+            _masterMixer = new MixingSampleProvider(waveFormat);
+            _masterMixer.ReadFully = true;
+            _masterVolumeSampleProvider = new VolumeSampleProvider(_masterMixer);
 
-            fxMixer = new DictionaryMixingSampleProvider(waveFormat);
-            fxMixer.ReadFully = true;
-            fxMixer.PauzeWhenInactive = true;
-            fxVolumeSampleProvider = new VolumeSampleProvider(fxMixer);
+            _fxMixer = new DictionaryMixingSampleProvider(waveFormat);
+            _fxMixer.ReadFully = true;
+            _fxMixer.PauzeWhenInactive = true;
+            _fxVolumeSampleProvider = new VolumeSampleProvider(_fxMixer);
 
-            ostMixer = new DictionaryMixingSampleProvider(waveFormat);
-            ostMixer.ReadFully = true;
-            ostMixer.PauzeWhenInactive = true;
-            ostVolumeSampleProvider = new VolumeSampleProvider(ostMixer);
+            _ostMixer = new DictionaryMixingSampleProvider(waveFormat);
+            _ostMixer.ReadFully = true;
+            _ostMixer.PauzeWhenInactive = true;
+            _ostVolumeSampleProvider = new VolumeSampleProvider(_ostMixer);
             
-            masterMixer.AddMixerInput(fxVolumeSampleProvider);
-            masterMixer.AddMixerInput(ostVolumeSampleProvider);
+            _masterMixer.AddMixerInput(_fxVolumeSampleProvider);
+            _masterMixer.AddMixerInput(_ostVolumeSampleProvider);
 
-            trackHistory = new List<string>();
-            trackQueue = new Queue<string>();
+            _trackHistory = new List<string>();
+            _trackQueue = new Queue<string>();
 
-            outputDevice.Init(masterVolumeSampleProvider);
-            outputDevice.Play();
+            _outputDevice.Init(_masterVolumeSampleProvider);
+            _outputDevice.Play();
 
             FxVolume = (float)parser.GetValue("Audio", "fx_vol", 0.5f);
             OstVolume = (float)parser.GetValue("Audio", "ost_vol", 1f);
@@ -165,7 +165,7 @@ namespace Stolon
             else if (input.WaveFormat.Channels == 1 && mixer.WaveFormat.Channels == 2) mixer.AddMixerInput(id, new MonoToStereoSampleProvider(input));
             else throw new NotImplementedException("Not yet implemented this channel count conversion.");
         }
-        public DictionaryMixingSampleProvider GetMixer(AudioDomain domain) => domain == AudioDomain.SFX ? fxMixer : ostMixer;
+        public DictionaryMixingSampleProvider GetMixer(AudioDomain domain) => domain == AudioDomain.SFX ? _fxMixer : _ostMixer;
         public void RemoveMixerInput(string id, AudioDomain domain)
         {
             GetMixer(domain).RemoveMixerInput(id);
@@ -190,28 +190,28 @@ namespace Stolon
 
             string ostProviderId = "__ostProvider";
             string ostTaskId = "ostChange";
-            bool alreadyPlaying = fadeInOutSampleProvider != null;
+            bool alreadyPlaying = _fadeInOutSampleProvider != null;
 
-            if (alreadyPlaying && fade) fadeInOutSampleProvider.BeginFadeOut(FadeTimeMiliseconds);
+            if (alreadyPlaying && fade) _fadeInOutSampleProvider.BeginFadeOut(FadeTimeMiliseconds);
             TaskHeap.Heap.SafePush(ostTaskId, new DynamicTask(() => // fire and forget game logic ftw
             {
                 TryRemoveMixerInput(ostProviderId, AudioDomain.OST);
                 StolonGame.Instance.DebugStream.Log("\ttrack changed to " + id);
-                fadeInOutSampleProviderSource = AudioLibrary[id].GetAsSampleProvider();
-                fadeInOutSampleProvider = new FadeInOutSampleProvider(fadeInOutSampleProviderSource);
+                _fadeInOutSampleProviderSource = AudioLibrary[id].GetAsSampleProvider();
+                _fadeInOutSampleProvider = new FadeInOutSampleProvider(_fadeInOutSampleProviderSource);
 
-                AddMixerInput(fadeInOutSampleProvider, ostProviderId, AudioDomain.OST);
-                fadeInOutSampleProvider.BeginFadeIn(1);
-                trackHistory.Add(id);
+                AddMixerInput(_fadeInOutSampleProvider, ostProviderId, AudioDomain.OST);
+                _fadeInOutSampleProvider.BeginFadeIn(1);
+                _trackHistory.Add(id);
             }), alreadyPlaying ? FadeTimeMiliseconds : -1);
         }
         public void SetPlayList(Playlist newPlaylist, bool fade = true)
         {
             Instance.DebugStream.Log(">changing audio playlist.");
-            currentPlaylist = newPlaylist;
-            trackQueue = new Queue<string>(newPlaylist.Get());
+            _currentPlaylist = newPlaylist;
+            _trackQueue = new Queue<string>(newPlaylist.Get());
 
-            SetTrack(trackQueue.Dequeue(), fade);
+            SetTrack(_trackQueue.Dequeue(), fade);
         }
         //public void ClearPlaylist(bool fade = false)
         //{
@@ -235,24 +235,24 @@ namespace Stolon
         /// <param name="elapsedMiliseconds">yes.</param>
         public void Update(int elapsedMiliseconds)
         {
-            if (fadeInOutSampleProvider != null && fadeInOutSampleProviderSource.Finished)
+            if (_fadeInOutSampleProvider != null && _fadeInOutSampleProviderSource.Finished)
             {
-                fadeInOutSampleProvider = null;
-                fadeInOutSampleProviderSource = null;
+                _fadeInOutSampleProvider = null;
+                _fadeInOutSampleProviderSource = null;
 
                 string? nextTrack = null;
 
-                if (trackQueue.Count > 0)
+                if (_trackQueue.Count > 0)
                 {
-                    nextTrack = trackQueue.Dequeue();
+                    nextTrack = _trackQueue.Dequeue();
                     SetTrack(nextTrack, false); // no fade nessesairy.
                     Instance.DebugStream.Log("dequeued next track; " + nextTrack);
                 }
-                else if (currentPlaylist != null && currentPlaylist.Loop)
+                else if (_currentPlaylist != null && _currentPlaylist.Loop)
                 {
                     Instance.DebugStream.Log(">refreshing loopable playlist queue");
-                    trackQueue = new Queue<string>(currentPlaylist.Get());
-                    SetTrack(trackQueue.Dequeue(), false); // no fade nessesairy.
+                    _trackQueue = new Queue<string>(_currentPlaylist.Get());
+                    SetTrack(_trackQueue.Dequeue(), false); // no fade nessesairy.
                 }
             }
         }
@@ -260,7 +260,7 @@ namespace Stolon
         public void Dispose()
         {
             Instance.DebugStream.Log("disposing audio engine..");
-            outputDevice.Dispose();
+            _outputDevice.Dispose();
         }
         /// <summary>
         /// The main <see cref="AudioEngine"/> instance.
