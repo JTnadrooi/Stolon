@@ -97,7 +97,7 @@ namespace Stolon
 
 			oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
 
-			desiredModifier = 67; 
+			desiredModifier = 57; 
 			virtualModifier = 57; //(prev = 30, so = x1.9)
 
             graphics.PreferredBackBufferWidth = DesiredDimensions.X;
@@ -226,7 +226,7 @@ namespace Stolon
 
 			environment.Draw(spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
 
-            //spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
+            spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
 
             spriteBatch.DrawString(Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
