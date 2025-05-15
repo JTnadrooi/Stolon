@@ -190,11 +190,11 @@ namespace Stolon
             _mouseClickFillElementTexture = new GameTexture(TexturePalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
             ((Texture2D)_mouseClickFillElementTexture).SetData(new Color[] { Color.White });
 
-            _textframe = new Textframe(this);
 
             _drawMenuLogoLines = true;
             _drawMenuLogoDummyTiles = true;
             _drawMenuLogoFilledTiles = false;
+            _textframe = new Textframe(this);
 
             _menuLogoFlashTime = 0;
             _menuFlashStart = null;

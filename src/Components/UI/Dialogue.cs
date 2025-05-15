@@ -54,5 +54,4 @@ namespace Stolon
         public static bool operator !=(DialogueInfo left, DialogueInfo right) => !(left == right);
         public override int GetHashCode() => HashCode.Combine(Text.GetHashCode(), Provider.GetHashCode());
     }
-    
 }

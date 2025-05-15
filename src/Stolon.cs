@@ -261,8 +261,10 @@ namespace Stolon
 	{
 		#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 		public static StolonGame Instance { get; private set; }
+		public const string MEDIUM_FONT_ID = "fonts\\pixeloidMono";
+		public const string SMALL_FONT_ID = "fonts\\smollerMono";
 		#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-	}
+    }
 
 	public static class SLMouse
 	{

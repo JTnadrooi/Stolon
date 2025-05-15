@@ -49,6 +49,7 @@ namespace Stolon
         private DialogueDrawArgs? _currentDialogueDrawArgs;
         private Point _dialogueTextPos;
         private string _toDrawDialogueText;
+        private GameFont _font;
 
         private Point _providerTextPos;
         private float _providerTextScaleCoefficient;
@@ -84,6 +85,7 @@ namespace Stolon
             _charsRead = 0;
             _toDrawDialogueText = string.Empty;
             _userInterface = userInterface;
+            _font = Instance.Fonts[MEDIUM_FONT_ID];
         }
         public void Queue(DialogueInfo[] dialogue)
         {
@@ -171,11 +173,11 @@ namespace Stolon
                 //    currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
 
                 _dialogueTextPos = _dialoguebounds.Location
-                    + new Point((int)(_dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasure(_toDrawDialogueText).X / 2f),
-                    (int)(_dialoguebounds.Height / 2f - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y));
+                    + new Point((int)(_dialoguebounds.Width / 2f - _font.FastMeasure(_toDrawDialogueText).X / 2f),
+                    (int)(_dialoguebounds.Height / 2f - _font.Dimensions.Y));
                  
                 _providerTextPos = _dialoguebounds.Location
-                    + new Point((int)(_dialoguebounds.Width / 2f - Instance.Fonts["fonts\\smollerMono"].FastMeasure(_currentDialogue.Value.Provider.Name).X * _providerTextScaleCoefficient / 2f), 2);
+                    + new Point((int)(_dialoguebounds.Width / 2f - _font.FastMeasure(_currentDialogue.Value.Provider.Name).X * _providerTextScaleCoefficient / 2f), 2);
             }
             if (_awaitingMouseDialogueHover) textFrameGoUp = true;
             if (SLMouse.Domain == SLMouse.MouseDomain.Dialogue)
@@ -200,8 +202,8 @@ namespace Stolon
             spriteBatch.Draw(Instance.Textures.Pixel, _dialoguebounds, Color.Black);
             if (_currentDialogue.HasValue)
             {
-                spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _toDrawDialogueText, _dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _currentDialogue.Value.Provider.Name.ToUpper(), _providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, _providerTextScaleCoefficient * Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_font, _toDrawDialogueText, _dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, _font.Scale, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_font, _currentDialogue.Value.Provider.Name.ToUpper(), _providerTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, _providerTextScaleCoefficient * _font.Scale, SpriteEffects.None, 0f);
             }
             spriteBatch.DrawRectangle(_dialoguebounds, Color.White, _userInterface.LineWidth);
 
