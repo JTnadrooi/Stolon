@@ -136,7 +136,7 @@ namespace Stolon
 
         public override void Update(int elapsedMiliseconds)
         {
-            Point dialogueBoxDimensions = new Point(256, 64);
+            Point dialogueBoxDimensions = new Point(384, 96);
             int dialogueYoffset = (int)(-10f * (_dialogueIsHidden ? _dialogueShowCoefficient : 1f));
             bool textFrameGoUp = false;
             _dialoguebounds = new Rectangle(
@@ -160,7 +160,6 @@ namespace Stolon
                 }
                 else if (_msSinceLastChar > _currentDialogueDrawArgs!.Value.TimeMap[_charsRead]) // else if its time for a new char..
                 {
-                    //Console.WriteLine(currentDialogueDrawArgs!.Value.TimeMap[charsRead]);
                     _toDrawDialogueText += _currentDialogue.Value.Text[_charsRead]; // ..add said char.
                     _charsRead++; 
                     _msSinceLastChar = 0;
@@ -168,9 +167,6 @@ namespace Stolon
 
                 _providerTextSizeTweener!.Update(elapsedMiliseconds / 1000f);
                 _providerTextScaleCoefficient = MathF.Min(_providerTextSizeTweener.Value, _dialogueShowCoefficient > 0.9f ? 1f : _dialogueShowCoefficient);
-
-                //toDrawDialogueText = dialogueMilisecondsRemaining < 0 ? currentDialogue.Value.Text :
-                //    currentDialogue.Value.Text[0..(int)MathF.Ceiling(currentDialogue.Value.Text.Length * ((initialDialogueMiliseconds - dialogueMilisecondsRemaining) / (float)initialDialogueMiliseconds))];
 
                 _dialogueTextPos = _dialoguebounds.Location
                     + new Point((int)(_dialoguebounds.Width / 2f - _font.FastMeasure(_toDrawDialogueText).X / 2f),
