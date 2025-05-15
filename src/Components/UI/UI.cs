@@ -327,7 +327,7 @@ namespace Stolon
             AddElement(new UIElement("startCom", TITLE_PARENT_ID, "COM", UIElementType.Listen, clickSoundId: "coin4"));
             AddElement(new UIElement("startXp", TITLE_PARENT_ID, "2P", UIElementType.Listen, clickSoundId: "coin4"));
             AddElement(new UIElement("options", TITLE_PARENT_ID, "Options", UIElementType.Listen));
-            AddElement(new UIElement("specialThanks", TITLE_PARENT_ID, "Special Thanks :D", UIElementType.Listen));
+            AddElement(new UIElement("specialThanks", TITLE_PARENT_ID, "Special Thanks", UIElementType.Listen));
             AddElement(new UIElement("quit", TITLE_PARENT_ID, "Quit", UIElementType.Listen));
 
             // options

@@ -55,9 +55,10 @@ namespace Stolon
         private bool _capitalise = true;
         public MenuOrderProvider()
         {
-            //font = Instance.Fonts["fonts\\smollerMono"];
-            _font = Instance.Fonts["fonts\\monogram"];
+            //_font = Instance.Fonts["fonts\\smollerMono"];
+            //_font = Instance.Fonts["fonts\\monogram"];
             _font = Instance.Fonts["fonts\\pixeloidMono"];
+            //_font = Instance.Fonts["fonts\\fixedsys"];
         }
         public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
         {
