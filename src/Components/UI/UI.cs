@@ -162,7 +162,7 @@ namespace Stolon
 
             _environment = Instance.Environment;
 
-            _lineOffset = 96f;
+            _lineOffset = 192f;
             _lineWidth = 2;
 
             Instance.DebugStream.Log(">loading audio");
