@@ -405,20 +405,20 @@ namespace Stolon
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
-            // if (milisecondsSinceStartup < 10000) // to skip start button click and animation
-            //{
-            //    milisecondsSinceStartup = 10001;
-            //    menuDone = true;
-            //    menuRemoveTweener.Update(10);
+             if (_milisecondsSinceStartup < 10000) // to skip start button click and animation
+            {
+                _milisecondsSinceStartup = 10001;
+                _menuDone = true;
+                _menuRemoveTweener.Update(10);
 
-            //    Scene.MainInstance.SetBoard(new Player[]
-            //            {
-            //                new Player("player0"),
-            //                new Player("player1"),
-            //            });
-            //    Leave();
-            //    //startFrame = true;
-            //}
+                _boardPlayers = new Player[]
+                        {
+                            new Player("player0"),
+                            new Player("player1"),
+                        };
+                Leave();
+                //startFrame = true;
+            }
 
             #region inFlash
             _menuLogoTileHider = new Rectangle(_menuLogoDrawPos.ToPoint(), new Point((int)(_menuLogoLines.Width * _menuLogoScaling), (int)(rowHeight * _menuLogoRowsHidden)));
@@ -515,15 +515,6 @@ namespace Stolon
             }
             if (_updateData["startStory"].IsClicked)
             {
-                //Leave(() =>
-                //{
-                //    Instance.Environment.Overlayer.Activate("transitionDither");
-                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Welcome.", 1000));
-                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Expecting something..?", 5000));
-                //    textframe.Queue(new DialogueInfo(Instance.Environment.Entities["sto"], "Hold on....", 1000));
-
-                //    Scene.MainInstance.SetImage(Instance.Textures.GetReference("textures\\landscape"));
-                //});
                 _textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
             }
             if (_updateData["startCom"].IsClicked)
