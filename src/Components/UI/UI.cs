@@ -175,10 +175,10 @@ namespace Stolon
             }
             Instance.DebugStream.Success();
 
-            _menuLogoLines = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lines");
-            _menuLogoDummyTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\dummyTiles");
-            _menuLogoFilledTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\filledTiles");
-            _menuLogoLowResFonted = Instance.Textures.GetReference("textures\\" + menuDataFolder+ "\\lowResFonted");
+            _menuLogoLines = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\lines");
+            _menuLogoDummyTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\dummyTiles");
+            _menuLogoFilledTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\filledTiles");
+            _menuLogoLowResFonted = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\lowResFonted");
             _dither32 = Instance.Textures.GetReference("textures\\dither_32");
 
             _AllUIElements = new Dictionary<string, UIElement>();
@@ -286,9 +286,6 @@ namespace Stolon
                 "elevenhundredthousand.",
                 "The comfort of finity.",
                 "Pressure discrepancy detected - reversing airflow.",
-                "*Delicieuxmiel!*",
-                "REV UP THE CLOUDS!",
-                "Headpatted with ease.",
                 ":LOVINGSTARE:",
                 ":STARE:",
                 "Collida past 3.",
@@ -391,7 +388,7 @@ namespace Stolon
                     }
                 }
             }
-            
+
             base.Update(elapsedMiliseconds);
         }
         private void UpdateMenuUI(int elapsedMiliseconds)
@@ -405,7 +402,7 @@ namespace Stolon
             int logoYoffset = 30;
             int menuLogoBoundingBoxClearing = 8;
 
-             if (_milisecondsSinceStartup < 10000) // to skip start button click and animation
+            if (_milisecondsSinceStartup < 10000) // to skip start button click and animation
             {
                 _milisecondsSinceStartup = 10001;
                 _menuDone = true;
@@ -413,8 +410,8 @@ namespace Stolon
 
                 _boardPlayers = new Player[]
                         {
-                            new Player("player0"),
-                            new Player("player1"),
+                                new Player("player0"),
+                                new Player("player1"),
                         };
                 Leave();
                 //startFrame = true;
@@ -546,6 +543,7 @@ namespace Stolon
                 _onLeave = null;
                 Instance.Environment.GameStateManager.ChangeState<BoardGameState>(true);
                 ((BoardGameState)Instance.Environment.GameStateManager.Current).SetBoard(_boardPlayers!);
+                _boardPlayers = null;
             }), 2000, false);
             _milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
 
@@ -685,5 +683,5 @@ namespace Stolon
         public override int GetHashCode() => segments.ToJoinedString(string.Empty).GetHashCode();
         public override bool Equals([NotNullWhen(true)] object? obj) => obj.GetHashCode() == GetHashCode();
     }
-    
+
 }

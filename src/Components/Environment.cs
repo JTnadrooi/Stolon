@@ -92,9 +92,8 @@ namespace Stolon
         {
             TaskHeap.Update(elapsedMiliseconds);
             _userInterface.Update(elapsedMiliseconds);
-            AudioEngine.Audio.Update(elapsedMiliseconds);
-
             GameStateManager.Update(elapsedMiliseconds);
+            AudioEngine.Audio.Update(elapsedMiliseconds);
             StolonGame.Instance.DRP.UpdateDetails(GameStateManager.Current.DRPStatus);
 
             _overlayer.Update(elapsedMiliseconds);
