@@ -24,7 +24,7 @@ namespace Stolon
         {
             
         }
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
             
         }
@@ -32,13 +32,24 @@ namespace Stolon
     public class BoardGameState : IGameState
     {
         public string DRPStatus => "BoardState";
+
+        private Board? _board;
+        public Board Board => _board ?? throw new Exception();
+
+        public void SetBoard(Player[] players) => SetBoard(new BoardState(Tile.GetTiles(new Vector2(8).ToPoint()), players, new BoardState.SearchTargetCollection()));
+        public void SetBoard(BoardState state)
+        {
+            if (BoardState.Validate(state)) _board = new Board(state);
+            else throw new Exception();
+        }
+
         public void Update(int elapsedMiliseconds)
         {
-            StolonEnvironment.Instance.Scene.Update(elapsedMiliseconds);
+            _board?.Update(elapsedMiliseconds);
         }
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-
+            _board?.Draw(spriteBatch, elapsedMiliseconds);
         }
     }
 }

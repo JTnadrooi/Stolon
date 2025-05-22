@@ -49,11 +49,6 @@ namespace Stolon
         private Point _oldWindowSize;
 
         public StolonEnvironment Environment => _environment;
-		public Scene Scene
-		{
-			get => _environment.Scene;
-			set => _environment.Scene = value;
-		}
 		public AudioEngine AudioEngine { get; private set; }
         public DiscordRichPresence DRP { get; set; }
         public UserInterface UserInterface => _environment.UI;

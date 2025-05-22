@@ -132,6 +132,7 @@ namespace Stolon
         public const string TITLE_PARENT_ID = "titleParent";
         private Textframe _textframe;
         private Action? _onLeave;
+        private Player[]? _boardPlayers;
 
         /// <summary>
         /// The <see cref="Stolon.Textframe"/> managed by the <see cref="UserInterface"/>.
@@ -486,11 +487,11 @@ namespace Stolon
 
             if (_updateData["startXp"].IsClicked)
             {
-                Scene.MainInstance.SetBoard(new Player[]
+                _boardPlayers = new Player[]
                         {
                             new Player("player0"),
                             new Player("player1"),
-                        });
+                        };
 
                 Leave();
             }
@@ -527,11 +528,11 @@ namespace Stolon
             }
             if (_updateData["startCom"].IsClicked)
             {
-                Scene.MainInstance.SetBoard(new Player[]
+                _boardPlayers = new Player[]
                         {
                             new Player("player0"),
                             Instance.Environment.Entities["goldsilk"].GetPlayer()
-                        });
+                        };
                 Leave();
             }
             if (_updateData["specialThanks"].IsClicked)
@@ -552,10 +553,8 @@ namespace Stolon
                 _loadingFinished = true;
                 _onLeave?.Invoke();
                 _onLeave = null;
-                //if (Scene.MainInstance.HasBoard)
-                //    Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
-                //else Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenScene;
                 Instance.Environment.GameStateManager.ChangeState<BoardGameState>(true);
+                ((BoardGameState)Instance.Environment.GameStateManager.Current).SetBoard(_boardPlayers!);
             }), 2000, false);
             _milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
 
@@ -568,7 +567,7 @@ namespace Stolon
         }
         private void UpdateBoardUI(int elapsedMiliseconds)
         {
-            float zoomIntensity = Instance.Environment.Scene.Board.ZoomIntensity;
+            float zoomIntensity = ((BoardGameState)Instance.Environment.GameStateManager.Current).Board.ZoomIntensity;
             float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
 
             lineZoomOffset = Math.Max(0, lineZoomOffset);

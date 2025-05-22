@@ -62,7 +62,7 @@ namespace Stolon
 
         public UniqueMoveBoardMap UniqueMoveBoardMap { get; }
 
-        public Board(Scene source, BoardState conf) : base(source)
+        public Board(BoardState conf) : base(Instance.Environment)
         {
             Camera = new Camera2D();
             TurnNumber = 0;

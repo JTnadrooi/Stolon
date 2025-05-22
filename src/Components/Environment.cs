@@ -36,14 +36,6 @@ namespace Stolon
     /// </summary>
     public class StolonEnvironment : GameComponent, IDialogueProvider
     {
-        /// <summary>
-        /// The current <see cref="Stolon.Scene"/>.
-        /// </summary>
-        public Scene Scene
-        {
-            get => _scene;
-            set => _scene = value;
-        }
         public GameStateManager GameStateManager => _gameStateManager;
         /// <summary>
         /// The <see cref="UserInterface"/>.
@@ -62,7 +54,6 @@ namespace Stolon
 
         public TaskHeap TaskHeap { get; }
 
-        private Scene _scene;
         private UserInterface _userInterface;
         private OverlayEngine _overlayer;
         private Dictionary<string, EntityBase> _entities;
@@ -70,7 +61,6 @@ namespace Stolon
 
         internal StolonEnvironment() : base(null)
         {
-            _scene = new Scene();
             _entities = new Dictionary<string, EntityBase>();
             _userInterface = null!;
             _overlayer = null!;
@@ -112,9 +102,8 @@ namespace Stolon
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            _scene.Draw(spriteBatch, elapsedMiliseconds);
             _userInterface.Draw(spriteBatch, elapsedMiliseconds);
-            GameStateManager.Draw(spriteBatch);
+            GameStateManager.Draw(spriteBatch, elapsedMiliseconds);
 
             _overlayer.Draw(spriteBatch, elapsedMiliseconds);
             base.Draw(spriteBatch, elapsedMiliseconds);

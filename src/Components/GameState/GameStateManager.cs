@@ -21,7 +21,7 @@ namespace Stolon
     public interface IGameState
     {
         public void Update(int elapsedMilliseconds);
-        public void Draw(SpriteBatch spriteBatch);
+        public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds);
         public string DRPStatus { get; }
     }
 
@@ -57,9 +57,9 @@ namespace Stolon
             _currentState.Update(elapsedMilliseconds);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            _currentState.Draw(spriteBatch);
+            _currentState.Draw(spriteBatch, elapsedMiliseconds);
         }
     }
 }
