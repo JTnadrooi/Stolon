@@ -18,16 +18,28 @@ using Microsoft.Xna.Framework.Content;
 
 namespace Stolon
 {
-    public class MenuState : IGameState
+    public class MenuGameState : IGameState
     {
+        public string DRPStatus => "MenuState";
+        public void Update(int elapsedMiliseconds)
+        {
+
+        }
         public void Draw(SpriteBatch spriteBatch)
         {
             
         }
-
+    }
+    public class BoardGameState : IGameState
+    {
+        public string DRPStatus => "BoardState";
         public void Update(int elapsedMiliseconds)
         {
-            
+            StolonEnvironment.Instance.Scene.Update(elapsedMiliseconds);
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+
         }
     }
 }
