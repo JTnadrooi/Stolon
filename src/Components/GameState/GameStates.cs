@@ -8,7 +8,6 @@ using AsitLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using static Stolon.BoardState;
-using static Stolon.StolonEnvironment;
 using static Stolon.StolonGame;
 
 using Point = Microsoft.Xna.Framework.Point;
@@ -23,7 +22,7 @@ namespace Stolon
         public string DRPStatus => "MenuState";
         public void Update(int elapsedMiliseconds)
         {
-
+            
         }
         public void Draw(SpriteBatch spriteBatch)
         {

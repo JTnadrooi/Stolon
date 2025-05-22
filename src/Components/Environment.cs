@@ -114,6 +114,7 @@ namespace Stolon
         {
             _scene.Draw(spriteBatch, elapsedMiliseconds);
             _userInterface.Draw(spriteBatch, elapsedMiliseconds);
+            GameStateManager.Draw(spriteBatch);
 
             _overlayer.Draw(spriteBatch, elapsedMiliseconds);
             base.Draw(spriteBatch, elapsedMiliseconds);
