@@ -367,17 +367,10 @@ namespace Stolon
             ResetElementData();
 
             _textframe.Update(elapsedMiliseconds);
-            switch (Instance.Environment.GameState)
-            {
-                case StolonEnvironment.SLGameState.OpenBoard:
-                    UpdateBoardUI(elapsedMiliseconds);
-                    break;
-                case StolonEnvironment.SLGameState.InMenu:
-                    UpdateMenuUI(elapsedMiliseconds);
-                    break;
-                case StolonEnvironment.SLGameState.Loading:
-                    break;
-            }
+            string id = Instance.Environment.GameStateManager.Current.GetID();
+            if (id == GameStateHelpers.GetID<BoardGameState>()) UpdateBoardUI(elapsedMiliseconds);
+            else if (id == GameStateHelpers.GetID<MenuGameState>()) UpdateMenuUI(elapsedMiliseconds);
+
 
             foreach (string item in UIElements.Keys)
             {
@@ -559,9 +552,10 @@ namespace Stolon
                 _loadingFinished = true;
                 _onLeave?.Invoke();
                 _onLeave = null;
-                if (Scene.MainInstance.HasBoard)
-                    Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
-                else Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenScene;
+                //if (Scene.MainInstance.HasBoard)
+                //    Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenBoard;
+                //else Instance.Environment.GameState = StolonEnvironment.SLGameState.OpenScene;
+                Instance.Environment.GameStateManager.ChangeState<BoardGameState>(true);
             }), 2000, false);
             _milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
 
@@ -609,45 +603,44 @@ namespace Stolon
         //public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            switch (StolonEnvironment.Instance.GameState)
+            string id = Instance.Environment.GameStateManager.Current.GetID();
+            if (id == GameStateHelpers.GetID<BoardGameState>())
             {
-                case StolonEnvironment.SLGameState.OpenBoard:
-                    spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(Point.Zero, new Point((int)_lineX1, 500)), Color.Black);
-                    spriteBatch.DrawLine(_lineX1, -10f, _lineX1, 500f, Color.White, _lineWidth);
-                    spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle((int)_lineX2, 0, Instance.VirtualDimensions.X - (int)_lineX2, 500), Color.Black);
-                    spriteBatch.DrawLine(_lineX2, -10f, _lineX2, 500f, Color.White, _lineWidth);
 
-                    if (_mouseClickElementBoundsCoefficient > 0.015f) spriteBatch.Draw(_mouseClickFillElementTexture, _mouseClickFillElementBounds, Color.White);
-                    else _mouseClickElementBoundsCoefficient = 0f; // I really shouldent be altering this in the Draw() method..
+                spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(Point.Zero, new Point((int)_lineX1, 500)), Color.Black);
+                spriteBatch.DrawLine(_lineX1, -10f, _lineX1, 500f, Color.White, _lineWidth);
+                spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle((int)_lineX2, 0, Instance.VirtualDimensions.X - (int)_lineX2, 500), Color.Black);
+                spriteBatch.DrawLine(_lineX2, -10f, _lineX2, 500f, Color.White, _lineWidth);
 
-                    break;
-                case StolonEnvironment.SLGameState.InMenu:
-                    spriteBatch.DrawLine(_menuLine1X, -10f, _menuLine1X, _menuLineLenght, Color.White, _menuLineWidth);
-                    spriteBatch.DrawLine(_menuLine2X, -10f, _menuLine2X, _menuLineLenght, Color.White, _menuLineWidth);
-                    if (_menuDone) spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _tips[_tipId], _tipPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 1f);
+                if (_mouseClickElementBoundsCoefficient > 0.015f) spriteBatch.Draw(_mouseClickFillElementTexture, _mouseClickFillElementBounds, Color.White);
+                else _mouseClickElementBoundsCoefficient = 0f; // I really shouldent be altering this in the Draw() method..
 
-                    if (_drawMenuLogoLowResFonted)
-                    {
-                        for (int i = 0; i < _menuDitherTexturePositions.Length; i++)
-                            spriteBatch.Draw(_dither32, _menuDitherTexturePositions[i].ToVector2(), null, Color.White, 0f, Vector2.Zero, 1f,
-                                (i >= _menuDitherTexturePositions.Length / 2f) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
+            }
+            else if (id == GameStateHelpers.GetID<MenuGameState>())
+            {
+                spriteBatch.DrawLine(_menuLine1X, -10f, _menuLine1X, _menuLineLenght, Color.White, _menuLineWidth);
+                spriteBatch.DrawLine(_menuLine2X, -10f, _menuLine2X, _menuLineLenght, Color.White, _menuLineWidth);
+                if (_menuDone) spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _tips[_tipId], _tipPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 1f);
 
-                        spriteBatch.Draw(Instance.Textures.Pixel, _menuLogoBoundingBox, Color.Black);
-                        spriteBatch.DrawRectangle(_menuLogoBoundingBox, Color.White, _lineWidth);
-                    }
-                    if (_drawMenuLogoDummyTiles) spriteBatch.Draw(_menuLogoDummyTiles, _menuLogoDrawPos, Color.White);
-                    if (_drawMenuLogoFilledTiles) spriteBatch.Draw(_menuLogoFilledTiles, _menuLogoDrawPos, Color.White);
-                    if (_drawMenuLogoLowResFonted) spriteBatch.Draw(_menuLogoLowResFonted, _menuLogoDrawPos, Color.White);
+                if (_drawMenuLogoLowResFonted)
+                {
+                    for (int i = 0; i < _menuDitherTexturePositions.Length; i++)
+                        spriteBatch.Draw(_dither32, _menuDitherTexturePositions[i].ToVector2(), null, Color.White, 0f, Vector2.Zero, 1f,
+                            (i >= _menuDitherTexturePositions.Length / 2f) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
-                    spriteBatch.Draw(Instance.Textures.Pixel, _menuLogoTileHider, Color.Black);
-                    if (_drawMenuLogoLines) spriteBatch.Draw(_menuLogoLines, _menuLogoDrawPos, Color.White);
+                    spriteBatch.Draw(Instance.Textures.Pixel, _menuLogoBoundingBox, Color.Black);
+                    spriteBatch.DrawRectangle(_menuLogoBoundingBox, Color.White, _lineWidth);
+                }
+                if (_drawMenuLogoDummyTiles) spriteBatch.Draw(_menuLogoDummyTiles, _menuLogoDrawPos, Color.White);
+                if (_drawMenuLogoFilledTiles) spriteBatch.Draw(_menuLogoFilledTiles, _menuLogoDrawPos, Color.White);
+                if (_drawMenuLogoLowResFonted) spriteBatch.Draw(_menuLogoLowResFonted, _menuLogoDrawPos, Color.White);
 
-                    int width = (int)(_menuLogoDrawPos.X - 8);
-                    spriteBatch.DrawLine(width, -10f, width, _menuRemoveLineY, Color.White, _lineWidth);
-                    spriteBatch.DrawLine(Instance.VirtualDimensions.X - width, -10f, Instance.VirtualDimensions.X - width, _menuRemoveLineY, Color.White, _lineWidth);
-                    break;
-                case StolonEnvironment.SLGameState.Loading:
-                    break;
+                spriteBatch.Draw(Instance.Textures.Pixel, _menuLogoTileHider, Color.Black);
+                if (_drawMenuLogoLines) spriteBatch.Draw(_menuLogoLines, _menuLogoDrawPos, Color.White);
+
+                int width = (int)(_menuLogoDrawPos.X - 8);
+                spriteBatch.DrawLine(width, -10f, width, _menuRemoveLineY, Color.White, _lineWidth);
+                spriteBatch.DrawLine(Instance.VirtualDimensions.X - width, -10f, Instance.VirtualDimensions.X - width, _menuRemoveLineY, Color.White, _lineWidth);
             }
             foreach (UIElementDrawData elementDrawData in _drawData)
             {

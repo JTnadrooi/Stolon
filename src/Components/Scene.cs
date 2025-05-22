@@ -40,7 +40,7 @@ namespace Stolon
 
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            if (HasBoard && Instance.Environment.GameState == StolonEnvironment.SLGameState.OpenBoard) Board.Draw(spriteBatch, elapsedMiliseconds);
+            if (HasBoard && Instance.Environment.GameStateManager.Current.GetID() == GameStateHelpers.GetID<BoardGameState>()) Board.Draw(spriteBatch, elapsedMiliseconds);
             if (_bg != null)
             {
                 spriteBatch.Draw(_bg, new Rectangle(Point.Zero, Instance.VirtualDimensions), Color.White);

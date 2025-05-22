@@ -35,7 +35,7 @@ namespace Stolon
 		private SpriteBatch _spriteBatch;
 		private RenderTarget2D _renderTarget;
 
-		private RenderTarget2D _bloomRenderTarget;
+        private RenderTarget2D _bloomRenderTarget;
 		private StolonEnvironment _environment;
 		private Point _aspectRatio = new Point(16, 9);
 		private float AspectRatioFloat => _aspectRatio.X / _aspectRatio.Y * 1.7776f;

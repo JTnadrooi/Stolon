@@ -37,34 +37,6 @@ namespace Stolon
     public class StolonEnvironment : GameComponent, IDialogueProvider
     {
         /// <summary>
-        /// The current state of the game.
-        /// </summary>
-        public enum SLGameState
-        {
-            /// <summary>
-            /// The board is open.
-            /// </summary>
-            OpenBoard,
-            OpenScene,
-            /// <summary>
-            /// The game is loading.
-            /// </summary>
-            Loading,
-            /// <summary>
-            /// The menu is open.
-            /// </summary>
-            InMenu,
-        }
-
-        /// <summary>
-        /// The current state of the game.
-        /// </summary>
-        public SLGameState GameState
-        {
-            get => _gameState; 
-            set => _gameState = value;
-        }
-        /// <summary>
         /// The current <see cref="Stolon.Scene"/>.
         /// </summary>
         public Scene Scene
@@ -72,6 +44,7 @@ namespace Stolon
             get => _scene;
             set => _scene = value;
         }
+        public GameStateManager GameStateManager => _gameStateManager;
         /// <summary>
         /// The <see cref="UserInterface"/>.
         /// </summary>
@@ -92,8 +65,8 @@ namespace Stolon
         private Scene _scene;
         private UserInterface _userInterface;
         private OverlayEngine _overlayer;
-        private SLGameState _gameState;
         private Dictionary<string, EntityBase> _entities;
+        private GameStateManager _gameStateManager;
 
         internal StolonEnvironment() : base(null)
         {
@@ -101,6 +74,8 @@ namespace Stolon
             _entities = new Dictionary<string, EntityBase>();
             _userInterface = null!;
             _overlayer = null!;
+            _gameStateManager = new GameStateManager();
+            GameStateManager.ChangeState<MenuGameState>();
             TaskHeap = new TaskHeap();
         }
         internal void Initialize()
@@ -114,8 +89,6 @@ namespace Stolon
 
             _overlayer = new OverlayEngine();
 
-            _gameState = SLGameState.InMenu;
-
             _overlayer.AddOverlay(new TransitionOverlay());
             _overlayer.AddOverlay(new LoadOverlay());
             _overlayer.AddOverlay(new TransitionDitherOverlay(StolonGame.Instance.GraphicsDevice));
@@ -125,54 +98,20 @@ namespace Stolon
             //    "debug2"
             //));
         }
-        public GamestateInfo GetGamestateInfo()
-        {
-            return _gameState switch
-            {
-                SLGameState.OpenBoard => new GamestateInfo("cityLights", "openBoard"),
-                SLGameState.InMenu => new GamestateInfo("menuTheme", "inMenu"),
-                _ => new GamestateInfo(null, "unknown"),
-            };
-        }
         public override void Update(int elapsedMiliseconds)
         {
             TaskHeap.Update(elapsedMiliseconds);
             _userInterface.Update(elapsedMiliseconds);
             AudioEngine.Audio.Update(elapsedMiliseconds);
 
-            switch (_gameState)
-            {
-                case SLGameState.OpenBoard:
-                    _scene.Update(elapsedMiliseconds);
-                    break;
-                case SLGameState.InMenu:
-                    break;
-                case SLGameState.Loading:
-                    break;
-            }
-
-            StolonGame.Instance.DRP.UpdateDetails(_gameState switch
-            {
-                SLGameState.OpenBoard => "Placing some markers..",
-                SLGameState.InMenu => "Admiring the main menu..",
-                SLGameState.Loading => "Loading STOLON..",
-                _ => "Unset."
-            });
+            GameStateManager.Update(elapsedMiliseconds);
+            StolonGame.Instance.DRP.UpdateDetails(GameStateManager.Current.DRPStatus);
 
             _overlayer.Update(elapsedMiliseconds);
             base.Update(elapsedMiliseconds);
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            switch (_gameState)
-            {
-                case SLGameState.OpenBoard:
-                    break;
-                case SLGameState.InMenu:
-                    break;
-                case SLGameState.Loading:
-                    break;
-            }
             _scene.Draw(spriteBatch, elapsedMiliseconds);
             _userInterface.Draw(spriteBatch, elapsedMiliseconds);
 
