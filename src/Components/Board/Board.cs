@@ -43,7 +43,7 @@ namespace Stolon
         public BoardState InitialState { get; }
         public Stack<BoardState> History { get; private set; }
 
-        public bool MouseIsOnBoard => SLMouse.Domain == SLMouse.MouseDomain.Board;
+        public bool MouseIsOnBoard => STOLON.Input.Domain == GameInputManager.MouseDomain.Board;
         public Vector2 WorldMousePos { get; private set; }
 
         private SpriteBatch _boardSpriteBatch;
@@ -105,24 +105,24 @@ namespace Stolon
         {
             if (!_firstFrame) _firstFrame = true;
 
-            WorldMousePos = Camera.Unproject(SLMouse.VirualPosition);
+            WorldMousePos = Camera.Unproject(STOLON.Input.VirtualPosition);
 
-            _mouseStateCoefficient = SLMouse.CurrentState.GetMouseStateCoefficient();
+            _mouseStateCoefficient = STOLON.Input.CurrentMouse.GetMouseStateCoefficient();
 
-            if (SLKeyboard.IsPressed(Keys.LeftShift))
+            if (STOLON.Input.IsPressed(Keys.LeftShift))
             {
                 if (_mouseStateCoefficient == 0) _mouseStateCoefficient = 1;
-                if (SLKeyboard.IsPressed(Keys.A))
+                if (STOLON.Input.IsPressed(Keys.A))
                     _desiredCameraPos.X -= 1;
-                if (SLKeyboard.IsPressed(Keys.D))
+                if (STOLON.Input.IsPressed(Keys.D))
                     _desiredCameraPos.X += 1;
-                if (SLKeyboard.IsPressed(Keys.W))
+                if (STOLON.Input.IsPressed(Keys.W))
                     _desiredCameraPos.Y -= 1;
-                if (SLKeyboard.IsPressed(Keys.S))
+                if (STOLON.Input.IsPressed(Keys.S))
                     _desiredCameraPos.Y += 1;
             }
 
-            if (SLMouse.IsPressed(SLMouse.MouseButton.Right)) _desiredCameraPos += (SLMouse.PreviousState.Position - SLMouse.CurrentState.Position).ToVector2();
+            if (STOLON.Input.IsPressed(GameInputManager.MouseButton.Right)) _desiredCameraPos += (STOLON.Input.PreviousMouse.Position - STOLON.Input.CurrentMouse.Position).ToVector2();
             Zoom += (_desiredZoom - Zoom) * 0.1f + _mouseStateCoefficient * SmoothnessModifier;
             Camera.Position += (_desiredCameraPos - Camera.Position) * 0.1f + (WorldMousePos - Camera.Position) * SmoothnessModifier * Math.Abs(_mouseStateCoefficient);
             Camera.Zoom = Zoom;
@@ -156,11 +156,11 @@ namespace Stolon
             //    }
             //    Undo();
             //}
-            if (SLKeyboard.IsClicked(Keys.Z)) // debug keys
+            if (STOLON.Input.IsClicked(Keys.Z)) // debug keys
             {
             }
-            if (SLKeyboard.IsClicked(Keys.X)) { }
-            if (SLKeyboard.IsClicked(Keys.C)) { }
+            if (STOLON.Input.IsClicked(Keys.X)) { }
+            if (STOLON.Input.IsClicked(Keys.C)) { }
             //if (StolonGame.Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) StolonGame.Instance.SLExit();
 
             //Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);
@@ -205,7 +205,7 @@ namespace Stolon
                     STOLON.Environment.Overlayer.Activate("loading");
                 }
             }
-            else if (StolonStatic.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && MouseIsOnBoard)
+            else if (StolonStatic.IsMouseClicked(STOLON.Input.CurrentMouse, STOLON.Input.PreviousMouse) && MouseIsOnBoard)
             {
                 STOLON.Debug.Log(">attempting board alter after mouseclick");
                 Move? move = null;

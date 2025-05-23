@@ -24,7 +24,8 @@ namespace Stolon
     public partial class STOLON : Game
 	{
 		private GraphicsDeviceManager _graphics;
-		private SpriteBatch _spriteBatch;
+		private GameInputManager _input;
+        private SpriteBatch _spriteBatch;
 		private RenderTarget2D _renderTarget;
 
         private RenderTarget2D _bloomRenderTarget;
@@ -122,11 +123,13 @@ namespace Stolon
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 			_textures = new GameTextureCollection(Content);
             _fonts = new GameFontCollection(Content);
+			_input = new GameInputManager();
 
-			Textures = _textures;
-			Fonts = _fonts;
+            STOLON.Textures = _textures;
+            STOLON.Fonts = _fonts;
+            STOLON.Input = _input;
 
-			_environment = new GameEnvironment();
+            _environment = new GameEnvironment();
             STOLON.Environment = _environment;
 
             _environment.Initialize();
@@ -159,22 +162,22 @@ namespace Stolon
 		{
 			if (IsActive)
 			{
-				SLMouse.PreviousState = SLMouse.CurrentState;
-				SLMouse.CurrentState = Mouse.GetState();
+				STOLON.Input.PreviousMouse = STOLON.Input.CurrentMouse;
+				STOLON.Input.CurrentMouse = Mouse.GetState();
 
-				SLKeyboard.PreviousState = SLKeyboard.CurrentState;
-				SLKeyboard.CurrentState = Keyboard.GetState();
+				STOLON.Input.PreviousKeyboard = STOLON.Input.CurrentKeyboard;
+				STOLON.Input.CurrentKeyboard = Keyboard.GetState();
 
-				if (!GraphicsDevice.Viewport.Bounds.Contains(SLMouse.CurrentState.Position)) SLMouse.Domain = SLMouse.MouseDomain.OfScreen;
-				else if (Environment.UI.Textframe.DialogueBounds.Contains(SLMouse.VirualPosition)) SLMouse.Domain = SLMouse.MouseDomain.Dialogue;
-				else if (GameStateManager.IsCurrent<BoardGameState>() && SLMouse.VirualPosition.X > (int)GameStateManager.GetCurrent<BoardGameState>().Line1X && SLMouse.VirualPosition.X < (int)GameStateManager.GetCurrent<BoardGameState>().Line2X) SLMouse.Domain = SLMouse.MouseDomain.Board;
-				else SLMouse.Domain = SLMouse.MouseDomain.UserInterfaceLow;
+				if (!GraphicsDevice.Viewport.Bounds.Contains(STOLON.Input.CurrentMouse.Position)) STOLON.Input.Domain = GameInputManager.MouseDomain.OfScreen;
+				else if (Environment.UI.Textframe.DialogueBounds.Contains(STOLON.Input.VirtualPosition)) STOLON.Input.Domain = GameInputManager.MouseDomain.Dialogue;
+				else if (GameStateManager.IsCurrent<BoardGameState>() && STOLON.Input.VirtualPosition.X > (int)GameStateManager.GetCurrent<BoardGameState>().Line1X && STOLON.Input.VirtualPosition.X < (int)GameStateManager.GetCurrent<BoardGameState>().Line2X) STOLON.Input.Domain = GameInputManager.MouseDomain.Board;
+				else STOLON.Input.Domain = GameInputManager.MouseDomain.UserInterfaceLow;
 
 				ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
 
 				_environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
-				if (SLKeyboard.IsClicked(Keys.F)) GoFullscreen();
+				if (STOLON.Input.IsClicked(Keys.F)) GoFullscreen();
 			}
 			base.Update(gameTime);
 		}
@@ -251,6 +254,7 @@ namespace Stolon
         public static AudioEngine Audio { get; private set; }
         public static DebugStream Debug { get; private set; }
         public static GameEnvironment Environment { get; private set; }
+        public static GameInputManager Input { get; private set; }
         public const string MEDIUM_FONT_ID = "fonts\\pixeloidMono";
 		public const string SMALL_FONT_ID = "fonts\\smollerMono";
 		#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -258,41 +262,8 @@ namespace Stolon
 
 	public static class SLMouse
 	{
-		public enum MouseButton
-		{
-			Left,
-			Middle,
-			Right,
-		}
-		public enum MouseDomain
-		{
-			OfScreen,
-			Board,
-			UserInterfaceLow,
-			UserInterfaceHigh,
-			Dialogue,
-		}
-		public static MouseDomain Domain { get; internal set; }
-		public static MouseState PreviousState { get; internal set; }
-		public static MouseState CurrentState { get; internal set; }
-		public static Vector2 VirualPosition => CurrentState.Position.ToVector2() / STOLON.Instance.ScreenScale;
-		public static bool IsPressed(MouseButton button) => IsPressed(CurrentState, button);
-		private static bool IsPressed(MouseState state, MouseButton button) => button switch
-		{
-			MouseButton.Left => state.LeftButton,
-			MouseButton.Middle => state.MiddleButton,
-			MouseButton.Right => state.RightButton,
-			_ => throw new Exception(),
-		} == ButtonState.Pressed;
-
-		public static bool IsClicked(MouseButton button) => IsPressed(CurrentState, button) && !IsPressed(PreviousState, button);
 	}
 	public static class SLKeyboard
 	{
-		public static KeyboardState CurrentState { get; internal set; }
-		public static KeyboardState PreviousState { get; internal set; }
-		private static bool IsPressed(KeyboardState state, Keys key) => state.IsKeyDown(key);
-		public static bool IsPressed(Keys key) => IsPressed(CurrentState, key);
-		public static bool IsClicked(Keys key) => IsPressed(CurrentState, key) && !IsPressed(PreviousState, key);
 	}
 }

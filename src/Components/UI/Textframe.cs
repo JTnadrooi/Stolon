@@ -177,7 +177,7 @@ namespace Stolon
                     + new Point((int)(_dialoguebounds.Width / 2f - _font.FastMeasure(_currentDialogue.Value.Provider.Name).X * _providerTextScaleCoefficient / 2f), 2);
             }
             if (_awaitingMouseDialogueHover) textFrameGoUp = true;
-            if (SLMouse.Domain == SLMouse.MouseDomain.Dialogue)
+            if (STOLON.Input.Domain == GameInputManager.MouseDomain.Dialogue)
             {
                 _awaitingMouseDialogueHover = false;
                 textFrameGoUp = true;

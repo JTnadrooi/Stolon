@@ -208,11 +208,11 @@ namespace Stolon
         /// <summary>
         /// A value indicating if the source <see cref="UIElement"/> is pressed by the mouse.
         /// </summary>
-        public bool IsPressed => IsHovered && SLMouse.CurrentState.LeftButton == ButtonState.Pressed;
+        public bool IsPressed => IsHovered && STOLON.Input.CurrentMouse.LeftButton == ButtonState.Pressed;
         /// <summary>
         /// A value indicating if the source <see cref="UIElement"/> is clicked by the mouse.
         /// </summary>
-        public bool IsClicked => IsPressed && SLMouse.PreviousState.LeftButton == ButtonState.Released;
+        public bool IsClicked => IsPressed && STOLON.Input.PreviousMouse.LeftButton == ButtonState.Released;
         /// <summary>
         /// The <see cref="UIElement.Id"/> of the source <see cref="UIElement"/>.
         /// </summary>
