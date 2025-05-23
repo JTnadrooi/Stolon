@@ -21,16 +21,6 @@ using DiscordRPC.Events;
 
 namespace STOLON
 {
-    public struct GamestateInfo
-    {
-        public string? TrackId { get; }
-        public string InfoId { get; }
-        public GamestateInfo(string? trackId, string infoId)
-        {
-            TrackId = trackId;
-            InfoId = infoId;
-        }
-    }
     /// <summary>
     /// The enviroment of the <see cref="STOLON"/> game.
     /// </summary>
