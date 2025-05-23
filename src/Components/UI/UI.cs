@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using static Stolon.UIElement;
+using static STOLON.UIElement;
 using Color = Microsoft.Xna.Framework.Color;
 using Math = System.Math;
 using Point = Microsoft.Xna.Framework.Point;
@@ -20,7 +20,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// The user interface for the <see cref="GameEnvironment"/>.
@@ -47,7 +47,7 @@ namespace Stolon
         private Textframe _textframe;
 
         /// <summary>
-        /// The <see cref="Stolon.Textframe"/> managed by the <see cref="UserInterface"/>.
+        /// The <see cref="global::STOLON.Textframe"/> managed by the <see cref="UserInterface"/>.
         /// </summary>
         public Textframe Textframe => _textframe;
 

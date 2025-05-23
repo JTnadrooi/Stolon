@@ -26,7 +26,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// A interface that provides a basic way to interact with <see cref="Intrara"/> component classes.

@@ -22,7 +22,7 @@ using System.Linq;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// Provides a way to "fire and forget" simple game logic.

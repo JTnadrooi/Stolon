@@ -2,7 +2,7 @@
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// A base for players.

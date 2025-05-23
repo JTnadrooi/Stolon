@@ -7,7 +7,7 @@ using System.Collections.Specialized;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// A base new <see cref="TileAttributeBase"/> objects
@@ -91,8 +91,8 @@ namespace Stolon
         /// <returns>A new <see cref="HashSet{T}"/> containing a list of <see cref="TileAttributeBase"/> objects fit for indicating a <see cref="Tile"/> is occupied.</returns>
         public static HashSet<TileAttributeBase> GetNewPlayerAttributes(int playerID) => new HashSet<TileAttributeBase>()
             {
-                (TileAttributeBase)Stolon.TileAttributes.Attributes["Player" + playerID + "Occupied"],
-                Stolon.TileAttributes.Get<TileAttributes.TileAttributeSolid>(),
+                (TileAttributeBase)global::STOLON.TileAttributes.Attributes["Player" + playerID + "Occupied"],
+                global::STOLON.TileAttributes.Get<TileAttributes.TileAttributeSolid>(),
             }; // keep new
         /// <summary>
         /// Get a value indicating if the <paramref name="tile"/> has gravity.

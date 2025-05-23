@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Point = Microsoft.Xna.Framework.Point;
 
-namespace Stolon
+namespace STOLON
 {
     public class GameFont
     {

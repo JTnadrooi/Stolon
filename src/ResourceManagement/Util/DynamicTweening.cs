@@ -7,7 +7,7 @@ using System.Numerics;
 #nullable enable
 
 
-namespace Stolon
+namespace STOLON
 {
 	public static class DynamicTweening
 	{

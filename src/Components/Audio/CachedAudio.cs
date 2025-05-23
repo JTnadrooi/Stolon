@@ -13,7 +13,7 @@ using AsitLib;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public class CachedAudioSampleProvider : ISampleProvider
     {

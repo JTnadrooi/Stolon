@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public static class Entities
     {

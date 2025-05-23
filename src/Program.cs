@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Stolon
+namespace STOLON
 {
     public static class Program
     {

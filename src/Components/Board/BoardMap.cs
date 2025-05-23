@@ -19,7 +19,7 @@ using RectangleF = MonoGame.Extended.RectangleF;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// Provides a way to get the unique <see cref="Move"/> structs from any given board in a performant manner.

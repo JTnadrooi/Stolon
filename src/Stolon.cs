@@ -19,7 +19,7 @@ using Microsoft.Xna.Framework.Content;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public partial class STOLON : Game
 	{
@@ -259,11 +259,4 @@ namespace Stolon
 		public const string SMALL_FONT_ID = "fonts\\smollerMono";
 		#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     }
-
-	public static class SLMouse
-	{
-	}
-	public static class SLKeyboard
-	{
-	}
 }

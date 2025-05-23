@@ -19,7 +19,7 @@ using Microsoft.Xna.Framework.Content;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public class GameInputManager
     {

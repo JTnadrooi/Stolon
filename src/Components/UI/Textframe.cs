@@ -14,7 +14,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public struct DialogueDrawArgs
     {

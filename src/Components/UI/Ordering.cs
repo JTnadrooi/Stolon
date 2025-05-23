@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Betwixt;
 using MonoGame.Extended;
 
-using static Stolon.UIElement;
+using static STOLON.UIElement;
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -16,7 +16,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Math = System.Math;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using RectangleF = MonoGame.Extended.RectangleF;
-using static Stolon.UserInterface;
+using static STOLON.UserInterface;
 using AsitLib;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -28,7 +28,7 @@ using System.Text.RegularExpressions;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
 
     /// <summary>

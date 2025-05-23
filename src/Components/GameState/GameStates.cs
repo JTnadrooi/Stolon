@@ -15,7 +15,7 @@ using MonoGame.Extended;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public class MenuGameState : IGameState
     {
@@ -104,7 +104,7 @@ namespace Stolon
                 "The border rows are most respectable.",
                 "They are stingers.",
                 "Reality is overrated.",
-                "Stolons deadline has always been 2025.",
+                "STOLON's deadline has always been 2025.",
                 "If you listen very closely you can hear the main theme.",
                 "If you listen very closely you can hear the sound effects.",
                 "Listed twice.",

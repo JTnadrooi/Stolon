@@ -16,7 +16,7 @@ using Microsoft.Xna.Framework;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// Goldsilk hates the player.

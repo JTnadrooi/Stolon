@@ -18,7 +18,7 @@ using DiscordRPC.Events;
 #nullable enable
 #pragma warning disable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// 

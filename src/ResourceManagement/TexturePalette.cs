@@ -27,7 +27,7 @@ using AsitLib.Collections;
 using System.Xml;
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public interface ITexturePalette
     {
@@ -35,7 +35,7 @@ namespace Stolon
         public string Name { get; }
         public int Size => Colors.Count;
     }
-    
+
     public static class TexturePalette
     {
         public enum BloomAlgorithm
@@ -123,7 +123,7 @@ namespace Stolon
         {
             _colors = new Color[4];
             Name = name;
-            Array.Copy(StolonStatic.GetColors(bitmap, unique), 0 , _colors, 0, _colors.Length);
+            Array.Copy(Utils.GetColors(bitmap, unique), 0, _colors, 0, _colors.Length);
         }
         public TexturePalette4(string name, params Color[] colors)
         {

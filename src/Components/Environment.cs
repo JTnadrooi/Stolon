@@ -19,7 +19,7 @@ using DiscordRPC.Events;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public struct GamestateInfo
     {
@@ -32,7 +32,7 @@ namespace Stolon
         }
     }
     /// <summary>
-    /// The enviroment of the <see cref="Stolon"/> game.
+    /// The enviroment of the <see cref="global::STOLON"/> game.
     /// </summary>
     public class GameEnvironment : GameComponent, IDialogueProvider
     {
@@ -42,7 +42,7 @@ namespace Stolon
         /// </summary>
         public UserInterface UI => _userInterface;
         /// <summary>
-        /// The <see cref="Stolon.OverlayEngine"/>.
+        /// The <see cref="global::STOLON.OverlayEngine"/>.
         /// </summary>
         public OverlayEngine Overlayer => _overlayer;
         /// <summary>

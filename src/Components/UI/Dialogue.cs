@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// Provides a way to make a object responsible for dialogue. 

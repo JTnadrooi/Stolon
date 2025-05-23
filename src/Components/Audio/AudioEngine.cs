@@ -14,7 +14,7 @@ using Salaros.Configuration;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public enum AudioDomain
     {

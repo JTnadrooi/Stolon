@@ -22,7 +22,7 @@ using MonoGame.Extended.Tiled;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// The representor of the board in the STOLON environment.
@@ -205,7 +205,7 @@ namespace Stolon
                     STOLON.Environment.Overlayer.Activate("loading");
                 }
             }
-            else if (StolonStatic.IsMouseClicked(STOLON.Input.CurrentMouse, STOLON.Input.PreviousMouse) && MouseIsOnBoard)
+            else if (Utils.IsMouseClicked(STOLON.Input.CurrentMouse, STOLON.Input.PreviousMouse) && MouseIsOnBoard)
             {
                 STOLON.Debug.Log(">attempting board alter after mouseclick");
                 Move? move = null;

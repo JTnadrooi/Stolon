@@ -13,7 +13,7 @@ using AsitLib;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     /// <summary>
     /// Implements a way to automatically dispose <see cref="AudioFileReader"/> objects.
@@ -63,7 +63,7 @@ namespace Stolon
         /// </summary>
         public bool ReadFully { get; set; }
         /// <summary>
-        /// If the output should be pauzed when the Stolon game window loses focus.
+        /// If the output should be pauzed when the STOLON game window loses focus.
         /// </summary>
         public bool PauzeWhenInactive { get; set; }
         /// <summary>

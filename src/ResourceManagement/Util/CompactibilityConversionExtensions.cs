@@ -16,7 +16,7 @@ using SizeF = MonoGame.Extended.SizeF;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public static class CompactibilityConversionExtensions
     {

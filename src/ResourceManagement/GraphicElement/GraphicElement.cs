@@ -24,7 +24,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using System.Diagnostics;
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public interface IGraphicElementParent
     {

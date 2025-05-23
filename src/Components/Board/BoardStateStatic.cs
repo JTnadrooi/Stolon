@@ -13,7 +13,7 @@ using Point = Microsoft.Xna.Framework.Point;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public partial class BoardState
     {

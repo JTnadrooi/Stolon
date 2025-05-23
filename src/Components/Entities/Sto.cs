@@ -18,7 +18,7 @@ using Microsoft.Xna.Framework;
 
 #nullable enable
 
-namespace Stolon
+namespace STOLON
 {
     public class StoEntity : EntityBase
     {
