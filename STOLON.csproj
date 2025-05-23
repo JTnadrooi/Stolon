@@ -36,14 +36,14 @@
 		<PackageReference Include="Betwixt" Version="1.4.1">
 			<NoWarn>NU1701</NoWarn>
 		</PackageReference>
-		<PackageReference Include="DiscordRichPresence" Version="1.0.175" />
-		<PackageReference Include="MonoGame.Extended" Version="4.0.3" />
-		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.2.1105" />
-		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+		<PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+		<PackageReference Include="MonoGame.Extended" Version="4.1.0" />
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.3" />
+		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.3" />
 		<PackageReference Include="NAudio" Version="2.2.1" />
-		<PackageReference Include="Nopipeline.Task" Version="2.2.0" />
+		<PackageReference Include="Nopipeline.Task" Version="2.3.0" />
 		<PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />
-		<PackageReference Include="System.Drawing.Common" Version="9.0.4" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.5" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="content\textures\characters\" />
