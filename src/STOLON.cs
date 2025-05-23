@@ -37,7 +37,6 @@ namespace STOLON
         private Color[] _palette;
         private GameTextureCollection _textures;
         private GameFontCollection _fonts;
-        private BloomFilter _bloomFilter;
         private Point _oldWindowSize;
         private EffectPipeline _post;
 
@@ -62,6 +61,7 @@ namespace STOLON
         {
             Instance = this;
             _graphics = new GraphicsDeviceManager(this);
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
             Content.RootDirectory = "content";
             IsMouseVisible = true;
 
@@ -139,10 +139,6 @@ namespace STOLON
                 System.Drawing.ColorTranslator.FromHtml("#f2fbeb").ToColor(),
                 System.Drawing.ColorTranslator.FromHtml("#171219").ToColor(),
             };
-
-            _bloomFilter = new BloomFilter();
-            _bloomFilter.Load(GraphicsDevice, Content, _aspectRatio.X * _desiredModifier, _aspectRatio.Y * _desiredModifier);
-            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
             _post = new EffectPipeline(GraphicsDevice, _spriteBatch, VirtualDimensions.X, VirtualDimensions.Y);
 
             _post.AddEffect(new ReplaceColorEffect(Content.Load<Effect>("effects\\ReplaceColor"))
@@ -158,7 +154,7 @@ namespace STOLON
         }
         protected override void UnloadContent()
         {
-            _bloomFilter.Dispose();
+
         }
         public void SLExit()
         {
@@ -202,7 +198,6 @@ namespace STOLON
                 _graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
                 _graphics.ApplyChanges();
             }
-            _bloomFilter.UpdateResolution(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             _graphics.ToggleFullScreen();
             _graphics.ApplyChanges();
         }

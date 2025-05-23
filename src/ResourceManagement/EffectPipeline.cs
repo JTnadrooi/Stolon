@@ -12,7 +12,7 @@ namespace STOLON
     public interface IEffect
     {
         public Effect Shader { get; }
-        public void SetParameters();
+        public void SetParameters(Texture2D source);
     }
 
     public class EffectPipeline : IDisposable
@@ -43,7 +43,7 @@ namespace STOLON
         public void BeginScene()
         {
             _graphics.SetRenderTarget(_sceneTarget);
-            _graphics.Clear(Color.Transparent);
+            _graphics.Clear(Color.LightSeaGreen);
         }
 
         /// <summary>
@@ -57,25 +57,43 @@ namespace STOLON
 
             foreach (IEffect effect in _effects)
             {
-                effect.SetParameters();
+                // pass src into the effect
+                effect.SetParameters(src);
 
                 _graphics.SetRenderTarget(dst);
                 _graphics.Clear(Color.LightSeaGreen);
 
-                _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Opaque, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, effect.Shader);
+                _spriteBatch.Begin(
+                    SpriteSortMode.Deferred,
+                    BlendState.Opaque,
+                    SamplerState.PointClamp,
+                    DepthStencilState.None,
+                    RasterizerState.CullCounterClockwise,
+                    effect.Shader
+                );
                 _spriteBatch.Draw(src, Vector2.Zero, Color.White);
                 _spriteBatch.End();
 
-                RenderTarget2D tmp = src;
+                // ping-pong
+                var tmp = src;
                 src = dst;
                 dst = tmp;
             }
 
+            // finally, draw `src` (which now holds the last pass) to the backbuffer
             _graphics.SetRenderTarget(null);
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: transform);
+            _spriteBatch.Begin(
+                SpriteSortMode.Deferred,
+                BlendState.AlphaBlend,
+                SamplerState.PointClamp,
+                DepthStencilState.None,
+                RasterizerState.CullCounterClockwise,
+                transformMatrix: transform
+            );
             _spriteBatch.Draw(src, Vector2.Zero, Color.White);
             _spriteBatch.End();
         }
+
 
         public void Dispose()
         {
@@ -96,8 +114,9 @@ namespace STOLON
 
         public ReplaceColorEffect(Effect effect) => Shader = effect;
 
-        public void SetParameters()
+        public void SetParameters(Texture2D source)
         {
+            Shader.Parameters["InputTexture"].SetValue(source);
             Shader.Parameters["dcolor1"].SetValue(Target1.ToVector4());
             Shader.Parameters["color1"].SetValue(Replace1.ToVector4());
             Shader.Parameters["dcolor2"].SetValue(Target2.ToVector4());

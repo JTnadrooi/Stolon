@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net8.0-windows</TargetFramework>
 		<RollForward>Major</RollForward>
 		<PublishReadyToRun>false</PublishReadyToRun>
 		<TieredCompilation>false</TieredCompilation>
@@ -9,6 +9,8 @@
 	<PropertyGroup>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationIcon>Icon.ico</ApplicationIcon>
+		<StartupObject>STOLON.Program</StartupObject>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Remove="content\bin\**" />
@@ -38,8 +40,8 @@
 		</PackageReference>
 		<PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
 		<PackageReference Include="MonoGame.Extended" Version="4.1.0" />
-		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.3" />
 		<PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.3" />
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.3" />
 		<PackageReference Include="NAudio" Version="2.2.1" />
 		<PackageReference Include="Nopipeline.Task" Version="2.3.0" />
 		<PackageReference Include="Salaros.ConfigParser" Version="0.3.8" />

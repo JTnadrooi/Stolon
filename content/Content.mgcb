@@ -77,11 +77,6 @@
 /processor:EffectProcessor
 /build:../content/effects/replaceColor.fx;effects/replaceColor.fx
 
-#begin ../content/effects/Bloom.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/build:../content/effects/Bloom.fx;effects/Bloom.fx
-
 #begin ../content/textures/landscape.png
 /importer:TextureImporter
 /processor:TextureProcessor

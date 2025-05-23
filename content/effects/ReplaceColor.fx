@@ -1,45 +1,41 @@
-﻿#if OPENGL
-#define SV_POSITION POSITION
-    #define VS_SHADERMODEL vs_3_0
-    #define PS_SHADERMODEL ps_3_0
-#else
-    #define VS_SHADERMODEL vs_4_0_level_9_1
-    #define PS_SHADERMODEL ps_4_0_level_9_1
-#endif
+﻿#define VS_SHADERMODEL vs_5_0
+#define PS_SHADERMODEL ps_5_0
 
-sampler2D input : register(s0);
+Texture2D InputTexture : register(t0);
+SamplerState InputSampler : register(s0);
 
-// threshold for “close enough”
+// Inputs expected from SpriteBatch
+struct PSInput
+{
+    float4 Position : SV_POSITION;
+    float4 Color    : COLOR0;
+    float2 TexCoord : TEXCOORD0;
+};
+
 static const float maxDelta = 0.1;
 
-// target and replacement colors
-extern float4 dcolor1;
-extern float4 dcolor2;
-extern float4 color1;
-extern float4 color2;
+// Externally set colors
+float4 dcolor1;
+float4 dcolor2;
+float4 color1;
+float4 color2;
 
-float4 MainPS(float2 uv : TEXCOORD) : COLOR
+float4 MainPS(PSInput input) : SV_TARGET
 {
-    float4 src = tex2D(input, uv);
-    
-    // if fully transparent, just return as-is
-    if (src.a == 0.0)
-        return src;
+    float4 src = InputTexture.Sample(InputSampler, input.TexCoord);
 
-    // compute absolute channel-wise deltas
+    if (src.a == 0.0) return src;
+
     float3 diff1 = abs(src.rgb - dcolor1.rgb);
     float3 diff2 = abs(src.rgb - dcolor2.rgb);
 
-    // all channels within threshold?
     bool match1 = all(diff1 <= maxDelta);
     bool match2 = all(diff2 <= maxDelta);
 
-    // pick final color: match1 → color1, match2 → color2, else → src
-    // note: if both match (unlikely), priority goes to color1
     float4 result = src;
-    result = match2 ? color2 : result;
-    result = match1 ? color1 : result;
-    
+    if (match2) result = color2;
+    if (match1) result = color1;
+
     return result;
 }
 
