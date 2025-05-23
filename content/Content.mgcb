@@ -317,3 +317,8 @@
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /build:../content/fonts/fixedsys.spritefont;fonts/fixedsys.spritefont
+
+#begin ../content/effects/ReplaceColor.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/build:../content/effects/ReplaceColor.fx;effects/ReplaceColor.fx

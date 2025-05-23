@@ -145,7 +145,7 @@ namespace STOLON
             _bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
             _post = new EffectPipeline(GraphicsDevice, _spriteBatch, VirtualDimensions.X, VirtualDimensions.Y);
 
-            _post.AddEffect(new ReplaceColorEffect(Content.Load<Effect>("effects\\replaceColor"))
+            _post.AddEffect(new ReplaceColorEffect(Content.Load<Effect>("effects\\ReplaceColor"))
             {
                 Target1 = Color.White,
                 Target2 = Color.Black,
