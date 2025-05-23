@@ -74,7 +74,7 @@ namespace STOLON
 
         public MenuGameState()
         {
-            string menuDataFolder = "menuLogoMid";
+            const string menuDataFolder = "menuLogoMid";
             _menuLogoLines = STOLON.Textures.GetReference("textures\\" + menuDataFolder + "\\lines");
             _menuLogoDummyTiles = STOLON.Textures.GetReference("textures\\" + menuDataFolder + "\\dummyTiles");
             _menuLogoFilledTiles = STOLON.Textures.GetReference("textures\\" + menuDataFolder + "\\filledTiles");
@@ -357,8 +357,8 @@ namespace STOLON
                 _loadingFinished = true;
                 _onLeave?.Invoke();
                 _onLeave = null;
-                STOLON.Environment.GameStateManager.ChangeState<BoardGameState>(true);
-                ((BoardGameState)STOLON.Environment.GameStateManager.Current).SetBoard(_boardPlayers!);
+                STOLON.StateManager.ChangeState<BoardGameState>(true);
+                ((BoardGameState)STOLON.StateManager.Current).SetBoard(_boardPlayers!);
                 _boardPlayers = null;
             }), 2000, false);
             _milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
@@ -437,7 +437,7 @@ namespace STOLON
         }
         private void UpdateUI(int elapsedMiliseconds)
         {
-            float zoomIntensity = ((BoardGameState)STOLON.Environment.GameStateManager.Current).Board.ZoomIntensity;
+            float zoomIntensity = ((BoardGameState)STOLON.StateManager.Current).Board.ZoomIntensity;
             float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
 
             lineZoomOffset = Math.Max(0, lineZoomOffset);

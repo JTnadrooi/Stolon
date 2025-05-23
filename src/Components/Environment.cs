@@ -25,8 +25,8 @@ namespace STOLON
     {
         public string? TrackId { get; }
         public string InfoId { get; }
-        public GamestateInfo(string? trackId, string infoId) 
-        { 
+        public GamestateInfo(string? trackId, string infoId)
+        {
             TrackId = trackId;
             InfoId = infoId;
         }
@@ -36,7 +36,6 @@ namespace STOLON
     /// </summary>
     public class GameEnvironment : GameComponent, IDialogueProvider
     {
-        public GameStateManager GameStateManager => _gameStateManager;
         /// <summary>
         /// The <see cref="UserInterface"/>.
         /// </summary>
@@ -65,7 +64,8 @@ namespace STOLON
             _userInterface = null!;
             _overlayer = null!;
             _gameStateManager = new GameStateManager();
-            GameStateManager.ChangeState<MenuGameState>();
+            STOLON.StateManager = _gameStateManager;
+            STOLON.StateManager.ChangeState<MenuGameState>();
             TaskHeap = new TaskHeap();
         }
         internal void Initialize()
@@ -93,18 +93,18 @@ namespace STOLON
             TaskHeap.Update(elapsedMiliseconds);
             _userInterface.Update(elapsedMiliseconds);
 
-            GameStateManager.Update(elapsedMiliseconds);
+            STOLON.StateManager.Update(elapsedMiliseconds);
 
             _userInterface.PostUpdate(elapsedMiliseconds);
             STOLON.Audio.Update(elapsedMiliseconds);
-            STOLON.Instance.DRP.UpdateDetails(GameStateManager.Current.DRPStatus);
+            STOLON.Instance.DRP.UpdateDetails(STOLON.StateManager.Current.DRPStatus);
 
             _overlayer.Update(elapsedMiliseconds);
             base.Update(elapsedMiliseconds);
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            GameStateManager.Draw(spriteBatch, elapsedMiliseconds);
+            STOLON.StateManager.Draw(spriteBatch, elapsedMiliseconds);
             _userInterface.Draw(spriteBatch, elapsedMiliseconds);
 
             _overlayer.Draw(spriteBatch, elapsedMiliseconds);

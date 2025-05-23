@@ -173,7 +173,7 @@ namespace STOLON
         //public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            string id = STOLON.Environment.GameStateManager.Current.GetID();
+            string id = STOLON.StateManager.Current.GetID();
             foreach (UIElementDrawData elementDrawData in _drawData)
             {
                 spriteBatch.DrawString(STOLON.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, STOLON.Fonts[elementDrawData.FontName].Scale, SpriteEffects.None, 1f);

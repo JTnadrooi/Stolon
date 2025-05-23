@@ -61,7 +61,7 @@ namespace STOLON
             _currentState.Draw(spriteBatch, elapsedMiliseconds);
         }
 
-        public static TGameState GetCurrent<TGameState>() where TGameState : IGameState => (TGameState)STOLON.Environment.GameStateManager.Current;
-        public static bool IsCurrent<TGameState>() where TGameState : IGameState => STOLON.Environment.GameStateManager.Current is TGameState;
+        public static TGameState GetCurrent<TGameState>() where TGameState : IGameState => (TGameState)STOLON.StateManager.Current;
+        public static bool IsCurrent<TGameState>() where TGameState : IGameState => STOLON.StateManager.Current is TGameState;
     }
 }
