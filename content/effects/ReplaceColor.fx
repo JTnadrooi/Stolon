@@ -1,35 +1,46 @@
 ﻿#if OPENGL
 #define SV_POSITION POSITION
-#define VS_SHADERMODEL vs_3_0
-#define PS_SHADERMODEL ps_3_0
+    #define VS_SHADERMODEL vs_3_0
+    #define PS_SHADERMODEL ps_3_0
 #else
-#define VS_SHADERMODEL vs_4_0_level_9_1
-#define PS_SHADERMODEL ps_4_0_level_9_1
+    #define VS_SHADERMODEL vs_4_0_level_9_1
+    #define PS_SHADERMODEL ps_4_0_level_9_1
 #endif
 
 sampler2D input : register(s0);
+
+// threshold for “close enough”
+static const float maxDelta = 0.1;
+
+// target and replacement colors
 extern float4 dcolor1;
 extern float4 dcolor2;
-
 extern float4 color1;
 extern float4 color2;
 
-bool1 ColorEqual(float4 incolor1, float4 incolor2)
-{
-    float maxDelta = float(0.1);
-    return (abs(incolor1.r - incolor2.r) < maxDelta && abs(incolor1.g - incolor2.g) < maxDelta && abs(incolor1.b - incolor2.b) < maxDelta);
-}
 float4 MainPS(float2 uv : TEXCOORD) : COLOR
 {
-    float4 color = tex2D(input, uv.xy);
+    float4 src = tex2D(input, uv);
     
-    if (ColorEqual(color.rgba, dcolor1))
-        return color1;
-    if (ColorEqual(color.rgba, dcolor2))
-        return color2;
-    if (color.a == float(0))
-        return color;
-    return color;
+    // if fully transparent, just return as-is
+    if (src.a == 0.0)
+        return src;
+
+    // compute absolute channel-wise deltas
+    float3 diff1 = abs(src.rgb - dcolor1.rgb);
+    float3 diff2 = abs(src.rgb - dcolor2.rgb);
+
+    // all channels within threshold?
+    bool match1 = all(diff1 <= maxDelta);
+    bool match2 = all(diff2 <= maxDelta);
+
+    // pick final color: match1 → color1, match2 → color2, else → src
+    // note: if both match (unlikely), priority goes to color1
+    float4 result = src;
+    result = match2 ? color2 : result;
+    result = match1 ? color1 : result;
+    
+    return result;
 }
 
 technique MainDrawing
