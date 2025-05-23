@@ -130,7 +130,8 @@ namespace Stolon
         {
             Instance.DebugStream.Log(">mass queueing a stream of size: " + count);
             selector ??= new Func<string, int, string>((s, i) => s);
-            for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke(Instance.UserInterface.GetRandomSplashText(), i)));
+            //for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke((()Instance.Environment.GameStateManager.Current).GetRandomSplashText(), i)));
+            throw new NotImplementedException();
             Instance.DebugStream.Success();
         }
 
