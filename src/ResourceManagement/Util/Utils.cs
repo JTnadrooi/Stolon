@@ -20,30 +20,6 @@ namespace STOLON
 {
     public static class Utils
     {
-        /// <summary>
-        /// Copy a texture.
-        /// </summary>
-        /// <param name="texture">The texture to copy.</param>
-        /// <param name="newName">The newName of the texture.</param>
-        /// <param name="onlyPostFix">
-        /// A value indicating if only the name of texture will be changed by <paramref name="newName"/>. If <see langword="false"/>,
-        /// the entirety of the id/key will be changed.
-        /// </param>
-        /// <param name="collection">
-        /// The <see cref="GameTextureCollection"/> this <see cref="GraphicsResource"/> will be added to. This is only relevant
-        /// when <paramref name="lazyCopy"/> is set to <see langword="true"/>.
-        /// </param>
-        /// <param name="graphics">The <see cref="GraphicsDevice"/> that will manage the newly created <see cref="GraphicsResource"/>.</param>
-        /// <param name="lazyCopy">
-        /// If <see langword="true"/>, there will be a check performed to see if the <paramref name="newName"/> 
-        /// is already contained in the given <paramref name="collection"/>. If yes, there will simply be a reference returned to that <see cref="GraphicsResource"/>.
-        /// If no, the the resulting <see cref="Texture2D"/> will be added to the <paramref name="collection"/>.
-        /// </param>
-        /// <param name="action">
-        /// The <see cref="Action{T}"/> that will be performed on the result of the 
-        /// <see cref="Copy(Texture2D, string?, bool, GameTextureCollection?, GraphicsDevice?, bool, Action{Texture2D}?)"/>.
-        /// </param>
-        /// <returns></returns>
         public static GameTexture Copy(this GameTexture texture, GraphicsDevice graphicsDevice, GameTextureCollection collection,
             string? newName = null, bool onlyPostFix = true,
             bool lazyCopy = true, Action<GameTexture>? action = null)
