@@ -177,7 +177,7 @@ namespace Stolon
 
 				if (!GraphicsDevice.Viewport.Bounds.Contains(SLMouse.CurrentState.Position)) SLMouse.Domain = SLMouse.MouseDomain.OfScreen;
 				else if (Environment.UI.Textframe.DialogueBounds.Contains(SLMouse.VirualPosition)) SLMouse.Domain = SLMouse.MouseDomain.Dialogue;
-				else if (SLMouse.VirualPosition.X > (int)UserInterface.Line1X && SLMouse.VirualPosition.X < (int)UserInterface.Line2X) SLMouse.Domain = SLMouse.MouseDomain.Board;
+				else if (GameStateManager.IsCurrent<BoardGameState>() && SLMouse.VirualPosition.X > (int)GameStateManager.GetCurrent<BoardGameState>().Line1X && SLMouse.VirualPosition.X < (int)GameStateManager.GetCurrent<BoardGameState>().Line2X) SLMouse.Domain = SLMouse.MouseDomain.Board;
 				else SLMouse.Domain = SLMouse.MouseDomain.UserInterfaceLow;
 
 				ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;

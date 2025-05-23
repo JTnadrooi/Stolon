@@ -104,8 +104,8 @@ namespace Stolon
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            _userInterface.Draw(spriteBatch, elapsedMiliseconds);
             GameStateManager.Draw(spriteBatch, elapsedMiliseconds);
+            _userInterface.Draw(spriteBatch, elapsedMiliseconds);
 
             _overlayer.Draw(spriteBatch, elapsedMiliseconds);
             base.Draw(spriteBatch, elapsedMiliseconds);

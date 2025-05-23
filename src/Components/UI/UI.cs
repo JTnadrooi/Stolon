@@ -32,39 +32,9 @@ namespace Stolon
         private List<UIElementDrawData> _drawData;
         public List<UIElementDrawData> DrawData => _drawData;
 
-        #region boardUIvariables
-
-        private int _lineX1;
-        private int _lineX2;
-        private float _lineOffset;
         public const int LINE_WIDTH = 2;
-        private float _uiLeftOffset;
-        private float _uiRightOffset;
-
-
         private Dictionary<string, UIElement> _AllUIElements;
         private Dictionary<string, UIElementUpdateData> _updateData;
-
-        private Texture2D _mouseClickFillElementTexture;
-        private Rectangle _mouseClickFillElementBounds;
-        private float _mouseClickElementBoundsCoefficient;
-
-        #endregion
-        #region dialogue variables
-
-
-
-        #endregion
-        #region public properties
-
-        /// <summary>
-        /// The virtual X coordiantes of the first line (from left to right).
-        /// </summary>
-        public float Line1X => _lineX1;
-        /// <summary>
-        /// The virtual X coordiantes of the second line (from left to right).
-        /// </summary>
-        public float Line2X => _lineX2;
 
         /// <summary>
         /// A <see cref="Dictionary{TKey, TValue}"/> containing all the <see cref="UIElementDrawData"/> objects from all the <see cref="UIElement"/> objects refreched AFTER the UI update.
@@ -75,8 +45,6 @@ namespace Stolon
         /// </summary>
         public ReadOnlyDictionary<string, UIElement> UIElements => new ReadOnlyDictionary<string, UIElement>(_AllUIElements);
 
-        #endregion
-
         public const string TITLE_PARENT_ID = "titleParent";
         private Textframe _textframe;
 
@@ -86,7 +54,7 @@ namespace Stolon
         public Textframe Textframe => _textframe;
 
         /// <summary>
-        /// The width of a <see cref="UserInterface"/> line. <i>(Why did I make this public again?)</i>
+        /// The width of a <see cref="UserInterface"/> line.
         /// </summary>
         public int LineWidth => LINE_WIDTH;
 
@@ -109,8 +77,6 @@ namespace Stolon
             _environment = Instance.Environment;
             _textframe = new Textframe(this);
 
-            _lineOffset = 192f;
-
             Instance.DebugStream.Log(">loading audio");
             foreach (string filePath in Directory.GetFiles("audio", "*.wav", SearchOption.AllDirectories))
             {
@@ -120,16 +86,9 @@ namespace Stolon
             }
             Instance.DebugStream.Success();
 
-
             _AllUIElements = new Dictionary<string, UIElement>();
-
             _drawData = new List<UIElementDrawData>();
-
             _updateData = new Dictionary<string, UIElementUpdateData>();
-            _mouseClickFillElementBounds = new Rectangle();
-
-            _mouseClickFillElementTexture = new GameTexture(TexturePalette.Empty, new Texture2D(Instance.GraphicsDevice, 1, 1));
-            ((Texture2D)_mouseClickFillElementTexture).SetData(new Color[] { Color.White });
 
             Instance.DebugStream.Success();
         }
@@ -214,41 +173,10 @@ namespace Stolon
                         if (updateData2.IsClicked) MenuPath = UIElement.GetParentPath(item);
                 }
         }
-        private void UpdateBoardUI(int elapsedMiliseconds)
-        {
-            float zoomIntensity = ((BoardGameState)Instance.Environment.GameStateManager.Current).Board.ZoomIntensity;
-            float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
-
-            lineZoomOffset = Math.Max(0, lineZoomOffset);
-
-            bool mouseIsOnUI = SLMouse.Domain == SLMouse.MouseDomain.UserInterfaceLow;
-
-            _uiLeftOffset = -lineZoomOffset;
-            _uiRightOffset = lineZoomOffset;
-
-            _lineX1 = (int)(_lineOffset + _uiLeftOffset);
-            _lineX2 = (int)(Instance.VirtualDimensions.X - _lineOffset + _uiRightOffset);
-        }
         //public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
             string id = Instance.Environment.GameStateManager.Current.GetID();
-            if (id == GameStateHelpers.GetID<BoardGameState>())
-            {
-
-                spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(Point.Zero, new Point((int)_lineX1, 500)), Color.Black);
-                spriteBatch.DrawLine(_lineX1, -10f, _lineX1, 500f, Color.White, LINE_WIDTH);
-                spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle((int)_lineX2, 0, Instance.VirtualDimensions.X - (int)_lineX2, 500), Color.Black);
-                spriteBatch.DrawLine(_lineX2, -10f, _lineX2, 500f, Color.White, LINE_WIDTH);
-
-                if (_mouseClickElementBoundsCoefficient > 0.015f) spriteBatch.Draw(_mouseClickFillElementTexture, _mouseClickFillElementBounds, Color.White);
-                else _mouseClickElementBoundsCoefficient = 0f; // I really shouldent be altering this in the Draw() method..
-
-            }
-            else if (id == GameStateHelpers.GetID<MenuGameState>())
-            {
-                
-            }
             foreach (UIElementDrawData elementDrawData in _drawData)
             {
                 spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, Instance.Fonts[elementDrawData.FontName].Scale, SpriteEffects.None, 1f);
