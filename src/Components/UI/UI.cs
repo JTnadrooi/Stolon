@@ -47,7 +47,7 @@ namespace STOLON
         private Textframe _textframe;
 
         /// <summary>
-        /// The <see cref="global::STOLON.Textframe"/> managed by the <see cref="UserInterface"/>.
+        /// The <see cref="Textframe"/> managed by the <see cref="UserInterface"/>.
         /// </summary>
         public Textframe Textframe => _textframe;
 

@@ -50,7 +50,7 @@ namespace STOLON
 
         static TileAttributes()
         {
-            Dictionary<string, TileAttributeBase>  tileAttributes = new Dictionary<string, TileAttributeBase>();
+            Dictionary<string, TileAttributeBase> tileAttributes = new Dictionary<string, TileAttributeBase>();
 
             static void Register<T>(T attribute, Dictionary<string, TileAttributeBase> dic) where T : TileAttributeBase => dic.Add(attribute.Id, attribute);
 
@@ -91,8 +91,8 @@ namespace STOLON
         /// <returns>A new <see cref="HashSet{T}"/> containing a list of <see cref="TileAttributeBase"/> objects fit for indicating a <see cref="Tile"/> is occupied.</returns>
         public static HashSet<TileAttributeBase> GetNewPlayerAttributes(int playerID) => new HashSet<TileAttributeBase>()
             {
-                (TileAttributeBase)global::STOLON.TileAttributes.Attributes["Player" + playerID + "Occupied"],
-                global::STOLON.TileAttributes.Get<TileAttributes.TileAttributeSolid>(),
+                (TileAttributeBase)TileAttributes.Attributes["Player" + playerID + "Occupied"],
+                TileAttributes.Get<TileAttributes.TileAttributeSolid>(),
             }; // keep new
         /// <summary>
         /// Get a value indicating if the <paramref name="tile"/> has gravity.

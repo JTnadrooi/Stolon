@@ -32,7 +32,7 @@ namespace STOLON
         }
     }
     /// <summary>
-    /// The enviroment of the <see cref="global::STOLON"/> game.
+    /// The enviroment of the <see cref="STOLON"/> game.
     /// </summary>
     public class GameEnvironment : GameComponent, IDialogueProvider
     {
@@ -41,7 +41,7 @@ namespace STOLON
         /// </summary>
         public UserInterface UI => _userInterface;
         /// <summary>
-        /// The <see cref="global::STOLON.OverlayEngine"/>.
+        /// The <see cref="OverlayEngine"/>.
         /// </summary>
         public OverlayEngine Overlayer => _overlayer;
         /// <summary>
