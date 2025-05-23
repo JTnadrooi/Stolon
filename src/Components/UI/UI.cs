@@ -291,6 +291,7 @@ namespace Stolon
                 "Collida past 3.",
                 "That translates to \"flour\".",
                 "Index is jealous.",
+                "the chairs have eyes",
             };
 
             _tipId = new Random().Next(0, _tips.Length);
@@ -369,31 +370,20 @@ namespace Stolon
             if (id == GameStateHelpers.GetID<BoardGameState>()) UpdateBoardUI(elapsedMiliseconds);
             else if (id == GameStateHelpers.GetID<MenuGameState>()) UpdateMenuUI(elapsedMiliseconds);
 
-
+        }
+        public void PostUpdate(int elapsedMiliseconds)
+        {
             foreach (string item in UIElements.Keys)
-            {
                 if (UIElements[item].Type == UIElementType.Listen)
                 {
                     if (_updateData[item].IsClicked)
-                    {
                         AudioEngine.Audio.Play(_updateData[item].ClickSound);
-                    }
                     if (_updateData.TryGetValue("_back_" + item, out UIElementUpdateData updateData2))
-                    {
-                        if (updateData2.IsClicked)
-                        {
-                            MenuPath = UIElement.GetParentPath(item);
-                            //Console.WriteLine(GetSelfPath(item));
-                        }
-                    }
+                        if (updateData2.IsClicked) MenuPath = UIElement.GetParentPath(item);
                 }
-            }
-
-            base.Update(elapsedMiliseconds);
         }
         private void UpdateMenuUI(int elapsedMiliseconds)
         {
-
             int rowHeight = (int)(_menuLogoLines.Height / (float)MENU_LOGO_ROW_COUNT);
             float menuRemoveTweenerOffset = 300f * _menuRemoveTweener.Value;
             int lineFromMid = (int)(170f + menuRemoveTweenerOffset);
