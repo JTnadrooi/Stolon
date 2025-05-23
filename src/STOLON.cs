@@ -35,11 +35,11 @@ namespace STOLON
         private int _virtualModifier;
         private int _desiredModifier;
         private Color[] _palette;
-        private Effect _replaceColorEffect;
         private GameTextureCollection _textures;
         private GameFontCollection _fonts;
         private BloomFilter _bloomFilter;
         private Point _oldWindowSize;
+        private EffectPipeline _post;
 
         public DiscordRichPresence DRP { get; set; }
         public UserInterface UserInterface => _environment.UI;
@@ -134,7 +134,6 @@ namespace STOLON
 
             _environment.Initialize();
 
-            _replaceColorEffect = STOLON.Textures.HardLoad<Effect>("effects\\replaceColor");
             _palette = new Color[]
             {
                 System.Drawing.ColorTranslator.FromHtml("#f2fbeb").ToColor(),
@@ -144,6 +143,15 @@ namespace STOLON
             _bloomFilter = new BloomFilter();
             _bloomFilter.Load(GraphicsDevice, Content, _aspectRatio.X * _desiredModifier, _aspectRatio.Y * _desiredModifier);
             _bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
+            _post = new EffectPipeline(GraphicsDevice, _spriteBatch, VirtualDimensions.X, VirtualDimensions.Y);
+
+            _post.AddEffect(new ReplaceColorEffect(Content.Load<Effect>("effects\\replaceColor"))
+            {
+                Target1 = Color.White,
+                Target2 = Color.Black,
+                Replace1 = _palette[0],
+                Replace2 = _palette[1]
+            });
 
             Debug.Success();
             base.LoadContent();
@@ -201,46 +209,18 @@ namespace STOLON
 
         protected override void Draw(GameTime gameTime)
         {
-            // replaceColor shader values setting.
-            _replaceColorEffect.Parameters["dcolor1"].SetValue(Color.White.ToVector4());
-            _replaceColorEffect.Parameters["dcolor2"].SetValue(Color.Black.ToVector4());
-
-            _replaceColorEffect.Parameters["color1"].SetValue(_palette[0].ToVector4());
-            _replaceColorEffect.Parameters["color2"].SetValue(_palette[1].ToVector4());
-
-            GraphicsDevice.SetRenderTarget(_renderTarget);
+            int elapsedMiliseconds = gameTime.ElapsedGameTime.Milliseconds;
+            _post.BeginScene();
             GraphicsDevice.Clear(STOLON.Instance.Color2);
             _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
             _environment.Draw(_spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
-
             _spriteBatch.Draw(STOLON.Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
-
             _spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - STOLON.Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
             _spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
             _spriteBatch.End();
-            //GraphicsDevice.SetRenderTarget(bloomRenderTarget);
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(STOLON.Instance.Color2);
-
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
-                RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(ScreenScale), effect: _replaceColorEffect);
-            _spriteBatch.Draw(_renderTarget, Vector2.Zero, Color.White);
-            _spriteBatch.End();
-
-            //         Texture2D bloom = _bloomFilter.Draw(bloomRenderTarget, DesiredDimensions.X, DesiredDimensions.Y);
-            //         GraphicsDevice.SetRenderTarget(null);
-            //         GraphicsDevice.Clear(StolonGame.Instance.Color2);
-
-            ////spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
-            //spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
-
-            //spriteBatch.Draw(bloomRenderTarget, Vector2.Zero, Color.White);
-            //spriteBatch.Draw(bloom, Vector2.Zero, Color.White);
-            //spriteBatch.End();
-
-            _replaceColorEffect.CurrentTechnique.Passes[0].Apply();
+            _post.EndScene(Matrix.CreateScale(ScreenScale));
 
             base.Draw(gameTime);
         }
