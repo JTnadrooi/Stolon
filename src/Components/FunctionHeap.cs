@@ -19,8 +19,6 @@ using System.Collections.Frozen;
 using System.Threading.Tasks;
 using System.Collections;
 using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Stolon.StolonGame;
 
 #nullable enable
 
@@ -57,7 +55,7 @@ namespace Stolon
             {
                 if (_taskWaitDataCollection[taskKvp.Key] < 0)
                 {
-                    Instance.DebugStream.Log("(interupt:taskheap) runningtask with id; " + taskKvp.Key);
+                    STOLON.Debug.Log("(interupt:taskheap) runningtask with id; " + taskKvp.Key);
                     ForceRun(taskKvp.Key);
                 }
                 else _taskWaitDataCollection[taskKvp.Key] -= elapsedMiliseconds;
@@ -107,18 +105,18 @@ namespace Stolon
             if (waitTime < 0)
             {
                 object? ret = dynamicTask.Run();
-                Instance.DebugStream.Log("insta-ran task with id: " + id);
+                STOLON.Debug.Log("insta-ran task with id: " + id);
                 _frameCompletedTasks.Add(id, ret);
                 _allCompletedTasks.Add(id);
                 return;
             }
 
             if (_taskDictionary.ContainsKey(id)) 
-                if (overwrite) Instance.DebugStream.Log("key already known, overwriting task with id: " + id);
+                if (overwrite) STOLON.Debug.Log("key already known, overwriting task with id: " + id);
                 else return;
             _taskWaitDataCollection[id] = waitTime;
             _taskDictionary[id] = dynamicTask;
-            Instance.DebugStream.Log("pushed task with id: " + id);
+            STOLON.Debug.Log("pushed task with id: " + id);
         }
         public void Push(string id, DynamicTask dynamicTask, int waitTime)
         {
@@ -127,18 +125,18 @@ namespace Stolon
         }
         public string EnsurePush(DynamicTask dynamicTask, int waitTime)
         {
-            Instance.DebugStream.Log(">ensuring task push.");
+            STOLON.Debug.Log(">ensuring task push.");
             string id = Enumerable.Range(0, int.MaxValue).Select(i => "__" + i).First(key => !_taskDictionary.ContainsKey(key));
 
             Push(id, dynamicTask, waitTime);
 
-            Instance.DebugStream.Log("task pushed with id: " + id);
-            Instance.DebugStream.Success();
+            STOLON.Debug.Log("task pushed with id: " + id);
+            STOLON.Debug.Success();
 
             return id;
         }
 
-        public static TaskHeap Heap => Instance.Environment.TaskHeap;
+        public static TaskHeap Instance => STOLON.Environment.TaskHeap;
     }
     /// <summary>
     /// Represents a <see cref="Func{TResult}"/> or <see cref="Action"/> with no parameters.

@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Betwixt;
 using MonoGame.Extended;
-using static Stolon.StolonGame;
+
 using static Stolon.UIElement;
 
 using Color = Microsoft.Xna.Framework.Color;
@@ -55,16 +55,16 @@ namespace Stolon
         private bool _capitalise = true;
         public MenuOrderProvider()
         {
-            //_font = Instance.Fonts["fonts\\smollerMono"];
-            //_font = Instance.Fonts["fonts\\monogram"];
-            _font = Instance.Fonts[MEDIUM_FONT_ID];
-            //_font = Instance.Fonts["fonts\\fixedsys"];
+            //_font = StolonGame.Instance.Fonts["fonts\\smollerMono"];
+            //_font = StolonGame.Instance.Fonts["fonts\\monogram"];
+            _font = STOLON.Fonts[STOLON.MEDIUM_FONT_ID];
+            //_font = StolonGame.Instance.Fonts["fonts\\fixedsys"];
         }
         public (UIElementDrawData drawData, bool isHovered) GetElementDrawData(UIElement element, Vector2 UIOrgin, int index)
         {
             Vector2 elementPos = Centering.MiddleX((int)_font.FastMeasure(element.Text).X,
                                 index * (_font.Dimensions.Y * 2 + 2) + UIOrgin.Y,
-                                Instance.VirtualDimensions.X, Vector2.One);
+                                STOLON.Instance.VirtualDimensions.X, Vector2.One);
             Centering.OnPixel(ref elementPos);
 
             Rectangle elementBounds = new Rectangle(elementPos.ToPoint(), new Point((int)_font.FastMeasure(element.Text).X, (int)_font.Dimensions.Y));

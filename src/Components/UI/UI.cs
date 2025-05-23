@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static Stolon.StolonGame;
+
 using static Stolon.UIElement;
 using Color = Microsoft.Xna.Framework.Color;
 using Math = System.Math;
@@ -23,12 +23,10 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 namespace Stolon
 {
     /// <summary>
-    /// The user interface for the <see cref="StolonEnvironment"/>.
+    /// The user interface for the <see cref="GameEnvironment"/>.
     /// </summary>
     public class UserInterface : GameComponent
     {
-        private StolonEnvironment _environment;
-
         private List<UIElementDrawData> _drawData;
         public List<UIElementDrawData> DrawData => _drawData;
 
@@ -62,7 +60,7 @@ namespace Stolon
         /// <summary>
         /// Main UIInterface contructor.
         /// </summary>
-        public UserInterface() : base(Instance.Environment)
+        public UserInterface() : base(STOLON.Environment)
         {
             string CamelCase(string s)
             {
@@ -72,29 +70,28 @@ namespace Stolon
                     m => m.Groups[1].Value + m.Groups[2].Value.ToLower() + m.Groups[3].Value);
                 return char.ToLower(x[0]) + x.Substring(1);
             }
-            Instance.DebugStream.Log(">[s]contructing stolon ui");
+            STOLON.Debug.Log(">[s]contructing stolon ui");
 
-            _environment = Instance.Environment;
             _textframe = new Textframe(this);
 
-            Instance.DebugStream.Log(">loading audio");
+            STOLON.Debug.Log(">loading audio");
             foreach (string filePath in Directory.GetFiles("audio", "*.wav", SearchOption.AllDirectories))
             {
                 string fileName = CamelCase(Path.GetFileNameWithoutExtension(filePath).Replace(" ", string.Empty));
-                AudioEngine.AudioLibrary.Add(fileName, new CachedAudio(filePath, fileName));
-                Instance.DebugStream.Log("loaded audio with id: " + fileName);
+                STOLON.Audio.Library.Add(fileName, new CachedAudio(filePath, fileName));
+                STOLON.Debug.Log("loaded audio with id: " + fileName);
             }
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
 
             _AllUIElements = new Dictionary<string, UIElement>();
             _drawData = new List<UIElementDrawData>();
             _updateData = new Dictionary<string, UIElementUpdateData>();
 
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
         }
         public void Initialize()
         {
-            StolonGame.Instance.DebugStream.Log(">[s]initializing ui..");
+            STOLON.Debug.Log(">[s]initializing ui..");
             // top
             AddElement(new UIElement(TITLE_PARENT_ID, UIElement.TOP_ID, string.Empty, UIElementType.Listen));
 
@@ -133,11 +130,11 @@ namespace Stolon
 
             MenuPath = GetSelfPath(TITLE_PARENT_ID);
 
-            StolonGame.Instance.DebugStream.Log(">autogenerating _back_ buttons");
+            STOLON.Debug.Log(">autogenerating _back_ buttons");
             HashSet<string> parentIds = GetParentIDs();
             foreach (string id in parentIds) AddElement(new UIElement("_back_" + id, id, "Back", UIElementType.Listen));
-            Instance.DebugStream.Success();
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
+            STOLON.Debug.Success();
         }
         /// <summary>
         /// Clears both the updatedata and drawdata collections, making them ready to be repopulated by the methods in the <see cref="UIOrdering"/> class.<br/>
@@ -168,7 +165,7 @@ namespace Stolon
                 if (UIElements[item].Type == UIElementType.Listen)
                 {
                     if (_updateData[item].IsClicked)
-                        AudioEngine.Audio.Play(_updateData[item].ClickSound);
+                        STOLON.Audio.Play(_updateData[item].ClickSound);
                     if (_updateData.TryGetValue("_back_" + item, out UIElementUpdateData updateData2))
                         if (updateData2.IsClicked) MenuPath = UIElement.GetParentPath(item);
                 }
@@ -176,10 +173,10 @@ namespace Stolon
         //public string ShowPercentage(string text, float coefficient) => text.Substring(0, (int)(text.Length * coefficient));
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            string id = Instance.Environment.GameStateManager.Current.GetID();
+            string id = STOLON.Environment.GameStateManager.Current.GetID();
             foreach (UIElementDrawData elementDrawData in _drawData)
             {
-                spriteBatch.DrawString(Instance.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, Instance.Fonts[elementDrawData.FontName].Scale, SpriteEffects.None, 1f);
+                spriteBatch.DrawString(STOLON.Fonts[elementDrawData.FontName], elementDrawData.Text, elementDrawData.Position, Color.White, 0f, Vector2.Zero, STOLON.Fonts[elementDrawData.FontName].Scale, SpriteEffects.None, 1f);
                 if (elementDrawData.DrawRectangle)
                 {
                     spriteBatch.DrawRectangle(elementDrawData.Rectangle, Color.White, 1f);
@@ -195,7 +192,7 @@ namespace Stolon
         public void AddElement(UIElement element)
         {
             _AllUIElements.Add(element.Id, element);
-            Instance.DebugStream.Log("ui-element with id " + element.Id + " added.");
+            STOLON.Debug.Log("ui-element with id " + element.Id + " added.");
             //updateData.Add(element.Id, default);
         }
         /// <summary>
@@ -205,10 +202,10 @@ namespace Stolon
         public void RemoveElement(string elementID)
         {
             _AllUIElements.Remove(elementID);
-            Instance.DebugStream.Log("ui-element with id " + elementID + " removed.");
+            STOLON.Debug.Log("ui-element with id " + elementID + " removed.");
         }
 
-        public static UserInterface UI => Instance.Environment.UI;
+        public static UserInterface UI => STOLON.Environment.UI;
     }
 
     public struct UIPath : IEnumerable<string>

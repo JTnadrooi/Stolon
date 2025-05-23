@@ -5,8 +5,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using AsitLib;
-using static Stolon.BoardState;
-using static Stolon.StolonGame;
+
+
 
 using Point = Microsoft.Xna.Framework.Point;
 

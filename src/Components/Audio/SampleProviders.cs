@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using NAudio.Utils;
 using System.Collections.ObjectModel;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 using AsitLib;
-using static Stolon.StolonGame;
+
 
 #nullable enable
 
@@ -77,7 +77,7 @@ namespace Stolon
             _sources = new Dictionary<string, ISampleProvider>();
             Sources = _sources.AsReadOnly();
             WaveFormat = waveFormat;
-            Instance.DebugStream.Log("created new DictionaryMixingSampleProvider with waveformat:" + WaveFormat);
+            STOLON.Debug.Log("created new DictionaryMixingSampleProvider with waveformat:" + WaveFormat);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace Stolon
             _sourceBuffer = BufferHelpers.Ensure(_sourceBuffer, count);
             lock (_sources)
             {
-                if (PauzeWhenInactive && !Instance.IsActive)
+                if (PauzeWhenInactive && !STOLON.Instance.IsActive)
                 {
                     for (var n = 0; n < count; n++)
                         buffer[offset + n] = 0;

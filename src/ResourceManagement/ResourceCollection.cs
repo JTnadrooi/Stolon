@@ -28,7 +28,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using System.IO;
 using MonoGame.Extended.Content;
 using Microsoft.Xna.Framework.Content;
-using static Stolon.StolonGame;
+
 #nullable enable
 
 namespace Stolon
@@ -60,12 +60,12 @@ namespace Stolon
 
             foreach (string file in files)
             {
-                Instance.DebugStream.Log("found file: " + file);
+                STOLON.Debug.Log("found file: " + file);
                 string toLoad = file[(contentManager.RootDirectory.Length + 1)..].Split('.')[..^1].ToJoinedString();
-                Instance.DebugStream.Log(">loading resource with id/key: " + toLoad);
+                STOLON.Debug.Log(">loading resource with id/key: " + toLoad);
                 TContent? loaderResult = loader(toLoad);
                 if (loaderResult != null) dictionary[toLoad] = loaderResult;
-                Instance.DebugStream.Success();
+                STOLON.Debug.Success();
             }
             ContentManager = contentManager;
 

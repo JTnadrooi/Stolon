@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using AsitLib;
 
 using MonoGame.Extended;
-using static Stolon.StolonGame;
+
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -62,13 +62,13 @@ namespace Stolon
 
         public UniqueMoveBoardMap UniqueMoveBoardMap { get; }
 
-        public Board(BoardState conf) : base(Instance.Environment)
+        public Board(BoardState conf) : base(STOLON.Environment)
         {
             Camera = new Camera2D();
             TurnNumber = 0;
 
             _state = conf;
-            _boardSpriteBatch = new SpriteBatch(Instance.GraphicsDevice);
+            _boardSpriteBatch = new SpriteBatch(STOLON.Instance.GraphicsDevice);
             _desiredZoom = MathF.Max(0.45f, CONF_ZOOM_COEFFICIENT * (4f / conf.Dimensions.X)); // does not change.
             _desiredCameraPos = BoardCenter;
             Camera.Position = _desiredCameraPos;
@@ -129,30 +129,30 @@ namespace Stolon
 
             Listen();
 
-            //if (Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked)
+            //if (StolonGame.Instance.UserInterface.UIElementUpdateData["restartBoard"].IsClicked)
             //{
-            //    Instance.Environment.Overlayer.Activate("transition", null, () =>
+            //    StolonGame.Instance.Environment.Overlayer.Activate("transition", null, () =>
             //            {
             //                Reset();
             //            }, "Resetting the Board..");
             //}
-            //if (Instance.UserInterface.UIElementUpdateData["skipMove"].IsClicked) EndMove();
-            //if (Instance.UserInterface.UIElementUpdateData["boardSearch"].IsClicked)
+            //if (StolonGame.Instance.UserInterface.UIElementUpdateData["skipMove"].IsClicked) EndMove();
+            //if (StolonGame.Instance.UserInterface.UIElementUpdateData["boardSearch"].IsClicked)
             //{
             //    int ret = State.SearchAny();
             //    if (ret != -1)
-            //        Instance.Environment.Overlayer.Activate("transition", null, () =>
+            //        StolonGame.Instance.Environment.Overlayer.Activate("transition", null, () =>
             //            {
             //                Reset();
             //            }, "4 Connected found for player " + GetPlayerTile(ret) + "!");
 
             //}
-            //if (Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
-            //if (Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked)
+            //if (StolonGame.Instance.UserInterface.UIElementUpdateData["centerCamera"].IsClicked) desiredCameraPos = BoardCenter;
+            //if (StolonGame.Instance.UserInterface.UIElementUpdateData["undoMove"].IsClicked)
             //{
             //    if (state.Players.Any(p => p.IsComputer))
             //    {
-            //        Instance.Environment.UI.Textframe.Queue(new DialogueInfo(Instance.Environment, "Not valid when against AI but coming soon!"));
+            //        StolonGame.Instance.Environment.UI.Textframe.Queue(new DialogueInfo(StolonGame.Instance.Environment, "Not valid when against AI but coming soon!"));
             //    }
             //    Undo();
             //}
@@ -161,7 +161,7 @@ namespace Stolon
             }
             if (SLKeyboard.IsClicked(Keys.X)) { }
             if (SLKeyboard.IsClicked(Keys.C)) { }
-            //if (Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) Instance.SLExit();
+            //if (StolonGame.Instance.UserInterface.UIElementUpdateData["exitGame"].IsClicked) StolonGame.Instance.SLExit();
 
             //Instance.UserInterface.UIElements["currentPlayer"].Text = "Current: " + state.CurrentPlayer.Name + " " + GetPlayerTile(state.CurrentPlayerID);
 
@@ -169,26 +169,26 @@ namespace Stolon
         }
         public void Undo()
         {
-            Instance.DebugStream.Log(">attempting move undo");
+            STOLON.Debug.Log(">attempting move undo");
             _state.Undo();
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
 
         }
         public void AfterMove()
         {
-            AudioEngine.Audio.Play(AudioEngine.AudioLibrary["select4"]);
+            STOLON.Audio.Play(STOLON.Audio.Library["select4"]);
         }
         public bool Listen()
         {
             if (_locked)
             {
                 _computerMoveTask = null;
-                Instance.Environment.Overlayer.Deactivate("loading");
+                STOLON.Environment.Overlayer.Deactivate("loading");
                 return false;
             }
             if (_computerMoveTask != null && _computerMoveTask.IsCompletedSuccessfully)
             {
-                Instance.Environment.Overlayer.Deactivate("loading");
+                STOLON.Environment.Overlayer.Deactivate("loading");
                 _computerMoveTask = null;
             }
             if (State.CurrentPlayer.IsComputer)
@@ -202,12 +202,12 @@ namespace Stolon
                 if (_computerMoveTask.Status == TaskStatus.Created)
                 {
                     _computerMoveTask.Start();
-                    Instance.Environment.Overlayer.Activate("loading");
+                    STOLON.Environment.Overlayer.Activate("loading");
                 }
             }
             else if (StolonStatic.IsMouseClicked(SLMouse.CurrentState, SLMouse.PreviousState) && MouseIsOnBoard)
             {
-                Instance.DebugStream.Log(">attempting board alter after mouseclick");
+                STOLON.Debug.Log(">attempting board alter after mouseclick");
                 Move? move = null;
                 for (int x = 0; x < _state.Tiles.GetLength(0); x++)
                     for (int y = 0; y < _state.Tiles.GetLength(1); y++)
@@ -221,22 +221,22 @@ namespace Stolon
                     History.Push(State.DeepCopy());
                     State.Alter(move!.Value, true);
                     AfterMove();
-                    Instance.DebugStream.Success();
+                    STOLON.Debug.Success();
                     return true;
                 }
-                else Instance.DebugStream.Fail();
+                else STOLON.Debug.Fail();
             }
             return false;
         }
         public void Reset()
         {
-            Instance.DebugStream.Log(">resetting board");
+            STOLON.Debug.Log(">resetting board");
 
             _computerMoveTask = null;
             State = InitialState.DeepCopy();
 
 
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
         }
         public void EndMove()
         {
@@ -253,11 +253,11 @@ namespace Stolon
                     int playerid = tile.GetOccupiedByPlayerID();
                     if (playerid != -1)
                     {
-                        _boardSpriteBatch.Draw(Instance.Textures.GetReference("textures\\player" + playerid + "item_96"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                        _boardSpriteBatch.Draw(STOLON.Textures.GetReference("textures\\player" + playerid + "item_96"), tile.BoardPosition, null, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                     }
-                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) _boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
-                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) _boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
-                    else _boardSpriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravDown>()) _boardSpriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], string.Empty, tile.BoardPosition + new Vector2(10), Color.White);
+                    else if (tile.HasAttribute<TileAttributes.TileAttributeGravUp>()) _boardSpriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], ("^").ToString(), (tile.BoardPosition + new Vector2(10)).PixelLock(Camera), Color.White);
+                    else _boardSpriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], ("Z").ToString(), tile.BoardPosition + new Vector2(10), Color.White);
                 }
             _boardSpriteBatch.End();
             base.Draw(spriteBatch, elapsedMiliseconds);
@@ -275,10 +275,10 @@ namespace Stolon
         public void EndGame(int winner)
         {
             bool draw = winner < 0;
-            Instance.DebugStream.Log(">ending game with " + (draw ? "a draw" : "winner: " + _state.Players[winner]));
+            STOLON.Debug.Log(">ending game with " + (draw ? "a draw" : "winner: " + _state.Players[winner]));
 
-            Instance.Environment.Overlayer.Activate("transition", Instance.VirtualBounds);
-            Instance.DebugStream.Success();
+            STOLON.Environment.Overlayer.Activate("transition", STOLON.Instance.VirtualBounds);
+            STOLON.Debug.Success();
         }
     }
 
@@ -300,14 +300,11 @@ namespace Stolon
             }
             InvertedNodes = rev.ToArray();
 
-            //Nodes.CopyTo(InvertedNodes, 0);
-            //Array.Reverse(InvertedNodes);
-
             PlayerBound = playerBound;
             TurnsRemaining = turnsRemaining;
             Id = id;
 
-            Instance.DebugStream.Log("searchTarget with nodes {" + Nodes.ToJoinedString(", ") + "} created.");
+            STOLON.Debug.Log("searchTarget with nodes {" + Nodes.ToJoinedString(", ") + "} created.");
         }
         public bool DecrementTurn()
         {
@@ -486,7 +483,7 @@ namespace Stolon
             Texture = texture;
         }
 
-        public static TileType Void => new TileType("void", Instance.Textures.GetReference("textures\\box_96"));
+        public static TileType Void => new TileType("void", STOLON.Textures.GetReference("textures\\box_96"));
     }
 
 }

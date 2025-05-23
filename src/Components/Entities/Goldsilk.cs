@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using AsitLib;
-using static Stolon.StolonGame;
 
 using Math = System.Math;
 using System.Diagnostics;
@@ -14,7 +13,6 @@ using System.Reflection.Metadata.Ecma335;
 using Microsoft.Xna.Framework.Input;
 using System.Xml.Linq;
 using Microsoft.Xna.Framework;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 #nullable enable
 
@@ -26,7 +24,7 @@ namespace Stolon
     public class GoldsilkEntity : EntityBase
     {
         public override SLComputer Computer => _computer;
-        public override Texture2D Splash => Instance.Textures.GetReference("textures\\splash\\goldsilk"); // unrelevant in first ver
+        public override Texture2D Splash => STOLON.Textures.GetReference("textures\\splash\\goldsilk"); // unrelevant in first ver
         public override string? Description => "This shoulden't be readable in the current verion.";
 
         private GoldsilkCom _computer;
@@ -54,7 +52,7 @@ namespace Stolon
 
             int ret = board.State.SearchAny();
             if (ret == current) // this makes it so when goldsilk finds a connect four right after the player does, she wins. This is a bug but I'm calling it a feature.
-                Instance.Environment.Overlayer.Activate("transition", null, () =>
+                STOLON.Environment.Overlayer.Activate("transition", null, () =>
                 {
                     board.Reset();
                 }, "4 Connected found for player " + board.GetPlayerTile(ret) + "!");
@@ -62,7 +60,7 @@ namespace Stolon
         private static int negaCount = 0;
         public static NegamaxEndResult Search(BoardState state, UniqueMoveBoardMap map, int depth)
         {
-            Instance.DebugStream.Log(">[s]initializing parallel alpha-beta algorithm..");
+            STOLON.Debug.Log(">[s]initializing parallel alpha-beta algorithm..");
 
             ConcurrentDictionary<int, TTEntry> tt = new ConcurrentDictionary<int, TTEntry>();
             List<Move> moves = map.GetAllMoves(state);
@@ -84,12 +82,12 @@ namespace Stolon
 
                 lock (lockObj)
                 {
-                    Instance.DebugStream.Log("evaluated move " + moves[i] + ", winstate score: " + score + ".");
+                    STOLON.Debug.Log("evaluated move " + moves[i] + ", winstate score: " + score + ".");
                     negaMaxedMoves.Add((score, moves[i]));
                 }
             });
 
-            Instance.DebugStream.Log(">attemting further move ordering");
+            STOLON.Debug.Log(">attemting further move ordering");
 
             negaMaxedMoves = negaMaxedMoves.Select((x, i) => new { Index = i, Value = x })
                 .Where(x => x.Value.score == negaMaxedMoves.Select(t => t.score).Max())
@@ -99,22 +97,22 @@ namespace Stolon
                 int score = MoveEvaluate(state, moveTuple.move, moveTuple.score);
                 evaluatedMoves.Add((score, moveTuple.move));
 
-                Instance.DebugStream.Log("move " + moveTuple.move + " has an evaluated score of " + score + ".");
+                STOLON.Debug.Log("move " + moveTuple.move + " has an evaluated score of " + score + ".");
             }
-            Instance.DebugStream.Success();
-            Instance.DebugStream.Log(">attempting best move selection");
+            STOLON.Debug.Success();
+            STOLON.Debug.Log(">attempting best move selection");
             (int score, Move move) bestItem = evaluatedMoves.Where(t => t.score == evaluatedMoves.Select(t => t.score).Max()).First();
 
             stopwatch.Stop();
-            Instance.DebugStream.Log("bestMove found with a score of: " + bestItem.score + " and move " + bestItem.move);
-            Instance.DebugStream.Success();
-            Instance.DebugStream.Success();
+            STOLON.Debug.Log("bestMove found with a score of: " + bestItem.score + " and move " + bestItem.move);
+            STOLON.Debug.Success();
+            STOLON.Debug.Success();
             return new NegamaxEndResult(bestItem.move, negaCount, (int)stopwatch.ElapsedMilliseconds);
         }
         public const int evalNum = 10000;
         public static int MoveEvaluate(BoardState state, Move move, int score)
         {
-            Instance.DebugStream.Log(">starting eval of move " + move + "..");
+            STOLON.Debug.Log(">starting eval of move " + move + "..");
 
             int connectScore;
             int positionalScore;
@@ -125,22 +123,22 @@ namespace Stolon
             state.Alter(move, true);
 
             connectScore = state.DeepSearchFrom(sim.TiledPosition, out _, null).Score;
-            Instance.DebugStream.Log("move has a connectScore of " + connectScore);
+            STOLON.Debug.Log("move has a connectScore of " + connectScore);
 
             int distanceFromCenter = (int)MathF.Abs((sim.TiledPosition.X - (state.Dimensions.X / 2f))); // more = bad
             int distanceFromGround = Math.Abs(move.Origin.Y - sim.TiledPosition.Y); // more = bad
             positionalScore = distanceFromCenter * distanceFromCenter * -1 * distanceFromGround * distanceFromGround;
-            Instance.DebugStream.Log("move has a positionalScore of " + positionalScore + ", xDelta: " + distanceFromCenter + ", yDelta: " + distanceFromGround);
+            STOLON.Debug.Log("move has a positionalScore of " + positionalScore + ", xDelta: " + distanceFromCenter + ", yDelta: " + distanceFromGround);
 
             Random random = new Random();
             randomScore = random.Next(1, 40);
-            Instance.DebugStream.Log("move has a randomScore of " + randomScore);
+            STOLON.Debug.Log("move has a randomScore of " + randomScore);
 
             state.Undo();
             outScore = score + connectScore + positionalScore + randomScore;
 
-            Instance.DebugStream.Log("total: " + outScore);
-            Instance.DebugStream.Success();
+            STOLON.Debug.Log("total: " + outScore);
+            STOLON.Debug.Success();
 
             return outScore;
         }

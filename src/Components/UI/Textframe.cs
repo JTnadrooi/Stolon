@@ -6,7 +6,7 @@ using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Stolon.StolonGame;
+
 using Color = Microsoft.Xna.Framework.Color;
 using Math = System.Math;
 using Point = Microsoft.Xna.Framework.Point;
@@ -85,7 +85,7 @@ namespace Stolon
             _charsRead = 0;
             _toDrawDialogueText = string.Empty;
             _userInterface = userInterface;
-            _font = Instance.Fonts[MEDIUM_FONT_ID];
+            _font = STOLON.Fonts[STOLON.MEDIUM_FONT_ID];
         }
         public void Queue(DialogueInfo[] dialogue)
         {
@@ -95,15 +95,15 @@ namespace Stolon
         public void Queue(DialogueInfo dialogue)
         {
             _dialogueQueue.Enqueue(dialogue);
-            Instance.DebugStream.Log("dialogue queued with text: " + dialogue.Text);
+            STOLON.Debug.Log("dialogue queued with text: " + dialogue.Text);
         }
         public void Next()
         {
             if (_dialogueQueue.Count == 0) throw new Exception();
 
-            Instance.DebugStream.Log(">attempting dequeuing of dialogue with text: " + _dialogueQueue.Peek().Text);
+            STOLON.Debug.Log(">attempting dequeuing of dialogue with text: " + _dialogueQueue.Peek().Text);
             bool providerDiffers = _currentDialogue.HasValue && _currentDialogue.Value.Provider.Name != _dialogueQueue.Peek().Provider.Name;
-            if (providerDiffers) Instance.DebugStream.Log("dialogue has new provider of name: " + _dialogueQueue.Peek().Provider.Name);
+            if (providerDiffers) STOLON.Debug.Log("dialogue has new provider of name: " + _dialogueQueue.Peek().Provider.Name);
 
             _currentDialogue = _dialogueQueue.Dequeue();
             _currentDialogueDrawArgs = DialogueDrawArgs.FromInfo(_currentDialogue.Value);
@@ -123,16 +123,16 @@ namespace Stolon
                 _providerTextSizeTweener.Start();
             }
 
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
         }
 
         public void Queue(int count, Func<string, int, string>? selector = null)
         {
-            Instance.DebugStream.Log(">mass queueing a stream of size: " + count);
+            STOLON.Debug.Log(">mass queueing a stream of size: " + count);
             selector ??= new Func<string, int, string>((s, i) => s);
-            //for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke((()Instance.Environment.GameStateManager.Current).GetRandomSplashText(), i)));
+            //for (int i = 0; i < count; i++) Queue(new DialogueInfo(StolonEnvironment.Instance, selector.Invoke((()StolonGame.Instance.Environment.GameStateManager.Current).GetRandomSplashText(), i)));
             throw new NotImplementedException();
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
         }
 
         public override void Update(int elapsedMiliseconds)
@@ -141,8 +141,8 @@ namespace Stolon
             int dialogueYoffset = (int)(-10f * (_dialogueIsHidden ? _dialogueShowCoefficient : 1f));
             bool textFrameGoUp = false;
             _dialoguebounds = new Rectangle(
-                (int)(Instance.VirtualBounds.Width * 0.5f - dialogueBoxDimensions.X * 0.5f),
-                (int)(Instance.VirtualBounds.Height - (dialogueBoxDimensions.Y * _dialogueShowCoefficient) + dialogueYoffset),
+                (int)(STOLON.Instance.VirtualBounds.Width * 0.5f - dialogueBoxDimensions.X * 0.5f),
+                (int)(STOLON.Instance.VirtualBounds.Height - (dialogueBoxDimensions.Y * _dialogueShowCoefficient) + dialogueYoffset),
                 dialogueBoxDimensions.X,
                 dialogueBoxDimensions.Y);
 
@@ -196,7 +196,7 @@ namespace Stolon
         }
         public override void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            spriteBatch.Draw(Instance.Textures.Pixel, _dialoguebounds, Color.Black);
+            spriteBatch.Draw(STOLON.Textures.Pixel, _dialoguebounds, Color.Black);
             if (_currentDialogue.HasValue)
             {
                 spriteBatch.DrawString(_font, _toDrawDialogueText, _dialogueTextPos.ToVector2(), Color.White, 0f, Vector2.Zero, _font.Scale, SpriteEffects.None, 0f);

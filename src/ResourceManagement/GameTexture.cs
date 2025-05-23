@@ -28,7 +28,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using System.IO;
 using MonoGame.Extended.Content;
 using Microsoft.Xna.Framework.Content;
-using static Stolon.StolonGame;
+
 #nullable enable
 
 
@@ -65,15 +65,15 @@ namespace Stolon
         public void SetColorData(Color[] data) => _texture.SetData(data);
         public GameTexture ApplyPalette(ITexturePalette newPalette, bool lazy = true)
         {
-            Instance.DebugStream.Log(">[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + _palette.Name + "\".");
-            if (lazy) Instance.DebugStream.Log("lazy is enabled.");
+            STOLON.Debug.Log(">[s]applying palette \"" + newPalette.Name + "\" to \"" + Name + "\" with palette; \"" + _palette.Name + "\".");
+            if (lazy) STOLON.Debug.Log("lazy is enabled.");
             if (_palette.Colors.Count != _palette.Colors.Count) throw new Exception();
             if (lazy && _palette.PaletteEquals(newPalette))
             {
-                Instance.DebugStream.Log("lazy replacement succes.");
+                STOLON.Debug.Log("lazy replacement succes.");
                 return this;
             }
-            else Instance.DebugStream.Log("lazy replacement invalid, this palette: " + _palette.Name + ", other: " + newPalette.Name + ".");
+            else STOLON.Debug.Log("lazy replacement invalid, this palette: " + _palette.Name + ", other: " + newPalette.Name + ".");
 
             Dictionary<Color, Color> colorMap = new Dictionary<Color, Color>(_palette.Size);
             for (int i = 0; i < _palette.Size; i++) colorMap[_palette.Colors[i]] = newPalette.Colors[i];
@@ -86,7 +86,7 @@ namespace Stolon
             SetColorData(data);
 
             _palette = newPalette;
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
             return this;
         }
         public GameTexture InvertColors()

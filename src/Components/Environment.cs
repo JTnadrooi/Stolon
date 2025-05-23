@@ -8,7 +8,7 @@ using AsitLib;
 using AsitLib.Debug;
 
 using MonoGame.Extended;
-using static Stolon.StolonGame;
+
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -34,7 +34,7 @@ namespace Stolon
     /// <summary>
     /// The enviroment of the <see cref="Stolon"/> game.
     /// </summary>
-    public class StolonEnvironment : GameComponent, IDialogueProvider
+    public class GameEnvironment : GameComponent, IDialogueProvider
     {
         public GameStateManager GameStateManager => _gameStateManager;
         /// <summary>
@@ -59,7 +59,7 @@ namespace Stolon
         private Dictionary<string, EntityBase> _entities;
         private GameStateManager _gameStateManager;
 
-        internal StolonEnvironment() : base(null)
+        internal GameEnvironment() : base(null)
         {
             _entities = new Dictionary<string, EntityBase>();
             _userInterface = null!;
@@ -81,7 +81,7 @@ namespace Stolon
 
             _overlayer.AddOverlay(new TransitionOverlay());
             _overlayer.AddOverlay(new LoadOverlay());
-            _overlayer.AddOverlay(new TransitionDitherOverlay(StolonGame.Instance.GraphicsDevice));
+            _overlayer.AddOverlay(new TransitionDitherOverlay(STOLON.Instance.GraphicsDevice));
 
             //StolonGame.Instance.AudioEngine.SetPlayList(new Playlist(
             //    "debug1",
@@ -96,8 +96,8 @@ namespace Stolon
             GameStateManager.Update(elapsedMiliseconds);
 
             _userInterface.PostUpdate(elapsedMiliseconds);
-            AudioEngine.Audio.Update(elapsedMiliseconds);
-            StolonGame.Instance.DRP.UpdateDetails(GameStateManager.Current.DRPStatus);
+            STOLON.Audio.Update(elapsedMiliseconds);
+            STOLON.Instance.DRP.UpdateDetails(GameStateManager.Current.DRPStatus);
 
             _overlayer.Update(elapsedMiliseconds);
             base.Update(elapsedMiliseconds);
@@ -129,8 +129,8 @@ namespace Stolon
         }
 
         /// <summary>
-        /// The main instance of the game.
+        /// The main StolonGame.Instance of the game.
         /// </summary>
-        public static StolonEnvironment Instance => StolonGame.Instance.Environment;
+        public static GameEnvironment Instance => STOLON.Environment;
     }
 }

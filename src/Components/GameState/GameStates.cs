@@ -7,8 +7,6 @@ using System.Linq;
 using AsitLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using static Stolon.BoardState;
-using static Stolon.StolonGame;
 
 using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework.Content;
@@ -66,7 +64,6 @@ namespace Stolon
         private Tweener<float> _menuLogoEaseTweener;
         private Tweener<float> _menuRemoveTweener;
 
-
         private string[] _tips;
         private Vector2 _tipPos;
         private int _tipId;
@@ -78,12 +75,11 @@ namespace Stolon
         public MenuGameState()
         {
             string menuDataFolder = "menuLogoMid";
-            _menuLogoLines = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\lines");
-            _menuLogoDummyTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\dummyTiles");
-            _menuLogoFilledTiles = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\filledTiles");
-            _menuLogoLowResFonted = Instance.Textures.GetReference("textures\\" + menuDataFolder + "\\lowResFonted");
-            _dither32 = Instance.Textures.GetReference("textures\\dither_32");
-
+            _menuLogoLines = STOLON.Textures.GetReference("textures\\" + menuDataFolder + "\\lines");
+            _menuLogoDummyTiles = STOLON.Textures.GetReference("textures\\" + menuDataFolder + "\\dummyTiles");
+            _menuLogoFilledTiles = STOLON.Textures.GetReference("textures\\" + menuDataFolder + "\\filledTiles");
+            _menuLogoLowResFonted = STOLON.Textures.GetReference("textures\\" + menuDataFolder + "\\lowResFonted");
+            _dither32 = STOLON.Textures.GetReference("textures\\dither_32");
             _drawMenuLogoLines = true;
             _drawMenuLogoDummyTiles = true;
             _drawMenuLogoFilledTiles = false;
@@ -240,17 +236,17 @@ namespace Stolon
             #region inFlash
             _menuLogoTileHider = new Rectangle(_menuLogoDrawPos.ToPoint(), new Point((int)(_menuLogoLines.Width * _menuLogoScaling), (int)(rowHeight * _menuLogoRowsHidden)));
             _milisecondsSinceStartup += elapsedMiliseconds;
-            _menuLogoDrawPos = Vector2.Round(Centering.MiddleX(_menuLogoLines, logoYoffset, Instance.VirtualDimensions.X, Vector2.One) + new Vector2(0, 8f * _menuLogoEaseTweener.Value * (1 - _menuRemoveTweener.Value)))
-                + new Vector2(0, ((Centering.MiddleY(_menuLogoLines, 1, Instance.VirtualDimensions.Y, Vector2.One).Y - logoYoffset * 1.5f) * _menuRemoveTweener.Value));
-            _menuDitherTexturePositions = new Point[(int)Math.Ceiling(Instance.VirtualDimensions.Y / (float)_dither32.Height) * 2];
+            _menuLogoDrawPos = Vector2.Round(Centering.MiddleX(_menuLogoLines, logoYoffset, STOLON.Instance.VirtualDimensions.X, Vector2.One) + new Vector2(0, 8f * _menuLogoEaseTweener.Value * (1 - _menuRemoveTweener.Value)))
+                + new Vector2(0, ((Centering.MiddleY(_menuLogoLines, 1, STOLON.Instance.VirtualDimensions.Y, Vector2.One).Y - logoYoffset * 1.5f) * _menuRemoveTweener.Value));
+            _menuDitherTexturePositions = new Point[(int)Math.Ceiling(STOLON.Instance.VirtualDimensions.Y / (float)_dither32.Height) * 2];
 
             _menuFlashStart = 1200;
             _menuFlashEnd = _menuFlashStart + 400;
 
-            _menuLine1X = (int)(Instance.VirtualDimensions.X / 2f) - lineFromMid;
-            _menuLine2X = (int)(Instance.VirtualDimensions.X / 2f) + lineFromMid;
+            _menuLine1X = (int)(STOLON.Instance.VirtualDimensions.X / 2f) - lineFromMid;
+            _menuLine2X = (int)(STOLON.Instance.VirtualDimensions.X / 2f) + lineFromMid;
 
-            _menuLineLenght = _drawMenuLogoFilledTiles ? StolonGame.Instance.VirtualDimensions.Y : 0;
+            _menuLineLenght = _drawMenuLogoFilledTiles ? STOLON.Instance.VirtualDimensions.Y : 0;
             _menuLineWidth = 2 + (menuFlashEnded ? 2 : 0);
 
             if (_milisecondsSinceStartup > 300) _menuLogoRowsHidden = 4;
@@ -290,7 +286,7 @@ namespace Stolon
             {
                 _menuLogoEaseTweener.Reverse();
                 _menuLogoEaseTweener.Start();
-                Instance.DebugStream.Log("reversed icon tweener.");
+                STOLON.Debug.Log("reversed icon tweener.");
             }
             _menuLogoBoundingBox =
                 new Rectangle(_menuLogoDrawPos.ToPoint() + new Point(-menuLogoBoundingBoxClearing), _menuLogoLines.Bounds.Size + new Point(menuLogoBoundingBoxClearing * 2));
@@ -300,9 +296,9 @@ namespace Stolon
                         (i >= _menuDitherTexturePositions.Length / 2f) ? _menuLine2X : _menuLine1X - _dither32.Width,
                         (i % (int)(_menuDitherTexturePositions.Length / 2f)) * _dither32.Height);
 
-            UIOrdering.Order(Instance.UserInterface.UIElements.Values.ToArray(), Instance.UserInterface.MenuPath, Instance.UserInterface.DrawData, Instance.UserInterface.UIElementUpdateData, new Vector2(0, uiElementOffsetY), OrderProviders.Menu);
+            UIOrdering.Order(STOLON.Instance.UserInterface.UIElements.Values.ToArray(), STOLON.Instance.UserInterface.MenuPath, STOLON.Instance.UserInterface.DrawData, STOLON.Instance.UserInterface.UIElementUpdateData, new Vector2(0, uiElementOffsetY), OrderProviders.Menu);
 
-            if (Instance.UserInterface.UIElementUpdateData["startXp"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["startXp"].IsClicked)
             {
                 _boardPlayers = new Player[]
                         {
@@ -312,65 +308,65 @@ namespace Stolon
 
                 Leave();
             }
-            if (Instance.UserInterface.UIElementUpdateData["options"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["options"].IsClicked)
             {
-                Instance.UserInterface.MenuPath = UIElement.GetSelfPath("options");
+                STOLON.Instance.UserInterface.MenuPath = UIElement.GetSelfPath("options");
             }
-            if (Instance.UserInterface.UIElementUpdateData["sound"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["sound"].IsClicked)
             {
-                Instance.UserInterface.MenuPath = UIElement.GetSelfPath("sound");
+                STOLON.Instance.UserInterface.MenuPath = UIElement.GetSelfPath("sound");
             }
-            if (Instance.UserInterface.UIElementUpdateData["volUp"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["volUp"].IsClicked)
             {
-                AudioEngine.Audio.MasterVolume += 0.1001f;
-                Instance.DebugStream.Log("new volume: " + AudioEngine.Audio.MasterVolume);
+                STOLON.Audio.MasterVolume += 0.1001f;
+                STOLON.Debug.Log("new volume: " + STOLON.Audio.MasterVolume);
             }
-            if (Instance.UserInterface.UIElementUpdateData["volDown"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["volDown"].IsClicked)
             {
-                AudioEngine.Audio.MasterVolume -= 0.1001f;
-                Instance.DebugStream.Log("new volume: " + AudioEngine.Audio.MasterVolume);
+                STOLON.Audio.MasterVolume -= 0.1001f;
+                STOLON.Debug.Log("new volume: " + STOLON.Audio.MasterVolume);
             }
-            if (Instance.UserInterface.UIElementUpdateData["startStory"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["startStory"].IsClicked)
             {
-                Instance.UserInterface.Textframe.Queue(new DialogueInfo(Instance.Environment, "Not yet implemented."));
+                STOLON.Instance.UserInterface.Textframe.Queue(new DialogueInfo(STOLON.Environment, "Not yet implemented."));
             }
-            if (Instance.UserInterface.UIElementUpdateData["startCom"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["startCom"].IsClicked)
             {
                 _boardPlayers = new Player[]
                         {
                             new Player("player0"),
-                            Instance.Environment.Entities["goldsilk"].GetPlayer()
+                            STOLON.Environment.Entities["goldsilk"].GetPlayer()
                         };
                 Leave();
             }
-            if (Instance.UserInterface.UIElementUpdateData["specialThanks"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["specialThanks"].IsClicked)
             {
-                Instance.UserInterface.Textframe.Queue(new DialogueInfo(Instance.Environment, "Please read the github README."));
+                STOLON.Instance.UserInterface.Textframe.Queue(new DialogueInfo(STOLON.Environment, "Please read the github README."));
             }
-            if (Instance.UserInterface.UIElementUpdateData["quit"].IsClicked)
+            if (STOLON.Instance.UserInterface.UIElementUpdateData["quit"].IsClicked)
             {
-                Instance.SLExit();
+                STOLON.Instance.SLExit();
             }
 
             if (!_menuDone) return;
             #endregion
 
             _menuRemoveTweener.Update(elapsedMiliseconds / 1000f);
-            TaskHeap.Heap.SafePush("menuLogoDisapear", new DynamicTask(() => // fire and forget game logic ftw
+            TaskHeap.Instance.SafePush("menuLogoDisapear", new DynamicTask(() => // fire and forget game logic ftw
             {
                 _loadingFinished = true;
                 _onLeave?.Invoke();
                 _onLeave = null;
-                Instance.Environment.GameStateManager.ChangeState<BoardGameState>(true);
-                ((BoardGameState)Instance.Environment.GameStateManager.Current).SetBoard(_boardPlayers!);
+                STOLON.Environment.GameStateManager.ChangeState<BoardGameState>(true);
+                ((BoardGameState)STOLON.Environment.GameStateManager.Current).SetBoard(_boardPlayers!);
                 _boardPlayers = null;
             }), 2000, false);
             _milisecondsSinceMenuRemoveStart += elapsedMiliseconds;
 
-            _tipPos = Centering.MiddleX((int)(Instance.Fonts["fonts\\smollerMono"].FastMeasure(_tips[_tipId]).X),
-                _menuLogoDrawPos.Y + _menuLogoLines.Height + (menuLogoBoundingBoxClearing * Math.Clamp(_menuRemoveTweener.Value * 2f, 0f, 1f)), Instance.VirtualDimensions.X, Vector2.One);
+            _tipPos = Centering.MiddleX((int)(STOLON.Fonts["fonts\\smollerMono"].FastMeasure(_tips[_tipId]).X),
+                _menuLogoDrawPos.Y + _menuLogoLines.Height + (menuLogoBoundingBoxClearing * Math.Clamp(_menuRemoveTweener.Value * 2f, 0f, 1f)), STOLON.Instance.VirtualDimensions.X, Vector2.One);
 
-            _menuRemoveLineY = (int)(_menuRemoveTweener.Value * Instance.VirtualDimensions.Y);
+            _menuRemoveLineY = (int)(_menuRemoveTweener.Value * STOLON.Instance.VirtualDimensions.Y);
 
             Centering.OnPixel(ref _menuLogoDrawPos);
         }
@@ -378,7 +374,7 @@ namespace Stolon
         {
             spriteBatch.DrawLine(_menuLine1X, -10f, _menuLine1X, _menuLineLenght, Color.White, _menuLineWidth);
             spriteBatch.DrawLine(_menuLine2X, -10f, _menuLine2X, _menuLineLenght, Color.White, _menuLineWidth);
-            if (_menuDone) spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _tips[_tipId], _tipPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 1f);
+            if (_menuDone) spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], _tips[_tipId], _tipPos, Color.White, 0f, Vector2.Zero, STOLON.Fonts["fonts\\smollerMono"].Scale, SpriteEffects.None, 1f);
 
             if (_drawMenuLogoLowResFonted)
             {
@@ -386,19 +382,19 @@ namespace Stolon
                     spriteBatch.Draw(_dither32, _menuDitherTexturePositions[i].ToVector2(), null, Color.White, 0f, Vector2.Zero, 1f,
                         (i >= _menuDitherTexturePositions.Length / 2f) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0f);
 
-                spriteBatch.Draw(Instance.Textures.Pixel, _menuLogoBoundingBox, Color.Black);
+                spriteBatch.Draw(STOLON.Textures.Pixel, _menuLogoBoundingBox, Color.Black);
                 spriteBatch.DrawRectangle(_menuLogoBoundingBox, Color.White, UserInterface.LINE_WIDTH);
             }
             if (_drawMenuLogoDummyTiles) spriteBatch.Draw(_menuLogoDummyTiles, _menuLogoDrawPos, Color.White);
             if (_drawMenuLogoFilledTiles) spriteBatch.Draw(_menuLogoFilledTiles, _menuLogoDrawPos, Color.White);
             if (_drawMenuLogoLowResFonted) spriteBatch.Draw(_menuLogoLowResFonted, _menuLogoDrawPos, Color.White);
 
-            spriteBatch.Draw(Instance.Textures.Pixel, _menuLogoTileHider, Color.Black);
+            spriteBatch.Draw(STOLON.Textures.Pixel, _menuLogoTileHider, Color.Black);
             if (_drawMenuLogoLines) spriteBatch.Draw(_menuLogoLines, _menuLogoDrawPos, Color.White);
 
             int width = (int)(_menuLogoDrawPos.X - 8);
             spriteBatch.DrawLine(width, -10f, width, _menuRemoveLineY, Color.White, UserInterface.LINE_WIDTH);
-            spriteBatch.DrawLine(Instance.VirtualDimensions.X - width, -10f, Instance.VirtualDimensions.X - width, _menuRemoveLineY, Color.White, UserInterface.LINE_WIDTH);
+            spriteBatch.DrawLine(STOLON.Instance.VirtualDimensions.X - width, -10f, STOLON.Instance.VirtualDimensions.X - width, _menuRemoveLineY, Color.White, UserInterface.LINE_WIDTH);
         }
     }
     public class BoardGameState : IGameState
@@ -441,7 +437,7 @@ namespace Stolon
         }
         private void UpdateUI(int elapsedMiliseconds)
         {
-            float zoomIntensity = ((BoardGameState)Instance.Environment.GameStateManager.Current).Board.ZoomIntensity;
+            float zoomIntensity = ((BoardGameState)STOLON.Environment.GameStateManager.Current).Board.ZoomIntensity;
             float lineZoomOffset = zoomIntensity * 30f * (zoomIntensity < 0 ? 0.5f : 1f); // 30 being the max zoom in pixels, the last bit is smoothening the inverted zoom.
 
             lineZoomOffset = Math.Max(0, lineZoomOffset);
@@ -452,15 +448,15 @@ namespace Stolon
             _uiRightOffset = lineZoomOffset;
 
             _lineX1 = (int)(_lineOffset + _uiLeftOffset);
-            _lineX2 = (int)(Instance.VirtualDimensions.X - _lineOffset + _uiRightOffset);
+            _lineX2 = (int)(STOLON.Instance.VirtualDimensions.X - _lineOffset + _uiRightOffset);
         }
         public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
             _board?.Draw(spriteBatch, elapsedMiliseconds);
 
-            spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle(Point.Zero, new Point((int)_lineX1, 500)), Color.Black);
+            spriteBatch.Draw(STOLON.Textures.Pixel, new Rectangle(Point.Zero, new Point((int)_lineX1, 500)), Color.Black);
             spriteBatch.DrawLine(_lineX1, -10f, _lineX1, 500f, Color.White, UserInterface.LINE_WIDTH);
-            spriteBatch.Draw(Instance.Textures.Pixel, new Rectangle((int)_lineX2, 0, Instance.VirtualDimensions.X - (int)_lineX2, 500), Color.Black);
+            spriteBatch.Draw(STOLON.Textures.Pixel, new Rectangle((int)_lineX2, 0, STOLON.Instance.VirtualDimensions.X - (int)_lineX2, 500), Color.Black);
             spriteBatch.DrawLine(_lineX2, -10f, _lineX2, 500f, Color.White, UserInterface.LINE_WIDTH);
         }
     }

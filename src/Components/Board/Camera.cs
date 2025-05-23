@@ -2,7 +2,7 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using static Stolon.StolonGame;
+
 
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -18,7 +18,7 @@ namespace Stolon
 
         public Camera2D()
         {
-            _dimensions = Instance.VirtualDimensions;
+            _dimensions = STOLON.Instance.VirtualDimensions;
 
             MinZoom = 0.1f;
             MaxZoom = 100f;

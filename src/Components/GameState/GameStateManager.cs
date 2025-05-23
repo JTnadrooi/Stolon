@@ -7,8 +7,8 @@ using System.Linq;
 using AsitLib;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using static Stolon.BoardState;
-using static Stolon.StolonGame;
+
+
 
 using Point = Microsoft.Xna.Framework.Point;
 using Microsoft.Xna.Framework.Content;
@@ -61,7 +61,7 @@ namespace Stolon
             _currentState.Draw(spriteBatch, elapsedMiliseconds);
         }
 
-        public static TGameState GetCurrent<TGameState>() where TGameState : IGameState => (TGameState)Instance.Environment.GameStateManager.Current;
-        public static bool IsCurrent<TGameState>() where TGameState : IGameState => Instance.Environment.GameStateManager.Current is TGameState;
+        public static TGameState GetCurrent<TGameState>() where TGameState : IGameState => (TGameState)STOLON.Environment.GameStateManager.Current;
+        public static bool IsCurrent<TGameState>() where TGameState : IGameState => STOLON.Environment.GameStateManager.Current is TGameState;
     }
 }

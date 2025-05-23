@@ -16,27 +16,19 @@ using DiscordRPC.Events;
 using Microsoft.Xna.Framework.Media;
 using System.Drawing;
 using Microsoft.Xna.Framework.Content;
-using static Stolon.StolonGame;
+
 #nullable enable
 
 namespace Stolon
 {
-	//public class FontCollection : IContentCollection<GameFont>
- //   {
- //       public FontCollection(ContentManager contentManager)
-	//	{
-
-	//	}
-
- //   }
-    public partial class StolonGame : Game
+    public partial class STOLON : Game
 	{
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
 		private RenderTarget2D _renderTarget;
 
         private RenderTarget2D _bloomRenderTarget;
-		private StolonEnvironment _environment;
+		private GameEnvironment _environment;
 		private Point _aspectRatio = new Point(16, 9);
 		private float AspectRatioFloat => _aspectRatio.X / _aspectRatio.Y * 1.7776f;
 		private int _virtualModifier;
@@ -48,8 +40,6 @@ namespace Stolon
         private BloomFilter _bloomFilter;
         private Point _oldWindowSize;
 
-        public StolonEnvironment Environment => _environment;
-		public AudioEngine AudioEngine { get; private set; }
         public DiscordRichPresence DRP { get; set; }
         public UserInterface UserInterface => _environment.UI;
 		public Rectangle VirtualBounds => new Rectangle(Point.Zero, VirtualDimensions);
@@ -58,20 +48,15 @@ namespace Stolon
 		public Point ScreenCenter => new Point(VirtualDimensions.X / 2, VirtualDimensions.Y / 2);
         public float ScreenScale { get; private set; }
 
-
-        public GameTextureCollection Textures => _textures;
-		public GameFontCollection Fonts => _fonts;
-
 		public SpriteBatch SpriteBatch => _spriteBatch;
 		public GraphicsDeviceManager GraphicsDeviceManager => _graphics;
-		public DebugStream DebugStream { get; }
 		public Color Color1 => _palette[0];
 		public Color Color2 => _palette[1];
 
 		public string VersionID => "0.051 (Open Alpha)";
 
 		#pragma warning disable CS8618
-		public StolonGame()
+		public STOLON()
 		#pragma warning restore CS8618
 		{
 			Instance = this;
@@ -79,14 +64,14 @@ namespace Stolon
 			Content.RootDirectory = "content";
 			IsMouseVisible = true;
 
-            DebugStream = new DebugStream(header: "stolon");
-            DebugStream.Silent = false;
-            AudioEngine = new AudioEngine();
+            Debug = new DebugStream(header: "stolon");
+            Debug.Silent = false;
+            Audio = new AudioEngine();
         }
 
 		protected override void Initialize()
 		{
-			DebugStream.Log(">[s]initializing stolon");
+            Debug.Log(">[s]initializing stolon");
 			DRP = new DiscordRichPresence();
 			DRP.UpdateDetails("Initializing..");
 
@@ -105,7 +90,7 @@ namespace Stolon
 
 
 			Window.ClientSizeChanged += Window_ClientSizeChanged;
-			DebugStream.Success();
+            Debug.Success();
 			base.Initialize();
 		}
 		void Window_ClientSizeChanged(object? sender, EventArgs e)
@@ -132,16 +117,21 @@ namespace Stolon
 		public void SetDesiredResolution(Point resolution) => _desiredModifier = resolution.X / _aspectRatio.X;
 		protected override void LoadContent()
 		{
-			DebugStream.Log(">[s]loading stolon content");
+            Debug.Log(">[s]loading stolon content");
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 			_textures = new GameTextureCollection(Content);
             _fonts = new GameFontCollection(Content);
 
-			_environment = new StolonEnvironment();
-			_environment.Initialize();
+			Textures = _textures;
+			Fonts = _fonts;
 
-            _replaceColorEffect = Instance.Textures.HardLoad<Effect>("effects\\replaceColor");
+			_environment = new GameEnvironment();
+            STOLON.Environment = _environment;
+
+            _environment.Initialize();
+
+            _replaceColorEffect = STOLON.Textures.HardLoad<Effect>("effects\\replaceColor");
 			_palette = new Color[]
 			{
 				System.Drawing.ColorTranslator.FromHtml("#f2fbeb").ToColor(),
@@ -152,7 +142,7 @@ namespace Stolon
 			_bloomFilter.Load(GraphicsDevice, Content, _aspectRatio.X * _desiredModifier, _aspectRatio.Y * _desiredModifier);
 			_bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
 
-            DebugStream.Success();
+            Debug.Success();
             base.LoadContent();
 		}
 		protected override void UnloadContent()
@@ -162,7 +152,7 @@ namespace Stolon
 		public void SLExit()
 		{
 			MediaPlayer.Stop();
-			AudioEngine.Audio.Dispose();
+			Audio.Dispose();
 			Exit();
 		}
 		protected override void Update(GameTime gameTime)
@@ -216,20 +206,20 @@ namespace Stolon
 			_replaceColorEffect.Parameters["color2"].SetValue(_palette[1].ToVector4());
 
 			GraphicsDevice.SetRenderTarget(_renderTarget);
-			GraphicsDevice.Clear(Instance.Color2);
+			GraphicsDevice.Clear(STOLON.Instance.Color2);
 			_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 
 			_environment.Draw(_spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
 
-            _spriteBatch.Draw(Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
+            _spriteBatch.Draw(STOLON.Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
 
-            _spriteBatch.DrawString(Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+            _spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - STOLON.Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
 			_spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
 			_spriteBatch.End();
 			//GraphicsDevice.SetRenderTarget(bloomRenderTarget);
 			GraphicsDevice.SetRenderTarget(null);
-			GraphicsDevice.Clear(Instance.Color2);
+			GraphicsDevice.Clear(STOLON.Instance.Color2);
 
 			_spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None,
 				RasterizerState.CullCounterClockwise, transformMatrix: Matrix.CreateScale(ScreenScale), effect: _replaceColorEffect);
@@ -238,7 +228,7 @@ namespace Stolon
 
 			//         Texture2D bloom = _bloomFilter.Draw(bloomRenderTarget, DesiredDimensions.X, DesiredDimensions.Y);
 			//         GraphicsDevice.SetRenderTarget(null);
-			//         GraphicsDevice.Clear(Instance.Color2);
+			//         GraphicsDevice.Clear(StolonGame.Instance.Color2);
 
 			////spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
 			//spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.Additive);
@@ -252,11 +242,16 @@ namespace Stolon
 			base.Draw(gameTime);
 		}
 	}
-	public partial class StolonGame
+	public partial class STOLON
 	{
 		#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-		public static StolonGame Instance { get; private set; }
-		public const string MEDIUM_FONT_ID = "fonts\\pixeloidMono";
+		public static STOLON Instance { get; private set; }
+		public static GameTextureCollection Textures { get; private set; }
+		public static GameFontCollection Fonts { get; private set; }
+        public static AudioEngine Audio { get; private set; }
+        public static DebugStream Debug { get; private set; }
+        public static GameEnvironment Environment { get; private set; }
+        public const string MEDIUM_FONT_ID = "fonts\\pixeloidMono";
 		public const string SMALL_FONT_ID = "fonts\\smollerMono";
 		#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     }
@@ -280,7 +275,7 @@ namespace Stolon
 		public static MouseDomain Domain { get; internal set; }
 		public static MouseState PreviousState { get; internal set; }
 		public static MouseState CurrentState { get; internal set; }
-		public static Vector2 VirualPosition => CurrentState.Position.ToVector2() / Instance.ScreenScale;
+		public static Vector2 VirualPosition => CurrentState.Position.ToVector2() / STOLON.Instance.ScreenScale;
 		public static bool IsPressed(MouseButton button) => IsPressed(CurrentState, button);
 		private static bool IsPressed(MouseState state, MouseButton button) => button switch
 		{

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using static Stolon.StolonGame;
+
 
 #nullable enable
 
@@ -115,10 +115,10 @@ namespace Stolon
         /// <returns>The <paramref name="attributes"/> <see cref="HashSet{T}"/>.</returns>
         public static HashSet<TileAttributeBase> ReplaceAttribute<TFrom, TTo>(this HashSet<TileAttributeBase> attributes) where TFrom : TileAttributeBase where TTo : TileAttributeBase
         {
-            Instance.DebugStream.Log(">attempting the replacement of attribute " + GetName<TFrom>() + " to " + GetName<TTo>());
+            STOLON.Debug.Log(">attempting the replacement of attribute " + GetName<TFrom>() + " to " + GetName<TTo>());
             if (!attributes.Remove(Get<TFrom>())) throw new Exception();
             if (!attributes.Add(Get<TTo>())) throw new Exception();
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
             return attributes;
         }
         /// <summary>

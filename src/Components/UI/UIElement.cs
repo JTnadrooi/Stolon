@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Betwixt;
 using MonoGame.Extended;
-using static Stolon.StolonGame;
+
 using static Stolon.UIElement;
 
 using Color = Microsoft.Xna.Framework.Color;
@@ -51,7 +51,7 @@ namespace Stolon
         }
         public bool IsTop => ChildOf == TOP_ID;
         public string ClickSoundID { get; }
-        public CachedAudio ClickSound => AudioEngine.AudioLibrary[ClickSoundID];
+        public CachedAudio ClickSound => STOLON.Audio.Library[ClickSoundID];
         public const string TOP_ID = "_";
         /// <summary>
         /// The type of the <see cref="UIElement"/>.
@@ -103,7 +103,7 @@ namespace Stolon
         public static UIPath GetSelfPath(string id)
         {
             IEnumerable<string> GetListPath(string idForSearch)
-                => idForSearch == TOP_ID ? idForSearch.ToSingleArray() : GetListPath(Instance.Environment.UI.UIElements[idForSearch].ChildOf).Concat(idForSearch.ToSingleArray());
+                => idForSearch == TOP_ID ? idForSearch.ToSingleArray() : GetListPath(STOLON.Environment.UI.UIElements[idForSearch].ChildOf).Concat(idForSearch.ToSingleArray());
             return new UIPath(GetListPath(id).ToArray()[1..]);
         }
         public static UIPath GetParentPath(string id) => new UIPath(GetSelfPath(id).Segments.ToArray()[..^1]);
@@ -217,8 +217,8 @@ namespace Stolon
         /// The <see cref="UIElement.Id"/> of the source <see cref="UIElement"/>.
         /// </summary>
         public string SourcID { get; }
-        public string ClickSoundID => Instance.UserInterface.UIElements[SourcID].ClickSoundID;
-        public CachedAudio ClickSound => AudioEngine.AudioLibrary[ClickSoundID];
+        public string ClickSoundID => STOLON.Instance.UserInterface.UIElements[SourcID].ClickSoundID;
+        public CachedAudio ClickSound => STOLON.Audio.Library[ClickSoundID];
 
         /// <summary>
         /// Create a new <see cref="UIElementUpdateData"/> with the propeties <see cref="IsHovered"/> and <see cref="SourcID"/> set.

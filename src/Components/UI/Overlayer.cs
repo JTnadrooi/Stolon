@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 using Betwixt;
 using MonoGame.Extended;
-using static Stolon.StolonGame;
+
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -22,7 +22,7 @@ namespace Stolon
         private Dictionary<string, IOverlay> _overlays;
         private List<string> _initialized;
 
-        public OverlayEngine() : base(StolonEnvironment.Instance)
+        public OverlayEngine() : base(GameEnvironment.Instance)
         {
             _overlays = new Dictionary<string, IOverlay>();
             _initialized = new List<string>();
@@ -31,17 +31,17 @@ namespace Stolon
         public void AddOverlay<TOverlay>() where TOverlay : IOverlay, new() => AddOverlay(new TOverlay());
         public void AddOverlay(IOverlay overlay)
         {
-            Instance.DebugStream.Log(">adding overlay of id " + overlay.ID + ".");
+            STOLON.Debug.Log(">adding overlay of id " + overlay.ID + ".");
             _overlays.Add(overlay.ID, overlay);
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
         }
 
         public void RemoveOverlay(string overlayId)
         {
-            Instance.DebugStream.Log(">removing overlay of id " + overlayId + ".");
+            STOLON.Debug.Log(">removing overlay of id " + overlayId + ".");
             Deactivate(overlayId);
             _overlays.Remove(overlayId);
-            Instance.DebugStream.Success();
+            STOLON.Debug.Success();
         }
 
         public void Activate(string overlayId, params object?[] args)
@@ -49,10 +49,10 @@ namespace Stolon
             
             if (!_initialized.Contains(overlayId))
             {
-                Instance.DebugStream.Log(">[s]activating overlay of id " + overlayId + ".");
+                STOLON.Debug.Log(">[s]activating overlay of id " + overlayId + ".");
                 _overlays[overlayId].Initialize(this, args);
                 _initialized.Add(overlayId);
-                Instance.DebugStream.Success();
+                STOLON.Debug.Success();
             }
         }
 
@@ -66,9 +66,9 @@ namespace Stolon
         {
             if (_initialized.Contains(overlayId))
             {
-                Instance.DebugStream.Log(">deactivating overlay of id " + overlayId + ".");
+                STOLON.Debug.Log(">deactivating overlay of id " + overlayId + ".");
                 _overlays[overlayId].Reset();
-                Instance.DebugStream.Success();
+                STOLON.Debug.Success();
             }
             _initialized.Remove(overlayId);
         }
@@ -82,9 +82,9 @@ namespace Stolon
                 overlay.Update(elapsedMiliseconds);
                 if (overlay.Ended)
                 {
-                    Instance.DebugStream.Log(">deactivating and resetting ended overlay of id " + overlay.ID + ".");
+                    STOLON.Debug.Log(">deactivating and resetting ended overlay of id " + overlay.ID + ".");
                     Deactivate(overlay.ID);
-                    Instance.DebugStream.Success();
+                    STOLON.Debug.Success();
                 }
             }
             base.Update(elapsedMiliseconds);
@@ -98,7 +98,7 @@ namespace Stolon
             base.Draw(spriteBatch, elapsedMiliseconds);
         }
 
-        public static OverlayEngine Engine => Instance.Environment.Overlayer;
+        public static OverlayEngine Engine => STOLON.Environment.Overlayer;
     }
 
     public interface IOverlay
@@ -125,12 +125,12 @@ namespace Stolon
 
         public LoadOverlay()
         {
-            lineTexture = Instance.Textures.GetReference("textures\\loading1");
+            lineTexture = STOLON.Textures.GetReference("textures\\loading1");
             _rotation = 0f;
             _scale = 0.20f;
             _rotationSpeed = 40f;
 
-            _pos = Instance.VirtualBounds.Size.ToVector2() + new Vector2(-lineTexture.Width, -lineTexture.Height) * _scale;
+            _pos = STOLON.Instance.VirtualBounds.Size.ToVector2() + new Vector2(-lineTexture.Width, -lineTexture.Height) * _scale;
 
         }
 
@@ -181,8 +181,8 @@ namespace Stolon
 
 
             _tweener = new Tweener<float>(1, this._pixelsToRemovePerFrame, 5f, Ease.Expo.In);
-            _height = Instance.VirtualDimensions.Y / resolution;
-            _width = Instance.VirtualDimensions.X / resolution;
+            _height = STOLON.Instance.VirtualDimensions.Y / resolution;
+            _width = STOLON.Instance.VirtualDimensions.X / resolution;
 
             _ditherTexture = null!;
             _pixelData = null!;
@@ -192,7 +192,7 @@ namespace Stolon
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
-            AudioEngine.Audio.Play(AudioEngine.AudioLibrary["randomize4"]);
+            STOLON.Audio.Play(STOLON.Audio.Library["randomize4"]);
         }
 
         public void ResetTexture()
@@ -286,24 +286,24 @@ namespace Stolon
             _heightCoefficient = _tweener.Value;
 
             _drawArea = new Rectangle(_area.Location, new Point(_area.Width, (int)(desiredHeight * _heightCoefficient)));
-            _textPos = Centering.MiddleXY(Instance.Fonts["fonts\\smollerMono"].FastMeasure(_text).ToPoint(), _drawArea, new Vector2(TextSizeMod));
-            _textPos = new Vector2(_textPos.X, Math.Min(_textPos.Y, _drawArea.Height - Instance.Fonts["fonts\\smollerMono"].Dimensions.Y * TextSizeMod));
+            _textPos = Centering.MiddleXY(STOLON.Fonts["fonts\\smollerMono"].FastMeasure(_text).ToPoint(), _drawArea, new Vector2(TextSizeMod));
+            _textPos = new Vector2(_textPos.X, Math.Min(_textPos.Y, _drawArea.Height - STOLON.Fonts["fonts\\smollerMono"].Dimensions.Y * TextSizeMod));
 
             Centering.OnPixel(ref _textPos);
         }
 
         public void Draw(SpriteBatch spriteBatch, int elapsedMiliseconds)
         {
-            spriteBatch.Draw(Instance.Textures.Pixel, _drawArea, Color.Black);
+            spriteBatch.Draw(STOLON.Textures.Pixel, _drawArea, Color.Black);
             spriteBatch.DrawRectangle(_drawArea, Color.White);
-            spriteBatch.DrawString(Instance.Fonts["fonts\\smollerMono"], _text, _textPos, Color.White, 0f, Vector2.Zero, Instance.Fonts["fonts\\smollerMono"].Scale * TextSizeMod, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], _text, _textPos, Color.White, 0f, Vector2.Zero, STOLON.Fonts["fonts\\smollerMono"].Scale * TextSizeMod, SpriteEffects.None, 0f);
         }
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)
         {
             Ended = false;
             _tweener = new Tweener<float>(0f, 1f, Duration / 1000f / 2, Ease.Sine.Out);
-            _area = (Rectangle)((args.Length > 0 ? args[0] : null) ?? Instance.VirtualBounds);
+            _area = (Rectangle)((args.Length > 0 ? args[0] : null) ?? STOLON.Instance.VirtualBounds);
             _text = (string)(args[2] ?? string.Empty);
             _action = (Action)(args[1]! ?? _action);
 

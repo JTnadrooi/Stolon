@@ -28,7 +28,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using System.IO;
 using MonoGame.Extended.Content;
 using Microsoft.Xna.Framework.Content;
-using static Stolon.StolonGame;
+
 #nullable enable
 
 namespace Stolon

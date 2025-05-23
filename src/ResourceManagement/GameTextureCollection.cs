@@ -28,7 +28,7 @@ using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using System.IO;
 using MonoGame.Extended.Content;
 using Microsoft.Xna.Framework.Content;
-using static Stolon.StolonGame;
+
 #nullable enable
 
 
@@ -53,7 +53,7 @@ namespace Stolon
                     {
                         if (!TexturePalette.Debug.Contains(data[i]) && data[i].A == 1)
                         {
-                            Instance.DebugStream.Log("found DEBUG texture: " + texture.Name);
+                            STOLON.Debug.Log("found DEBUG texture: " + texture.Name);
                             break;
                         }
                     }
@@ -70,7 +70,7 @@ namespace Stolon
 
         public TContent HardLoad<TContent>(string path)
         {
-            Instance.DebugStream.Log("hardloading path: " + path);
+            STOLON.Debug.Log("hardloading path: " + path);
             return ContentManager.Load<TContent>(path);
         }
 

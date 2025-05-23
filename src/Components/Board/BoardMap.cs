@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using AsitLib;
 
 using MonoGame.Extended;
-using static Stolon.StolonGame;
+
 
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;

@@ -15,7 +15,7 @@ namespace Stolon
     {
         public static void Main()
         {
-            using StolonGame game = new StolonGame();
+            using STOLON game = new STOLON();
             game.Run();
         }
     }
