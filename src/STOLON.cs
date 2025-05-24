@@ -119,7 +119,6 @@ namespace STOLON
 
             Window.ClientSizeChanged += Window_ClientSizeChanged;
         }
-        public void SetDesiredResolution(Point resolution) => _desiredModifier = resolution.X / _aspectRatio.X;
         public void GoFullscreen()
         {
             if (_graphics.IsFullScreen) SetBackBufferSize(DesiredDimensions);
