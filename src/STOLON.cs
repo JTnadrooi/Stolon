@@ -83,6 +83,8 @@ namespace STOLON
 
             _graphics.PreferredBackBufferWidth = DesiredDimensions.X;
             _graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
+            _graphics.GraphicsDevice.PresentationParameters.MultiSampleCount = 0;
+            _graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             Window.AllowUserResizing = true;
             _graphics.ApplyChanges();
 
@@ -177,8 +179,8 @@ namespace STOLON
                 STOLON.Input.CurrentKeyboard = Keyboard.GetState();
 
                 if (!GraphicsDevice.Viewport.Bounds.Contains(STOLON.Input.CurrentMouse.Position)) STOLON.Input.Domain = GameInputManager.MouseDomain.OfScreen;
-                else if (Environment.UI.Textframe.DialogueBounds.Contains(STOLON.Input.VirtualPosition)) STOLON.Input.Domain = GameInputManager.MouseDomain.Dialogue;
-                else if (GameStateManager.IsCurrent<BoardGameState>() && STOLON.Input.VirtualPosition.X > (int)GameStateManager.GetCurrent<BoardGameState>().Line1X && STOLON.Input.VirtualPosition.X < (int)GameStateManager.GetCurrent<BoardGameState>().Line2X) STOLON.Input.Domain = GameInputManager.MouseDomain.Board;
+                else if (Environment.UI.Textframe.DialogueBounds.Contains(STOLON.Input.VirtualMousePos)) STOLON.Input.Domain = GameInputManager.MouseDomain.Dialogue;
+                else if (GameStateManager.IsCurrent<BoardGameState>() && STOLON.Input.VirtualMousePos.X > (int)GameStateManager.GetCurrent<BoardGameState>().Line1X && STOLON.Input.VirtualMousePos.X < (int)GameStateManager.GetCurrent<BoardGameState>().Line2X) STOLON.Input.Domain = GameInputManager.MouseDomain.Board;
                 else STOLON.Input.Domain = GameInputManager.MouseDomain.UserInterfaceLow;
 
                 ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
