@@ -54,7 +54,7 @@ namespace STOLON
         public Color Color1 => _palette[0];
         public Color Color2 => _palette[1];
 
-        public string VersionID => "0.051 (Open Alpha)";
+        public const string VERSION_STRING = "0.051 (Open Alpha)";
 
 #pragma warning disable CS8618
         public STOLON()
@@ -100,8 +100,8 @@ namespace STOLON
         {
             Window.ClientSizeChanged -= Window_ClientSizeChanged;
 
-            var newWidth = Window.ClientBounds.Width;
-            var newHeight = Window.ClientBounds.Height;
+            int newWidth = Window.ClientBounds.Width;
+            int newHeight = Window.ClientBounds.Height;
 
             if (newWidth != _oldWindowSize.X)
             {
@@ -220,7 +220,7 @@ namespace STOLON
 
             _environment.Draw(_spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
             _spriteBatch.Draw(STOLON.Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
-            _spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - STOLON.Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
+            _spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], "ver: " + VERSION_STRING, new Vector2(VirtualDimensions.X / 2 - STOLON.Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VERSION_STRING).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
             _spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
             _spriteBatch.End();
