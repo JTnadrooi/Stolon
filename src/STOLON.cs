@@ -173,8 +173,8 @@ namespace STOLON
                 STOLON.Input.CurrentKeyboard = Keyboard.GetState();
 
                 if (!GraphicsDevice.Viewport.Bounds.Contains(STOLON.Input.CurrentMouse.Position)) STOLON.Input.Domain = GameInputManager.MouseDomain.OfScreen;
-                else if (Environment.UI.Textframe.DialogueBounds.Contains(STOLON.Input.VirtualPosition)) STOLON.Input.Domain = GameInputManager.MouseDomain.Dialogue;
-                else if (GameStateManager.IsCurrent<BoardGameState>() && STOLON.Input.VirtualPosition.X > (int)GameStateManager.GetCurrent<BoardGameState>().Line1X && STOLON.Input.VirtualPosition.X < (int)GameStateManager.GetCurrent<BoardGameState>().Line2X) STOLON.Input.Domain = GameInputManager.MouseDomain.Board;
+                else if (Environment.UI.Textframe.DialogueBounds.Contains(STOLON.Input.VirtualMousePos)) STOLON.Input.Domain = GameInputManager.MouseDomain.Dialogue;
+                else if (GameStateManager.IsCurrent<BoardGameState>() && STOLON.Input.VirtualMousePos.X > (int)GameStateManager.GetCurrent<BoardGameState>().Line1X && STOLON.Input.VirtualMousePos.X < (int)GameStateManager.GetCurrent<BoardGameState>().Line2X) STOLON.Input.Domain = GameInputManager.MouseDomain.Board;
                 else STOLON.Input.Domain = GameInputManager.MouseDomain.UserInterfaceLow;
 
                 ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
@@ -211,6 +211,7 @@ namespace STOLON
 
             _environment.Draw(_spriteBatch, gameTime.ElapsedGameTime.Milliseconds);
             _spriteBatch.Draw(STOLON.Textures.GetReference("textures\\characters\\silo"), new Vector2(500, 0), Color.White);
+            _spriteBatch.DrawPoint(STOLON.Input.VirtualMousePos, Color1, 10);
             _spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], "ver: " + VersionID, new Vector2(VirtualDimensions.X / 2 - STOLON.Fonts["fonts\\smollerMono"].FastMeasure("ver: " + VersionID).X / 2, 1f), Color.White, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 1f);
             _spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 

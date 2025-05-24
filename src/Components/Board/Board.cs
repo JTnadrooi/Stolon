@@ -105,7 +105,7 @@ namespace STOLON
         {
             if (!_firstFrame) _firstFrame = true;
 
-            WorldMousePos = Camera.Unproject(STOLON.Input.VirtualPosition);
+            WorldMousePos = Camera.Unproject(STOLON.Input.VirtualMousePos);
 
             _mouseStateCoefficient = STOLON.Input.CurrentMouse.GetMouseStateCoefficient();
 

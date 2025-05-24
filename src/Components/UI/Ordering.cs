@@ -77,7 +77,7 @@ namespace STOLON
                 "specialThanks" => "!",
                 _ => ">",
             };
-            bool elementIsHovered = elementBounds.Contains(STOLON.Input.VirtualPosition);
+            bool elementIsHovered = elementBounds.Contains(STOLON.Input.VirtualMousePos);
 
             return (new UIElementDrawData(element.Id, elementIsHovered 
                 ? (postPre + " " + elementText + " " + postPre.Replace(">", "<")) 
