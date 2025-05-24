@@ -46,7 +46,7 @@ namespace STOLON
 
         public void Activate(string overlayId, params object?[] args)
         {
-            
+
             if (!_initialized.Contains(overlayId))
             {
                 STOLON.Debug.Log(">[s]activating overlay of id " + overlayId + ".");
@@ -205,7 +205,7 @@ namespace STOLON
 
         public void Reset()
         {
-            _tweener .Reset();
+            _tweener.Reset();
             ResetTexture();
         }
 
@@ -286,8 +286,8 @@ namespace STOLON
             _heightCoefficient = _tweener.Value;
 
             _drawArea = new Rectangle(_area.Location, new Point(_area.Width, (int)(desiredHeight * _heightCoefficient)));
-            _textPos = Centering.MiddleXY(STOLON.Fonts["fonts\\smollerMono"].FastMeasure(_text).ToPoint(), _drawArea, new Vector2(TextSizeMod));
-            _textPos = new Vector2(_textPos.X, Math.Min(_textPos.Y, _drawArea.Height - STOLON.Fonts["fonts\\smollerMono"].Dimensions.Y * TextSizeMod));
+            _textPos = Centering.MiddleXY(STOLON.Fonts[STOLON.SMALL_FONT_ID].FastMeasure(_text).ToPoint(), _drawArea, new Vector2(TextSizeMod));
+            _textPos = new Vector2(_textPos.X, Math.Min(_textPos.Y, _drawArea.Height - STOLON.Fonts[STOLON.SMALL_FONT_ID].Dimensions.Y * TextSizeMod));
 
             Centering.OnPixel(ref _textPos);
         }
@@ -296,7 +296,7 @@ namespace STOLON
         {
             spriteBatch.Draw(STOLON.Textures.Pixel, _drawArea, Color.Black);
             spriteBatch.DrawRectangle(_drawArea, Color.White);
-            spriteBatch.DrawString(STOLON.Fonts["fonts\\smollerMono"], _text, _textPos, Color.White, 0f, Vector2.Zero, STOLON.Fonts["fonts\\smollerMono"].Scale * TextSizeMod, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(STOLON.Fonts[STOLON.SMALL_FONT_ID], _text, _textPos, Color.White, 0f, Vector2.Zero, STOLON.Fonts[STOLON.SMALL_FONT_ID].Scale * TextSizeMod, SpriteEffects.None, 0f);
         }
 
         public void Initialize(OverlayEngine overlayer, params object?[] args)
