@@ -28,7 +28,6 @@ namespace STOLON
         private SpriteBatch _spriteBatch;
         private RenderTarget2D _renderTarget;
 
-        private RenderTarget2D _bloomRenderTarget;
         private GameEnvironment _environment;
         private Point _aspectRatio = new Point(16, 9);
         private float AspectRatioFloat => _aspectRatio.X / _aspectRatio.Y * 1.7776f;
@@ -37,7 +36,6 @@ namespace STOLON
         private Color[] _palette;
         private GameTextureCollection _textures;
         private GameFontCollection _fonts;
-        private BloomFilter _bloomFilter;
         private Point _oldWindowSize;
         private EffectPipeline _post;
 
@@ -89,8 +87,6 @@ namespace STOLON
             _graphics.ApplyChanges();
 
             _renderTarget = new RenderTarget2D(GraphicsDevice, VirtualDimensions.X, VirtualDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
-            _bloomRenderTarget = new RenderTarget2D(GraphicsDevice, DesiredDimensions.X, DesiredDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
-
 
             Window.ClientSizeChanged += Window_ClientSizeChanged;
             Debug.Success();
@@ -121,14 +117,13 @@ namespace STOLON
         }
         public void GoFullscreen()
         {
-            if (_graphics.IsFullScreen) SetBackBufferSize(DesiredDimensions);
+            if (_graphics.IsFullScreen) SetBackBufferSize(VirtualDimensions);
             else
             {
                 SetBackBufferSize(new Point(GraphicsDevice.DisplayMode.Width, GraphicsDevice.DisplayMode.Height));
                 _graphics.ApplyChanges();
             }
 
-            _bloomFilter.UpdateResolution(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             _graphics.ToggleFullScreen();
             _graphics.ApplyChanges();
         }
@@ -162,9 +157,6 @@ namespace STOLON
                 System.Drawing.ColorTranslator.FromHtml("#171219").ToColor(),
             };
 
-            _bloomFilter = new BloomFilter();
-            _bloomFilter.Load(GraphicsDevice, Content, _aspectRatio.X * _desiredModifier, _aspectRatio.Y * _desiredModifier);
-            _bloomFilter.BloomPreset = BloomFilter.BloomPresets.One;
             _post = new EffectPipeline(GraphicsDevice, _spriteBatch, VirtualDimensions.X, VirtualDimensions.Y);
 
             _post.AddEffect(new ReplaceColorEffect(Content.Load<Effect>("effects\\ReplaceColor"))
@@ -180,7 +172,6 @@ namespace STOLON
         }
         protected override void UnloadContent()
         {
-            _bloomFilter.Dispose();
         }
         public void SLExit()
         {
@@ -204,6 +195,7 @@ namespace STOLON
                 else STOLON.Input.Domain = GameInputManager.MouseDomain.UserInterfaceLow;
 
                 ScreenScale = (GraphicsDevice.Viewport.Bounds.Size.ToVector2() / VirtualDimensions.ToVector2()).Y;
+                _desiredModifier = (int)(_virtualModifier * ScreenScale);
 
                 _environment.Update(gameTime.ElapsedGameTime.Milliseconds);
 
@@ -224,7 +216,7 @@ namespace STOLON
             _spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
             _spriteBatch.End();
-            _post.EndScene(Matrix.CreateScale(ScreenScale));
+            _post.EndScene();
 
             base.Draw(gameTime);
         }

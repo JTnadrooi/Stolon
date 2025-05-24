@@ -50,7 +50,7 @@ namespace STOLON
         /// Call this at the end of Draw: applies each effect in order, then
         /// presents the final result to the screen.
         /// </summary>
-        public void EndScene(Matrix? transform = null)
+        public void EndScene()
         {
             RenderTarget2D src = _sceneTarget;
             RenderTarget2D dst = _rt2;
@@ -72,8 +72,8 @@ namespace STOLON
             }
 
             _graphics.SetRenderTarget(null);
-            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, transformMatrix: transform);
-            _spriteBatch.Draw(src, Vector2.Zero, Color.White);
+            _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+            _spriteBatch.Draw(src, new Rectangle(Point.Zero, STOLON.Instance.DesiredDimensions), Color.White);
             _spriteBatch.End();
         }
 
