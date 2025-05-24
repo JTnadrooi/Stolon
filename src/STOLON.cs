@@ -60,8 +60,10 @@ namespace STOLON
 #pragma warning restore CS8618
         {
             Instance = this;
-            _graphics = new GraphicsDeviceManager(this);
-            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                GraphicsProfile = GraphicsProfile.HiDef,
+            };
             Content.RootDirectory = "content";
             IsMouseVisible = true;
 
@@ -83,12 +85,13 @@ namespace STOLON
 
             _graphics.PreferredBackBufferWidth = DesiredDimensions.X;
             _graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
+            _graphics.GraphicsDevice.PresentationParameters.MultiSampleCount = 0;
+            _graphics.GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             Window.AllowUserResizing = true;
             _graphics.ApplyChanges();
 
             _renderTarget = new RenderTarget2D(GraphicsDevice, VirtualDimensions.X, VirtualDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
             _bloomRenderTarget = new RenderTarget2D(GraphicsDevice, DesiredDimensions.X, DesiredDimensions.Y, false, GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24);
-
 
             Window.ClientSizeChanged += Window_ClientSizeChanged;
             Debug.Success();
