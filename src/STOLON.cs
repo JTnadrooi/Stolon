@@ -97,28 +97,34 @@ namespace STOLON
             Debug.Success();
             base.Initialize();
         }
-        void Window_ClientSizeChanged(object? sender, EventArgs e)
+        private void Window_ClientSizeChanged(object? sender, EventArgs e)
         {
-            Window.ClientSizeChanged -= new EventHandler<EventArgs>(Window_ClientSizeChanged);
-
-            if (Window.ClientBounds.Width != _oldWindowSize.X)
-            {
-                _graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-                _graphics.PreferredBackBufferHeight = (int)(Window.ClientBounds.Width / AspectRatioFloat);
-            }
-            else if (Window.ClientBounds.Height != _oldWindowSize.Y)
-            {
-                _graphics.PreferredBackBufferWidth = (int)(Window.ClientBounds.Height * AspectRatioFloat);
-                _graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-            }
-
-            _graphics.ApplyChanges();
-
-            _oldWindowSize = new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
-
-            Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
+            RecalculateScreenScaleAndViewport();
         }
-        public void SetDesiredResolution(Point resolution) => _desiredModifier = resolution.X / _aspectRatio.X;
+        private void RecalculateScreenScaleAndViewport()
+        {
+            var windowWidth = Window.ClientBounds.Width;
+            var windowHeight = Window.ClientBounds.Height;
+
+            float targetAspectRatio = (float)VirtualDimensions.X / VirtualDimensions.Y;
+
+            int newWidth = windowWidth;
+            int newHeight = (int)(newWidth / targetAspectRatio);
+
+            if (newHeight > windowHeight)
+            {
+                newHeight = windowHeight;
+                newWidth = (int)(newHeight * targetAspectRatio);
+            }
+
+            int offsetX = (windowWidth - newWidth) / 2;
+            int offsetY = (windowHeight - newHeight) / 2;
+
+            GraphicsDevice.Viewport = new Viewport(offsetX, offsetY, newWidth, newHeight);
+
+            ScreenScale = newWidth / (float)VirtualDimensions.X;
+        }
+
         protected override void LoadContent()
         {
             Debug.Log(">[s]loading stolon content");
@@ -190,20 +196,24 @@ namespace STOLON
         }
         public void GoFullscreen()
         {
+            _graphics.IsFullScreen = !_graphics.IsFullScreen;
+
             if (_graphics.IsFullScreen)
             {
-                _graphics.PreferredBackBufferWidth = DesiredDimensions.X;
-                _graphics.PreferredBackBufferHeight = DesiredDimensions.Y;
+                var display = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+                _graphics.PreferredBackBufferWidth = display.Width;
+                _graphics.PreferredBackBufferHeight = display.Height;
             }
             else
             {
-                _graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
-                _graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
-                _graphics.ApplyChanges();
+                _graphics.PreferredBackBufferWidth = VirtualDimensions.X; // Or whatever window size you want
+                _graphics.PreferredBackBufferHeight = VirtualDimensions.Y;
             }
-            _graphics.ToggleFullScreen();
+
             _graphics.ApplyChanges();
+            RecalculateScreenScaleAndViewport();
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
@@ -219,7 +229,7 @@ namespace STOLON
             _spriteBatch.DrawRectangle(new Rectangle(Point.Zero, VirtualDimensions), Color.White, 1);
 
             _spriteBatch.End();
-            _post.EndScene(Matrix.CreateScale(ScreenScale));
+            _post.EndScene();
 
             base.Draw(gameTime);
         }

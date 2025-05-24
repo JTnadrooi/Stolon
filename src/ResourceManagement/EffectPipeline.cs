@@ -50,14 +50,13 @@ namespace STOLON
         /// Call this at the end of Draw: applies each effect in order, then
         /// presents the final result to the screen.
         /// </summary>
-        public void EndScene(Matrix? transform = null)
+        public void EndScene()
         {
             RenderTarget2D src = _sceneTarget;
             RenderTarget2D dst = _rt2;
 
             foreach (IEffect effect in _effects)
             {
-                // pass src into the effect
                 effect.SetParameters(src);
 
                 _graphics.SetRenderTarget(dst);
@@ -74,23 +73,22 @@ namespace STOLON
                 _spriteBatch.Draw(src, Vector2.Zero, Color.White);
                 _spriteBatch.End();
 
-                // ping-pong
                 var tmp = src;
                 src = dst;
                 dst = tmp;
             }
 
-            // finally, draw `src` (which now holds the last pass) to the backbuffer
             _graphics.SetRenderTarget(null);
             _spriteBatch.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
                 SamplerState.PointClamp,
                 DepthStencilState.None,
-                RasterizerState.CullCounterClockwise,
-                transformMatrix: transform
+                RasterizerState.CullCounterClockwise
             );
-            _spriteBatch.Draw(src, Vector2.Zero, Color.White);
+            var vp = STOLON.Instance.GraphicsDevice.Viewport;
+            var drawRect = new Rectangle(vp.X, vp.Y, vp.Width, vp.Height);
+            _spriteBatch.Draw(src, drawRect, Color.White);
             _spriteBatch.End();
         }
 
